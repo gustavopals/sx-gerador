@@ -15,8 +15,8 @@ import { validateMigration } from './validators/migration.validator';
  * @returns Resultado com código gerado, helper e avisos
  * @throws {Error} Se houver erros de validação bloqueantes
  */
-export function buildMigration(input: any): string {
-  const migrationInput = input as MigrationInput;
+export function buildMigration(input: MigrationInput): string {
+  const migrationInput = input;
 
   const errors: ValidationError[] = validateMigration(migrationInput);
   if (errors.length > 0) {

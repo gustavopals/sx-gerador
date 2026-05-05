@@ -36,6 +36,11 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Generate Prisma client
+        run: pnpm --filter api exec prisma generate
+        env:
+          DATABASE_URL: postgresql://localhost/ci_dummy
+
       - name: Lint (root + turbo)
         run: pnpm lint
 
@@ -63,6 +68,11 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+
+      - name: Generate Prisma client
+        run: pnpm --filter api exec prisma generate
+        env:
+          DATABASE_URL: postgresql://localhost/ci_dummy
 
       - name: Typecheck
         run: pnpm typecheck
