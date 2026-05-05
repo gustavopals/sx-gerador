@@ -1,0 +1,25 @@
+.sxg-dashboard {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.sxg-metric {
+  margin: 8px 0 4px;
+  color: #1d242b;
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.sxg-muted {
+  margin: 0;
+  color: #53616f;
+  line-height: 1.5;
+}
+
+@media (max-width: 960px) {
+  .sxg-dashboard {
+    grid-template-columns: 1fr;
+  }
+}

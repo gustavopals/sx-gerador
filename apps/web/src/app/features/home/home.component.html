@@ -1,0 +1,22 @@
+<po-page-default
+  p-title="Hello SXGerador"
+  p-subtitle="Fundação web com Angular 21 e PO-UI 21"
+  [p-actions]="pageActions"
+>
+  <section class="sxg-dashboard" aria-label="Resumo do workspace">
+    <po-widget p-title="Projetos" p-tag-label="F0" p-tag-type="info">
+      <p class="sxg-metric">0</p>
+      <p class="sxg-muted">Workspace pronto para receber os dicionários.</p>
+    </po-widget>
+
+    <po-widget p-title="API" p-tag-label="dev" p-tag-type="neutral">
+      <p class="sxg-metric">{{ environmentName }}</p>
+      <p class="sxg-muted">{{ apiUrl }}</p>
+    </po-widget>
+
+    <po-widget p-title="Stack" p-tag-label="ok" p-tag-type="success">
+      <p class="sxg-metric">Angular 21</p>
+      <p class="sxg-muted">PO-UI carregado no shell inicial.</p>
+    </po-widget>
+  </section>
+</po-page-default>
