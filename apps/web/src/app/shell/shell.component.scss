@@ -1,0 +1,12 @@
+:host {
+  display: block;
+  min-height: 100vh;
+}
+
+.sxg-shell {
+  min-height: 100vh;
+}
+
+:host ::ng-deep .po-wrapper {
+  min-height: inherit;
+}

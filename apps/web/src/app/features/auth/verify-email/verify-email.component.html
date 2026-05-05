@@ -1,0 +1,51 @@
+<po-page-background p-product-name="SXGerador" p-environment="beta">
+  <div class="sxg-verify-email">
+    <!-- Loading -->
+    @if (state() === 'loading') {
+      <div class="sxg-verify-email__icon sxg-verify-email__icon--loading" aria-hidden="true">
+        <span class="po-icon an an-spinner"></span>
+      </div>
+      <h2 class="po-font-title sxg-verify-email__title">Verificando seu e-mail...</h2>
+      <p class="po-font-text sxg-verify-email__body">Aguarde um momento.</p>
+    }
+
+    <!-- Success -->
+    @if (state() === 'success') {
+      <div class="sxg-verify-email__icon sxg-verify-email__icon--success" aria-hidden="true">
+        <span class="po-icon an an-check-circle-fill"></span>
+      </div>
+      <h2 class="po-font-title sxg-verify-email__title">E-mail verificado!</h2>
+      <p class="po-font-text sxg-verify-email__body">
+        Sua conta está ativa. Agora você pode entrar no SXGerador.
+      </p>
+      <po-button routerLink="/login" p-label="Entrar agora" p-kind="primary"></po-button>
+    }
+
+    <!-- Error -->
+    @if (state() === 'error') {
+      <div class="sxg-verify-email__icon sxg-verify-email__icon--error" aria-hidden="true">
+        <span class="po-icon an an-warning-circle"></span>
+      </div>
+      <h2 class="po-font-title sxg-verify-email__title">Link inválido ou expirado</h2>
+      <p class="po-font-text sxg-verify-email__body">{{ errorMessage() }}</p>
+
+      <div class="sxg-verify-email__actions">
+        <po-button
+          p-label="Reenviar e-mail de verificação"
+          p-kind="primary"
+          [p-loading]="isResending()"
+          [p-disabled]="!canResend()"
+          (p-click)="resend()"
+        ></po-button>
+
+        @if (resendCooldown() > 0) {
+          <p class="po-font-text-small sxg-verify-email__cooldown" aria-live="polite">
+            Reenviar disponível em {{ resendCooldown() }}s
+          </p>
+        }
+
+        <po-button routerLink="/login" p-label="Voltar ao login" p-kind="secondary"></po-button>
+      </div>
+    }
+  </div>
+</po-page-background>

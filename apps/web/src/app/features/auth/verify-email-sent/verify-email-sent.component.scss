@@ -1,0 +1,58 @@
+:host {
+  display: block;
+  height: 100vh;
+}
+
+.sxg-verify {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 0 8px;
+
+  &__icon {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    background: var(--color-action-lightest, #e8f4fd);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 24px;
+
+    .po-icon {
+      font-size: 32px;
+      color: var(--color-action-default, #0070d2);
+    }
+  }
+
+  &__title {
+    margin: 0 0 16px;
+    color: var(--color-neutral-dark-80, #1d2a35);
+  }
+
+  &__body {
+    margin: 0 0 12px;
+    color: var(--color-neutral-dark-70, #3a4a55);
+    max-width: 360px;
+    line-height: 1.5;
+  }
+
+  &__hint {
+    margin: 0 0 28px;
+    color: var(--color-neutral-dark-50, #6c7a86);
+  }
+
+  &__link {
+    color: var(--color-action-default, #0070d2);
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+::ng-deep .po-page-background-highlight {
+  background: linear-gradient(135deg, #1a2332 0%, #0c3547 50%, #1a5276 100%) !important;
+}

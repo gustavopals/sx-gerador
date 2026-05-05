@@ -9,7 +9,11 @@
     "types": ["node"],
     "sourceMap": true,
     "declaration": true,
-    "declarationMap": true
+    "declarationMap": true,
+    "paths": {
+      "@sxgerador/shared-types": ["../../packages/shared-types/dist/index.d.ts"],
+      "@sxgerador/advpl-builder": ["../../packages/advpl-builder/dist/index.d.ts"]
+    }
   },
   "include": ["src/**/*.ts"],
   "exclude": ["dist", "node_modules"]

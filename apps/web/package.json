@@ -14,7 +14,6 @@
   "private": true,
   "packageManager": "pnpm@10.33.3",
   "dependencies": {
-    "@sxgerador/shared-types": "workspace:*",
     "@angular/animations": "^21.2.11",
     "@angular/common": "^21.2.0",
     "@angular/compiler": "^21.2.0",
@@ -23,7 +22,9 @@
     "@angular/platform-browser": "^21.2.0",
     "@angular/router": "^21.2.0",
     "@po-ui/ng-components": "21.13.1",
+    "@po-ui/ng-templates": "^21.13.1",
     "@po-ui/style": "21.13.1",
+    "@sxgerador/shared-types": "workspace:*",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.15.1"

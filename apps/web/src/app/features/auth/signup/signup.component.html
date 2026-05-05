@@ -1,0 +1,62 @@
+<po-page-background p-product-name="SXGerador" p-environment="beta">
+  <div class="sxg-signup">
+    <h2 class="po-font-title sxg-signup__title">Criar conta</h2>
+    <p class="po-font-text-small sxg-signup__sub">
+      Já tem conta? <a routerLink="/login" class="sxg-signup__link">Entrar</a>
+    </p>
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+      <po-input
+        p-label="Nome"
+        formControlName="name"
+        p-placeholder="Seu nome completo"
+        [p-error-pattern]="nameError"
+        p-required="true"
+      ></po-input>
+
+      <po-input
+        p-label="E-mail"
+        p-type="email"
+        formControlName="email"
+        p-placeholder="seu@email.com"
+        [p-error-pattern]="emailError"
+        p-required="true"
+      ></po-input>
+
+      <po-password
+        p-label="Senha"
+        formControlName="password"
+        p-placeholder="Mínimo 8 caracteres, 1 maiúscula e 1 número"
+        [p-error-pattern]="passwordError"
+        p-required="true"
+      ></po-password>
+
+      <po-password
+        p-label="Confirmar senha"
+        formControlName="confirmPassword"
+        p-placeholder="Repita a senha"
+        [p-error-pattern]="confirmError"
+        p-required="true"
+      ></po-password>
+
+      <div class="sxg-signup__terms">
+        <po-checkbox
+          p-label="Li e aceito os Termos de Uso e a Política de Privacidade (LGPD)"
+          formControlName="acceptedTerms"
+        ></po-checkbox>
+        @if (form.controls.acceptedTerms.touched && form.controls.acceptedTerms.invalid) {
+          <span class="sxg-signup__terms-error">Você deve aceitar os termos para continuar</span>
+        }
+      </div>
+
+      <po-button
+        class="sxg-signup__submit"
+        p-label="Criar conta"
+        [p-type]="submitType"
+        p-kind="primary"
+        [p-loading]="loading()"
+        [p-disabled]="loading()"
+      ></po-button>
+    </form>
+  </div>
+</po-page-background>

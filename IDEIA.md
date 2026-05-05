@@ -1850,60 +1850,60 @@ sxgerador/
 - Cobertura de testes ≥ 70% nessa feature
 
 #### Task F1.1 — Schema Prisma para auth (M)
-- [ ] Adicionar modelos `User`, `RefreshToken`, `EmailVerificationToken`, `PasswordResetToken` ao schema (conforme seção 11.2)
-- [ ] Migration `prisma migrate dev --name auth`
-- [ ] Atualizar seed com usuário verificado de teste
+- [x] Adicionar modelos `User`, `RefreshToken`, `EmailVerificationToken`, `PasswordResetToken` ao schema (conforme seção 11.2)
+- [x] Migration `prisma migrate dev --name auth`
+- [x] Atualizar seed com usuário verificado de teste
 
 #### Task F1.2 — Schemas Zod de auth (S)
-- [ ] Em `packages/shared-types`: `SignupSchema`, `LoginSchema`, `ForgotPasswordSchema`, `ResetPasswordSchema`, `UpdateProfileSchema`
-- [ ] Validações: email válido, senha ≥ 8 chars com 1 maiúscula + 1 número
-- [ ] Testes unitários dos schemas
+- [x] Em `packages/shared-types`: `SignupSchema`, `LoginSchema`, `ForgotPasswordSchema`, `ResetPasswordSchema`, `UpdateProfileSchema`
+- [x] Validações: email válido, senha ≥ 8 chars com 1 maiúscula + 1 número
+- [x] Testes unitários dos schemas
 
 #### Task F1.3 — Service de auth no backend (L)
-- [ ] `apps/api/src/modules/auth/auth.service.ts`:
-  - [ ] `signup(input)`: cria user, hash senha, gera token de verificação, dispara email
-  - [ ] `login(input)`: valida credentials, gera JWT + refresh
-  - [ ] `refresh(token)`: valida refresh, rotaciona, retorna novo par
-  - [ ] `logout(refreshToken)`: revoga refresh
-  - [ ] `verifyEmail(token)`: marca user como verificado
-  - [ ] `forgotPassword(email)`: gera token + dispara email
-  - [ ] `resetPassword(token, newPassword)`: troca senha, revoga todos refresh
-- [ ] Testes unitários cobrindo casos felizes e edge cases (email duplicado, token expirado, etc.)
+- [x] `apps/api/src/modules/auth/auth.service.ts`:
+  - [x] `signup(input)`: cria user, hash senha, gera token de verificação, dispara email
+  - [x] `login(input)`: valida credentials, gera JWT + refresh
+  - [x] `refresh(token)`: valida refresh, rotaciona, retorna novo par
+  - [x] `logout(refreshToken)`: revoga refresh
+  - [x] `verifyEmail(token)`: marca user como verificado
+  - [x] `forgotPassword(email)`: gera token + dispara email
+  - [x] `resetPassword(token, newPassword)`: troca senha, revoga todos refresh
+- [x] Testes unitários cobrindo casos felizes e edge cases (email duplicado, token expirado, etc.)
 
 #### Task F1.4 — Controllers e rotas de auth (M)
-- [ ] `auth.controller.ts` com handlers Express
-- [ ] Validação via Zod com middleware `validate(schema)`
-- [ ] `auth.routes.ts` registrando endpoints
-- [ ] Integration tests com supertest
+- [x] `auth.controller.ts` com handlers Express
+- [x] Validação via Zod com middleware `validate(schema)`
+- [x] `auth.routes.ts` registrando endpoints
+- [x] Integration tests com supertest
 
 #### Task F1.5 — Middleware de autenticação JWT (M)
-- [ ] `apps/api/src/middleware/auth.middleware.ts`
-- [ ] Lê header `Authorization`, valida JWT, anexa `req.user`
-- [ ] Variantes: `requireAuth` e `optionalAuth`
-- [ ] Testes
+- [x] `apps/api/src/middleware/auth.middleware.ts`
+- [x] Lê header `Authorization`, valida JWT, anexa `req.user`
+- [x] Variantes: `requireAuth` e `optionalAuth`
+- [x] Testes
 
 #### Task F1.6 — Envio de emails transacionais (M)
-- [ ] Integrar **Resend** ou **Nodemailer**
-- [ ] Templates HTML simples para: verificação, reset de senha, convite
-- [ ] Service `email.service.ts` com métodos tipados
-- [ ] Modo dev: log do email no console em vez de enviar
+- [x] Integrar **Resend** ou **Nodemailer**
+- [x] Templates HTML simples para: verificação, reset de senha, convite
+- [x] Service `email.service.ts` com métodos tipados
+- [x] Modo dev: log do email no console em vez de enviar
 
 #### Task F1.7 — Tela de Login (Angular) (M)
-- [ ] Componente `LoginPage` com `po-page-login`
-- [ ] Formulário reativo com validação
-- [ ] Integração com `AuthService` (frontend)
-- [ ] Persistência de tokens em `localStorage` (com fallback `sessionStorage`)
-- [ ] Tratamento de erros (toast)
+- [x] Componente `LoginPage` com `po-page-login`
+- [x] Formulário reativo com validação
+- [x] Integração com `AuthService` (frontend)
+- [x] Persistência de tokens em `localStorage` (com fallback `sessionStorage`)
+- [x] Tratamento de erros (toast)
 
 #### Task F1.8 — Tela de Cadastro (M)
-- [ ] `SignupPage` similar à login
-- [ ] Aceite de Termos + Política de Privacidade (LGPD)
-- [ ] Pós-cadastro: tela "verifique seu email"
+- [x] `SignupPage` similar à login
+- [x] Aceite de Termos + Política de Privacidade (LGPD)
+- [x] Pós-cadastro: tela "verifique seu email"
 
 #### Task F1.9 — Verificação de email (S)
-- [ ] Rota `/verify-email/:token` no Angular
-- [ ] Chama API e exibe sucesso/erro
-- [ ] Botão "reenviar email" com cooldown de 60s
+- [x] Rota `/verify-email/:token` no Angular
+- [x] Chama API e exibe sucesso/erro
+- [x] Botão "reenviar email" com cooldown de 60s
 
 #### Task F1.10 — Esqueci minha senha (M)
 - [ ] Tela de pedido + tela de reset

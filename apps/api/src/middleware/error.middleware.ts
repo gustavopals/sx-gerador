@@ -1,5 +1,6 @@
 import type { ErrorRequestHandler, RequestHandler } from 'express';
 import { logger } from '../config/logger';
+import { AuthError } from '../modules/auth/auth.errors';
 
 export const notFoundHandler: RequestHandler = (req, res) => {
   res.status(404).json({
@@ -12,6 +13,11 @@ export const notFoundHandler: RequestHandler = (req, res) => {
 
 export const errorHandler: ErrorRequestHandler = (err, _req, res, next) => {
   void next;
+
+  if (err instanceof AuthError) {
+    res.status(err.statusCode).json({ error: { code: 'AUTH_ERROR', message: err.message } });
+    return;
+  }
 
   logger.error({ err }, 'Unhandled request error');
 

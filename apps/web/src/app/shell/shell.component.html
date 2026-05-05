@@ -1,0 +1,12 @@
+<div class="po-wrapper sxg-shell">
+  <po-toolbar
+    p-title="SXGerador"
+    p-actions-icon="an an-gear"
+    [p-actions]="toolbarActions"
+    [p-show-notification]="false"
+  ></po-toolbar>
+
+  <po-menu [p-menus]="menus"></po-menu>
+
+  <router-outlet></router-outlet>
+</div>
