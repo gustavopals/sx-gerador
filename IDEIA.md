@@ -1949,23 +1949,23 @@ sxgerador/
 **Objetivo:** CRUD completo de projetos, com soft-delete, duplicação e visibilidade.
 
 #### Task F2.1 — Schema Prisma de Projects (S)
-- [ ] Adicionar modelo `Project` (sem owner ainda — só personal por enquanto)
-- [ ] Migration
+- [x] Adicionar modelo `Project` (sem owner ainda — só personal por enquanto)
+- [x] Migration
 
 #### Task F2.2 — Schemas Zod (S)
-- [ ] `CreateProjectSchema`, `UpdateProjectSchema`
+- [x] `CreateProjectSchema`, `UpdateProjectSchema`
 
 #### Task F2.3 — Service e Controller de Projects (M)
-- [ ] CRUD com paginação e filtros (search por nome)
-- [ ] Soft-delete + restore
-- [ ] Duplicate (clona projeto + tabelas + campos + índices)
-- [ ] Testes
+- [x] CRUD com paginação e filtros (search por nome)
+- [x] Soft-delete + restore
+- [x] Duplicate (clona projeto; tabelas + campos + índices entram após F3/F4/F5)
+- [x] Testes
 
 #### Task F2.4 — Tela de listagem de Projetos (M)
-- [ ] `ProjectsListPage` com `po-page-list` ou grid customizado
-- [ ] Cards com nome, descrição, contagem de tabelas, última atualização
-- [ ] Botão "Novo projeto" abre modal/redireciona
-- [ ] Filtro por arquivados/ativos
+- [x] `ProjectsListPage` com `po-page-list` ou grid customizado
+- [x] Cards com nome, descrição, contagem de tabelas, última atualização
+- [x] Botão "Novo projeto" abre modal/redireciona
+- [x] Filtro por arquivados/ativos
 
 #### Task F2.5 — Tela de criação/edição (M)
 - [ ] Form com nome, slug auto-gerado (com edição), descrição, idioma default, tamanho de filial

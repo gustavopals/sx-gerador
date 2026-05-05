@@ -7,3 +7,9 @@ export type {
   User,
   UserRole,
 } from '../schemas/user.schema';
+export type {
+  CreateProjectInput,
+  Project,
+  ProjectVisibility,
+  UpdateProjectInput,
+} from '../schemas/project.schema';

@@ -1,0 +1,169 @@
+<po-page-default
+  p-title="Projetos"
+  p-subtitle="Dicionários de dados e configurações Protheus"
+  [p-actions]="pageActions"
+>
+  <section class="sxg-projects">
+    <form class="sxg-projects__filters" [formGroup]="filtersForm" (ngSubmit)="applyFilters()">
+      <po-input
+        class="sxg-projects__search"
+        p-label="Buscar"
+        p-placeholder="Nome ou slug"
+        p-icon="an an-magnifying-glass"
+        formControlName="search"
+      ></po-input>
+
+      <po-select
+        p-label="Exibir"
+        [p-options]="filterOptions"
+        formControlName="archived"
+      ></po-select>
+
+      <div class="sxg-projects__filter-actions">
+        <po-button p-label="Filtrar" p-icon="an an-funnel" [p-type]="submitType"></po-button>
+        <po-button
+          p-label="Limpar"
+          p-icon="an an-x"
+          p-kind="secondary"
+          (p-click)="clearFilters()"
+        ></po-button>
+      </div>
+    </form>
+
+    @if (isLoading()) {
+      <div class="sxg-projects__state">
+        <span class="sxg-projects__spinner"></span>
+        <p>Carregando projetos</p>
+      </div>
+    } @else if (projects().length === 0) {
+      <div class="sxg-projects__empty">
+        <h2>Nenhum projeto encontrado</h2>
+        <p>Crie seu primeiro dicionário ou ajuste os filtros para ver projetos arquivados.</p>
+        <po-button
+          p-label="Novo projeto"
+          p-icon="an an-plus"
+          p-kind="primary"
+          (p-click)="openCreateModal()"
+        ></po-button>
+      </div>
+    } @else {
+      <div class="sxg-projects__grid" aria-label="Lista de projetos">
+        @for (project of projects(); track project.id) {
+          <article class="sxg-project-card" [class.sxg-project-card--archived]="project.deletedAt">
+            <header class="sxg-project-card__header">
+              <div>
+                <a class="sxg-project-card__title" [routerLink]="['/projects', project.id]">
+                  {{ project.name }}
+                </a>
+                <p class="sxg-project-card__slug">{{ project.slug }}</p>
+              </div>
+              <po-tag
+                [p-value]="project.deletedAt ? 'Arquivado' : visibilityLabel(project)"
+                [p-type]="project.deletedAt ? tagType.Warning : tagType.Info"
+              ></po-tag>
+            </header>
+
+            <p class="sxg-project-card__description">
+              {{ project.description || 'Sem descrição cadastrada.' }}
+            </p>
+
+            <dl class="sxg-project-card__meta">
+              <div>
+                <dt>Tabelas</dt>
+                <dd>{{ tableCount(project) }}</dd>
+              </div>
+              <div>
+                <dt>Idioma</dt>
+                <dd>{{ project.defaultLang }}</dd>
+              </div>
+              <div>
+                <dt>Filial</dt>
+                <dd>{{ project.defaultTamFil }}</dd>
+              </div>
+            </dl>
+
+            <footer class="sxg-project-card__footer">
+              <span>Atualizado {{ project.updatedAt | date: 'dd/MM/yyyy HH:mm' }}</span>
+              @if (project.deletedAt) {
+                <po-button
+                  p-label="Restaurar"
+                  p-icon="an an-arrow-u-up-left"
+                  p-kind="secondary"
+                  (p-click)="restoreProject(project)"
+                ></po-button>
+              } @else {
+                <po-button
+                  p-label="Arquivar"
+                  p-icon="an an-archive"
+                  p-kind="secondary"
+                  (p-click)="archiveProject(project)"
+                ></po-button>
+              }
+            </footer>
+          </article>
+        }
+      </div>
+
+      <nav class="sxg-projects__pagination" aria-label="Paginação de projetos">
+        <span>{{ total() }} projeto(s) · página {{ page() }} de {{ totalPages() || 1 }}</span>
+        <div>
+          <po-button
+            p-label="Anterior"
+            p-icon="an an-caret-left"
+            p-kind="secondary"
+            [p-disabled]="!hasPreviousPage"
+            (p-click)="previousPage()"
+          ></po-button>
+          <po-button
+            p-label="Próxima"
+            p-icon="an an-caret-right"
+            p-kind="secondary"
+            [p-disabled]="!hasNextPage"
+            (p-click)="nextPage()"
+          ></po-button>
+        </div>
+      </nav>
+    }
+  </section>
+</po-page-default>
+
+<po-modal
+  #createProjectModal
+  p-title="Novo projeto"
+  p-icon="an an-folder-plus"
+  [p-primary-action]="createPrimaryAction"
+  [p-secondary-action]="createSecondaryAction"
+  [p-hide-close]="isCreating()"
+>
+  <form class="sxg-projects__modal-form" [formGroup]="createForm" novalidate>
+    <po-input
+      p-label="Nome"
+      p-placeholder="Financeiro"
+      formControlName="name"
+      [p-error-pattern]="nameError"
+      p-required="true"
+      (p-change)="syncSlugFromName()"
+    ></po-input>
+
+    <po-input
+      p-label="Slug"
+      p-placeholder="financeiro"
+      formControlName="slug"
+      [p-error-pattern]="slugError"
+      p-required="true"
+    ></po-input>
+
+    <po-textarea
+      p-label="Descrição"
+      p-placeholder="Escopo do dicionário"
+      formControlName="description"
+      [p-rows]="3"
+    ></po-textarea>
+
+    <po-select
+      p-label="Visibilidade"
+      [p-options]="visibilityOptions"
+      formControlName="visibility"
+    ></po-select>
+  </form>
+</po-modal>

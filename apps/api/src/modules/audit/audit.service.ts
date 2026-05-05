@@ -6,7 +6,12 @@ export type AuditAction =
   | 'auth.login'
   | 'auth.logout'
   | 'auth.password_reset'
-  | 'auth.account_delete';
+  | 'auth.account_delete'
+  | 'projects.create'
+  | 'projects.update'
+  | 'projects.delete'
+  | 'projects.restore'
+  | 'projects.duplicate';
 
 export type AuditMetadata = Record<string, string | number | boolean | null>;
 

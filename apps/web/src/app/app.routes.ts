@@ -63,6 +63,13 @@ export const routes: Routes = [
         loadComponent: () => import('./features/home/home.component').then((m) => m.HomeComponent),
       },
       {
+        path: 'projects',
+        loadComponent: () =>
+          import('./features/projects/list/projects-list.component').then(
+            (m) => m.ProjectsListComponent,
+          ),
+      },
+      {
         path: 'settings/profile',
         loadComponent: () =>
           import('./features/settings/profile/profile.component').then((m) => m.ProfileComponent),
