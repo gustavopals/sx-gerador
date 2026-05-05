@@ -1,5 +1,6 @@
 # SXGerador
 
+[![CI](https://github.com/gustavopals/sxgerador/actions/workflows/ci.yml/badge.svg)](https://github.com/gustavopals/sxgerador/actions/workflows/ci.yml)
 [![Status](https://img.shields.io/badge/status-concep%C3%A7%C3%A3o-blue)](IDEIA.md)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Node.js](https://img.shields.io/badge/node-22.x-339933)](.nvmrc)
@@ -14,8 +15,10 @@ com modelagem visual, validações de domínio, colaboração e geração de scr
 
 ## Status
 
-O projeto está iniciando a Fase 0: fundação do monorepo. O documento principal de
-produto, arquitetura e roadmap está em [IDEIA.md](IDEIA.md).
+O projeto está na Fase 0: fundação do monorepo. O app web Angular + PO-UI já existe
+em `apps/web`, a API Express + TypeScript já existe em `apps/api`, e a base local de
+PostgreSQL + Prisma está configurada. O documento principal de produto, arquitetura e
+roadmap está em [IDEIA.md](IDEIA.md).
 
 ## Stack Planejada
 
@@ -28,16 +31,13 @@ produto, arquitetura e roadmap está em [IDEIA.md](IDEIA.md).
 
 ## Setup Local
 
-> A base executável do monorepo será criada nas próximas tasks da Fase 0. Por enquanto,
-> este repositório contém a documentação inicial e os arquivos fundacionais.
-
 Requisitos planejados:
 
 - Node.js 22
 - pnpm
 - Docker e Docker Compose
 
-Quando o monorepo estiver configurado:
+Para instalar dependências e subir web + API:
 
 ```bash
 pnpm install
@@ -45,11 +45,40 @@ pnpm db:up
 pnpm dev
 ```
 
-Com isso, a expectativa da Fase 0 é subir:
+Hoje isso sobe:
 
 - Web em `http://localhost:4200`
 - API em `http://localhost:3000`
-- PostgreSQL local via Docker Compose
+- Health check em `http://localhost:3000/health`
+- PostgreSQL local em `localhost:5432`
+
+Credenciais locais do banco:
+
+```text
+database: sxgerador
+user: sxgerador
+password: sxgerador
+```
+
+## Banco Local
+
+O PostgreSQL 16 roda via Docker Compose em `tools/docker/docker-compose.yml`, com dados
+persistidos em `tools/docker/data/postgres`.
+
+Comandos:
+
+```bash
+pnpm db:up        # sobe apenas o Postgres
+pnpm db:up:admin  # sobe Postgres + PgAdmin opcional
+pnpm db:down      # para os containers
+pnpm db:reset     # apaga os dados locais e recria o Postgres
+pnpm db:seed      # insere os dados iniciais via Prisma
+```
+
+As migrations Prisma ficam versionadas em `apps/api/prisma/migrations`, e o client da
+API é gerado localmente por `prisma generate` antes do build/typecheck.
+
+PgAdmin, quando iniciado, fica em `http://localhost:5050`.
 
 ## Qualidade de Código
 

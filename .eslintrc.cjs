@@ -7,6 +7,8 @@ module.exports = {
     'coverage/',
     '.angular/',
     '.turbo/',
+    'apps/*/src/generated/',
+    'tools/docker/data/',
     'pnpm-lock.yaml',
   ],
   overrides: [
@@ -79,6 +81,14 @@ module.exports = {
           },
         ],
         '@typescript-eslint/no-explicit-any': 'warn',
+        '@typescript-eslint/no-unused-vars': [
+          'error',
+          {
+            argsIgnorePattern: '^_',
+            varsIgnorePattern: '^_',
+            caughtErrorsIgnorePattern: '^_',
+          },
+        ],
         'import/no-duplicates': 'error',
       },
     },

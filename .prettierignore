@@ -4,9 +4,13 @@ build/
 coverage/
 .angular/
 .turbo/
+apps/*/src/generated/
+apps/*/src/generated/**
 tools/docker/data/
+tools/docker/data/**
 pnpm-lock.yaml
 .prettierignore
+.env*
 
 # Long-form product document; keep manual formatting to avoid noisy roadmap rewrites.
 IDEIA.md

@@ -1779,63 +1779,63 @@ sxgerador/
 - [x] Documentar no README
 
 #### Task F0.4 — Criar `apps/web` Angular 21 + PO-UI 21 (L)
-- [ ] Gerar app Angular 21 com `ng new web --standalone --style=scss --ssr=false`
-- [ ] Mover para `apps/web`
-- [ ] Adicionar `@po-ui/ng-components` 21 e `@po-ui/style`
-- [ ] Configurar `angular.json` para incluir CSS do PO-UI
-- [ ] Configurar `app.config.ts` com `provideHttpClient`, `provideAnimations`, `providePoLocale`
-- [ ] Criar layout base com `po-page`, `po-toolbar`, `po-menu`
-- [ ] Criar página inicial "Hello SXGerador"
-- [ ] Configurar variáveis de ambiente (`environment.ts`, `environment.prod.ts`)
-- [ ] Validar `pnpm dev` sobe na porta 4200
+- [x] Gerar app Angular 21 com `ng new web --standalone --style=scss --ssr=false`
+- [x] Mover para `apps/web`
+- [x] Adicionar `@po-ui/ng-components` 21 e `@po-ui/style`
+- [x] Configurar `angular.json` para incluir CSS do PO-UI
+- [x] Configurar `app.config.ts` com `provideHttpClient`, `provideAnimations`, `providePoLocale`
+- [x] Criar layout base com `po-page`, `po-toolbar`, `po-menu`
+- [x] Criar página inicial "Hello SXGerador"
+- [x] Configurar variáveis de ambiente (`environment.ts`, `environment.prod.ts`)
+- [x] Validar `pnpm dev` sobe na porta 4200
 
 #### Task F0.5 — Criar `apps/api` Express + TypeScript (L)
-- [ ] Inicializar `apps/api` com `package.json`
-- [ ] Instalar Express, TypeScript, ts-node-dev, types
-- [ ] Configurar `tsconfig.json` extendendo o base
-- [ ] Criar estrutura: `src/{config,middleware,modules,routes,utils}`
-- [ ] Criar `src/app.ts` com Express básico (helmet, cors, json)
-- [ ] Criar `src/server.ts` lendo `PORT` do env
-- [ ] Criar endpoint `GET /health` retornando `{ status: 'ok' }`
-- [ ] Configurar `pino` com pretty-print em dev
-- [ ] Configurar `dotenv` e `.env.example`
-- [ ] Validar `pnpm dev` sobe na porta 3000
+- [x] Inicializar `apps/api` com `package.json`
+- [x] Instalar Express, TypeScript, ts-node-dev, types
+- [x] Configurar `tsconfig.json` extendendo o base
+- [x] Criar estrutura: `src/{config,middleware,modules,routes,utils}`
+- [x] Criar `src/app.ts` com Express básico (helmet, cors, json)
+- [x] Criar `src/server.ts` lendo `PORT` do env
+- [x] Criar endpoint `GET /health` retornando `{ status: 'ok' }`
+- [x] Configurar `pino` com pretty-print em dev
+- [x] Configurar `dotenv` e `.env.example`
+- [x] Validar `pnpm dev` sobe na porta 3000
 
 #### Task F0.6 — Configurar Docker Compose para PostgreSQL (S)
-- [ ] Criar `tools/docker/docker-compose.yml` com serviço Postgres 16
-- [ ] Volume persistente em `tools/docker/data/postgres`
-- [ ] Adicionar PgAdmin opcional
-- [ ] Documentar comandos: `pnpm db:up`, `pnpm db:down`, `pnpm db:reset`
+- [x] Criar `tools/docker/docker-compose.yml` com serviço Postgres 16
+- [x] Volume persistente em `tools/docker/data/postgres`
+- [x] Adicionar PgAdmin opcional
+- [x] Documentar comandos: `pnpm db:up`, `pnpm db:down`, `pnpm db:reset`
 
 #### Task F0.7 — Configurar Prisma em `apps/api` (M)
-- [ ] Instalar `prisma` (dev) e `@prisma/client`
-- [ ] `npx prisma init`
-- [ ] Configurar `DATABASE_URL` no `.env`
-- [ ] Criar schema mínimo (apenas `User` por enquanto)
-- [ ] Rodar `prisma migrate dev --name init`
-- [ ] Criar `apps/api/prisma/seed.ts` com 1 usuário de exemplo
-- [ ] Adicionar script `pnpm db:seed`
-- [ ] Criar `src/config/db.ts` exportando `prisma` singleton
+- [x] Instalar `prisma` (dev) e `@prisma/client`
+- [x] `npx prisma init`
+- [x] Configurar `DATABASE_URL` no `.env`
+- [x] Criar schema mínimo (apenas `User` por enquanto)
+- [x] Rodar `prisma migrate dev --name init`
+- [x] Criar `apps/api/prisma/seed.ts` com 1 usuário de exemplo
+- [x] Adicionar script `pnpm db:seed`
+- [x] Criar `src/config/db.ts` exportando `prisma` singleton
 
 #### Task F0.8 — Criar `packages/shared-types` (M)
-- [ ] Estrutura básica do package com `package.json` e `tsconfig.json`
-- [ ] Configurar build com `tsup` (output ESM + CJS + types)
-- [ ] Instalar `zod`
-- [ ] Criar primeiro schema de exemplo (`UserSchema`)
-- [ ] Configurar `apps/web` e `apps/api` para consumir via workspace dep
+- [x] Estrutura básica do package com `package.json` e `tsconfig.json`
+- [x] Configurar build com `tsup` (output ESM + CJS + types)
+- [x] Instalar `zod`
+- [x] Criar primeiro schema de exemplo (`UserSchema`)
+- [x] Configurar `apps/web` e `apps/api` para consumir via workspace dep
 
 #### Task F0.9 — Criar `packages/advpl-builder` (esqueleto) (M)
-- [ ] Estrutura do package
-- [ ] Vitest configurado
-- [ ] Função stub `buildMigration(input: any): string`
-- [ ] Teste smoke
+- [x] Estrutura do package
+- [x] Vitest configurado
+- [x] Função stub `buildMigration(input: any): string`
+- [x] Teste smoke
 
 #### Task F0.10 — CI/CD GitHub Actions (M)
-- [ ] Criar `.github/workflows/ci.yml`: lint + test + build
-- [ ] Matrix: Node 22
-- [ ] Cache pnpm
-- [ ] Service container Postgres para testes
-- [ ] Status badge no README
+- [x] Criar `.github/workflows/ci.yml`: lint + test + build
+- [x] Matrix: Node 22
+- [x] Cache pnpm
+- [x] Service container Postgres para testes
+- [x] Status badge no README
 
 ---
 
