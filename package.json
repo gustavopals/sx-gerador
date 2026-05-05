@@ -1,0 +1,53 @@
+{
+  "name": "sxgerador",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Plataforma open source para criar, versionar e gerar migrations AdvPL de dicionario de dados Protheus.",
+  "license": "MIT",
+  "author": "Gustavo Pals",
+  "type": "module",
+  "packageManager": "pnpm@10.33.3",
+  "engines": {
+    "node": ">=22 <23",
+    "pnpm": ">=10 <11"
+  },
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "test": "turbo run test",
+    "lint": "eslint . --ext .js,.cjs,.mjs,.ts,.html --ignore-pattern apps --ignore-pattern packages && turbo run lint",
+    "lint:fix": "eslint . --ext .js,.cjs,.mjs,.ts,.html --ignore-pattern apps --ignore-pattern packages --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "typecheck": "turbo run typecheck",
+    "commitlint": "commitlint",
+    "prepare": "husky"
+  },
+  "lint-staged": {
+    "*.{js,cjs,mjs,ts,html}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,md,yml,yaml,scss,css}": [
+      "prettier --write"
+    ]
+  },
+  "devDependencies": {
+    "@angular-eslint/eslint-plugin": "21.3.1",
+    "@angular-eslint/eslint-plugin-template": "21.3.1",
+    "@angular-eslint/template-parser": "21.3.1",
+    "@commitlint/cli": "20.5.3",
+    "@commitlint/config-conventional": "20.5.3",
+    "@ianvs/prettier-plugin-sort-imports": "4.7.1",
+    "@typescript-eslint/eslint-plugin": "8.59.2",
+    "@typescript-eslint/parser": "8.59.2",
+    "eslint": "8.57.1",
+    "eslint-config-prettier": "10.1.8",
+    "eslint-import-resolver-typescript": "4.4.4",
+    "eslint-plugin-import": "2.32.0",
+    "husky": "9.1.7",
+    "lint-staged": "16.4.0",
+    "prettier": "3.8.3",
+    "turbo": "2.9.9"
+  }
+}

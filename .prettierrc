@@ -1,0 +1,16 @@
+{
+  "printWidth": 100,
+  "singleQuote": true,
+  "trailingComma": "all",
+  "semi": true,
+  "plugins": ["@ianvs/prettier-plugin-sort-imports"],
+  "importOrder": [
+    "^@angular/(.*)$",
+    "^@po-ui/(.*)$",
+    "^@sxgerador/(.*)$",
+    "<THIRD_PARTY_MODULES>",
+    "^\\.",
+    "^\\u0000"
+  ],
+  "importOrderParserPlugins": ["typescript", "decorators-legacy"]
+}

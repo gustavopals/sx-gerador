@@ -1753,30 +1753,30 @@ sxgerador/
 - Postgres local via Docker Compose
 
 #### Task F0.1 — Inicializar repositório (S)
-- [ ] Criar repo `sxgerador` no GitHub (privado inicialmente, depois público)
-- [ ] Adicionar `.gitignore`, `.editorconfig`, `.nvmrc` (22)
-- [ ] Criar `LICENSE` (MIT)
-- [ ] Criar `README.md` inicial com badges, descrição, setup
-- [ ] Criar `CONTRIBUTING.md` com guia de contribuição
-- [ ] Adicionar `IDEIA.md` (este documento) na raiz
+- [x] Criar repo `sxgerador` no GitHub (privado inicialmente, depois público)
+- [x] Adicionar `.gitignore`, `.editorconfig`, `.nvmrc` (22)
+- [x] Criar `LICENSE` (MIT)
+- [x] Criar `README.md` inicial com badges, descrição, setup
+- [x] Criar `CONTRIBUTING.md` com guia de contribuição
+- [x] Adicionar `IDEIA.md` (este documento) na raiz
 
 #### Task F0.2 — Configurar Turborepo + pnpm workspaces (M)
-- [ ] `pnpm init` na raiz
-- [ ] Criar `pnpm-workspace.yaml` declarando `apps/*` e `packages/*`
-- [ ] Instalar `turbo` como devDep da raiz
-- [ ] Criar `turbo.json` com pipelines `build`, `dev`, `test`, `lint`
-- [ ] Criar `tsconfig.base.json` na raiz com configs strict compartilhadas
-- [ ] Adicionar scripts globais no `package.json` raiz: `dev`, `build`, `test`, `lint`, `format`
+- [x] `pnpm init` na raiz
+- [x] Criar `pnpm-workspace.yaml` declarando `apps/*` e `packages/*`
+- [x] Instalar `turbo` como devDep da raiz
+- [x] Criar `turbo.json` com pipelines `build`, `dev`, `test`, `lint`
+- [x] Criar `tsconfig.base.json` na raiz com configs strict compartilhadas
+- [x] Adicionar scripts globais no `package.json` raiz: `dev`, `build`, `test`, `lint`, `format`
 
 #### Task F0.3 — Configurar ESLint + Prettier + Husky (M)
-- [ ] Instalar ESLint + plugins TypeScript + Angular + plugins de import
-- [ ] Configurar `.eslintrc.cjs` na raiz com regras compartilhadas
-- [ ] Instalar Prettier + plugin imports sort
-- [ ] Configurar `.prettierrc` com 100 char/linha, single quotes
-- [ ] Instalar Husky + lint-staged
-- [ ] Configurar pre-commit hook (lint + format) e commit-msg hook (commitlint)
-- [ ] Instalar `commitlint` com config Conventional Commits
-- [ ] Documentar no README
+- [x] Instalar ESLint + plugins TypeScript + Angular + plugins de import
+- [x] Configurar `.eslintrc.cjs` na raiz com regras compartilhadas
+- [x] Instalar Prettier + plugin imports sort
+- [x] Configurar `.prettierrc` com 100 char/linha, single quotes
+- [x] Instalar Husky + lint-staged
+- [x] Configurar pre-commit hook (lint + format) e commit-msg hook (commitlint)
+- [x] Instalar `commitlint` com config Conventional Commits
+- [x] Documentar no README
 
 #### Task F0.4 — Criar `apps/web` Angular 21 + PO-UI 21 (L)
 - [ ] Gerar app Angular 21 com `ng new web --standalone --style=scss --ssr=false`

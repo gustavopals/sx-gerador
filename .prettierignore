@@ -1,0 +1,12 @@
+node_modules/
+dist/
+build/
+coverage/
+.angular/
+.turbo/
+tools/docker/data/
+pnpm-lock.yaml
+.prettierignore
+
+# Long-form product document; keep manual formatting to avoid noisy roadmap rewrites.
+IDEIA.md
