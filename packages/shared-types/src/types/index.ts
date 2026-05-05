@@ -1,1 +1,9 @@
-export type { User, UserRole, CreateUserInput, UpdateUserInput } from '../schemas/user.schema';
+export type {
+  AvatarUploadInput,
+  ChangePasswordInput,
+  CreateUserInput,
+  DeleteAccountInput,
+  UpdateUserInput,
+  User,
+  UserRole,
+} from '../schemas/user.schema';

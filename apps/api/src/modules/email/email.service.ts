@@ -1,6 +1,8 @@
 import { createTransport, type Transporter } from 'nodemailer';
 import { logger } from '../../config/logger';
 import {
+  accountDeletionEmailHtml,
+  accountDeletionEmailText,
   invitationEmailHtml,
   invitationEmailText,
   passwordResetEmailHtml,
@@ -16,6 +18,7 @@ import {
 export interface EmailService {
   sendVerificationEmail(to: string, name: string, token: string): Promise<void>;
   sendPasswordResetEmail(to: string, name: string, token: string): Promise<void>;
+  sendAccountDeletionEmail(to: string, name: string, scheduledAt: Date): Promise<void>;
   sendInvitationEmail(
     to: string,
     inviterName: string,
@@ -62,6 +65,13 @@ class DevEmailService implements EmailService {
     logger.info(
       { to, name, url },
       '[DEV] sendPasswordResetEmail — link would be sent by email in production',
+    );
+  }
+
+  async sendAccountDeletionEmail(to: string, name: string, scheduledAt: Date): Promise<void> {
+    logger.info(
+      { to, name, scheduledAt },
+      '[DEV] sendAccountDeletionEmail — email would be sent in production',
     );
   }
 
@@ -120,6 +130,17 @@ class SmtpEmailService implements EmailService {
       text: passwordResetEmailText(name, url),
     });
     logger.info({ to }, 'Password reset email sent');
+  }
+
+  async sendAccountDeletionEmail(to: string, name: string, scheduledAt: Date): Promise<void> {
+    await this.transport.sendMail({
+      from: this.config.from,
+      to,
+      subject: 'Conta marcada para exclusão — SXGerador',
+      html: accountDeletionEmailHtml(name, scheduledAt),
+      text: accountDeletionEmailText(name, scheduledAt),
+    });
+    logger.info({ to }, 'Account deletion email sent');
   }
 
   async sendInvitationEmail(

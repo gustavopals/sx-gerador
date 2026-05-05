@@ -3,6 +3,7 @@ import { compare as bcryptCompare, hash as bcryptHash } from 'bcrypt';
 import { sign as jwtSign, type SignOptions } from 'jsonwebtoken';
 import { env } from '../../config/env';
 import type { PrismaClient } from '../../generated/prisma';
+import { logAudit } from '../audit';
 import { AuthError, Errors } from './auth.errors';
 
 const BCRYPT_ROUNDS = 12;
@@ -61,12 +62,15 @@ export class AuthService {
     private readonly mailer: AuthMailer = noopMailer,
   ) {}
 
-  async signup(input: {
-    name: string;
-    email: string;
-    password: string;
-    locale?: string;
-  }): Promise<void> {
+  async signup(
+    input: {
+      name: string;
+      email: string;
+      password: string;
+      locale?: string;
+    },
+    meta: { userAgent?: string } = {},
+  ): Promise<void> {
     const existing = await this.db.user.findUnique({ where: { email: input.email } });
     if (existing) throw new AuthError(Errors.EMAIL_IN_USE.message, Errors.EMAIL_IN_USE.statusCode);
 
@@ -95,10 +99,14 @@ export class AuthService {
     });
 
     await this.mailer.sendVerificationEmail(input.email, input.name, rawToken);
+    await logAudit(this.db, 'auth.signup', user.id, {
+      locale: user.locale,
+      userAgent: meta.userAgent ?? null,
+    });
   }
 
   async resendVerificationEmail(email: string): Promise<void> {
-    const user = await this.db.user.findUnique({ where: { email } });
+    const user = await this.db.user.findFirst({ where: { email, deletedAt: null } });
     // Silent return — never reveal whether the email exists
     if (!user || user.emailVerified) return;
 
@@ -123,7 +131,9 @@ export class AuthService {
     input: { email: string; password: string },
     meta: { userAgent?: string; ipAddress?: string } = {},
   ): Promise<TokenPair> {
-    const user = await this.db.user.findUnique({ where: { email: input.email } });
+    const user = await this.db.user.findFirst({
+      where: { email: input.email, deletedAt: null },
+    });
     if (!user)
       throw new AuthError(
         Errors.INVALID_CREDENTIALS.message,
@@ -141,6 +151,10 @@ export class AuthService {
       throw new AuthError(Errors.EMAIL_NOT_VERIFIED.message, Errors.EMAIL_NOT_VERIFIED.statusCode);
 
     await this.db.user.update({ where: { id: user.id }, data: { lastLoginAt: new Date() } });
+    await logAudit(this.db, 'auth.login', user.id, {
+      userAgent: meta.userAgent ?? null,
+      ipAddress: meta.ipAddress ?? null,
+    });
 
     return this.issueTokenPair({ sub: user.id, email: user.email }, meta);
   }
@@ -153,7 +167,7 @@ export class AuthService {
       throw new AuthError(Errors.INVALID_TOKEN.message, Errors.INVALID_TOKEN.statusCode);
     }
 
-    const user = await this.db.user.findUnique({ where: { id: stored.userId } });
+    const user = await this.db.user.findFirst({ where: { id: stored.userId, deletedAt: null } });
     if (!user) throw new AuthError(Errors.INVALID_TOKEN.message, Errors.INVALID_TOKEN.statusCode);
 
     await this.db.refreshToken.update({
@@ -166,10 +180,12 @@ export class AuthService {
 
   async logout(rawRefreshToken: string): Promise<void> {
     const tokenHash = hashToken(rawRefreshToken);
+    const stored = await this.db.refreshToken.findUnique({ where: { tokenHash } });
     await this.db.refreshToken.updateMany({
       where: { tokenHash, revokedAt: null },
       data: { revokedAt: new Date() },
     });
+    await logAudit(this.db, 'auth.logout', stored?.userId ?? null);
   }
 
   async verifyEmail(rawToken: string): Promise<void> {
@@ -184,7 +200,7 @@ export class AuthService {
   }
 
   async forgotPassword(email: string): Promise<void> {
-    const user = await this.db.user.findUnique({ where: { email } });
+    const user = await this.db.user.findFirst({ where: { email, deletedAt: null } });
     // Silent return — never reveal whether the email exists
     if (!user) return;
 
@@ -217,6 +233,7 @@ export class AuthService {
         data: { revokedAt: new Date() },
       }),
     ]);
+    await logAudit(this.db, 'auth.password_reset', record.userId);
   }
 
   private async issueTokenPair(

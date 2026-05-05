@@ -1906,41 +1906,41 @@ sxgerador/
 - [x] Botão "reenviar email" com cooldown de 60s
 
 #### Task F1.10 — Esqueci minha senha (M)
-- [ ] Tela de pedido + tela de reset
-- [ ] Validação de força da senha visual
-- [ ] Confirmação de senha
+- [x] Tela de pedido + tela de reset
+- [x] Validação de força da senha visual
+- [x] Confirmação de senha
 
 #### Task F1.11 — HTTP Interceptor (Angular) (M)
-- [ ] Interceptor que adiciona `Authorization` automaticamente
-- [ ] Detecta 401 → tenta refresh → repete request
-- [ ] Se refresh falhar → desloga e redireciona
+- [x] Interceptor que adiciona `Authorization` automaticamente
+- [x] Detecta 401 → tenta refresh → repete request
+- [x] Se refresh falhar → desloga e redireciona
 
 #### Task F1.12 — Auth Signal Store (M)
-- [ ] `apps/web/src/app/stores/auth.store.ts` com Signal Store
-- [ ] State: `user`, `isAuthenticated`, `isLoading`
-- [ ] Methods: `login`, `logout`, `loadCurrentUser`, `refreshToken`
-- [ ] Computed: `isVerified`
+- [x] `apps/web/src/app/stores/auth.store.ts` com Signal Store
+- [x] State: `user`, `isAuthenticated`, `isLoading`
+- [x] Methods: `login`, `logout`, `loadCurrentUser`, `refreshToken`
+- [x] Computed: `isVerified`
 
 #### Task F1.13 — Route Guards (S)
-- [ ] `authGuard` redireciona para `/login` se não autenticado
-- [ ] `verifiedGuard` exige email verificado para certas rotas
-- [ ] `guestGuard` redireciona para `/dashboard` se já logado (em login/signup)
+- [x] `authGuard` redireciona para `/login` se não autenticado
+- [x] `verifiedGuard` exige email verificado para certas rotas
+- [x] `guestGuard` redireciona para `/dashboard` se já logado (em login/signup)
 
 #### Task F1.14 — Página de perfil (M)
-- [ ] Tela `/settings/profile` com edição de nome, avatar, idioma
-- [ ] Upload de avatar (V1: armazena base64; V2: S3/R2)
-- [ ] Mudança de senha (com confirmação da atual)
+- [x] Tela `/settings/profile` com edição de nome, avatar, idioma
+- [x] Upload de avatar (V1: armazena base64; V2: S3/R2)
+- [x] Mudança de senha (com confirmação da atual)
 
 #### Task F1.15 — Excluir conta (LGPD) (M)
-- [ ] Botão "Excluir conta" em settings
-- [ ] Modal de confirmação dupla
-- [ ] Endpoint `DELETE /users/me` que soft-deleta + agenda hard-delete em 30 dias (cron job futuro)
-- [ ] Email de confirmação
+- [x] Botão "Excluir conta" em settings
+- [x] Modal de confirmação dupla
+- [x] Endpoint `DELETE /users/me` que soft-deleta + agenda hard-delete em 30 dias (cron job futuro)
+- [x] Email de confirmação
 
 #### Task F1.16 — Audit log de auth (S)
-- [ ] Adicionar modelo `AuditLog` ao schema
-- [ ] Helper `logAudit(action, userId, metadata)`
-- [ ] Logar: signup, login, logout, password reset, account delete
+- [x] Adicionar modelo `AuditLog` ao schema
+- [x] Helper `logAudit(action, userId, metadata)`
+- [x] Logar: signup, login, logout, password reset, account delete
 
 ---
 

@@ -12,10 +12,17 @@ type AnyFn = (...args: any[]) => any;
 type MockedTable<T extends Record<string, AnyFn>> = { [K in keyof T]: ReturnType<typeof vi.fn> };
 
 interface MockedPrisma {
-  user: MockedTable<{ findUnique: AnyFn; create: AnyFn; update: AnyFn; updateMany: AnyFn }>;
+  user: MockedTable<{
+    findUnique: AnyFn;
+    findFirst: AnyFn;
+    create: AnyFn;
+    update: AnyFn;
+    updateMany: AnyFn;
+  }>;
   refreshToken: MockedTable<{ create: AnyFn; findUnique: AnyFn; update: AnyFn; updateMany: AnyFn }>;
   emailVerificationToken: MockedTable<{ upsert: AnyFn; findFirst: AnyFn; delete: AnyFn }>;
   passwordResetToken: MockedTable<{ create: AnyFn; findUnique: AnyFn; update: AnyFn }>;
+  auditLog: MockedTable<{ create: AnyFn }>;
   $transaction: ReturnType<typeof vi.fn>;
 }
 
@@ -23,6 +30,7 @@ function mockPrisma(): MockedPrisma {
   return {
     user: {
       findUnique: vi.fn(),
+      findFirst: vi.fn(),
       create: vi.fn(),
       update: vi.fn(),
       updateMany: vi.fn(),
@@ -42,6 +50,9 @@ function mockPrisma(): MockedPrisma {
       create: vi.fn(),
       findUnique: vi.fn(),
       update: vi.fn(),
+    },
+    auditLog: {
+      create: vi.fn(),
     },
     $transaction: vi.fn((ops: unknown[]) => Promise.all(ops)),
   };
@@ -85,10 +96,11 @@ describe('AuthService', () => {
     service = new AuthService(db as unknown as PrismaClient, mailer as AuthMailer);
 
     // Default: user doesn't exist (for signup tests)
-    db.user.findUnique.mockResolvedValue(null);
+    db.user.findFirst.mockResolvedValue(null);
     db.user.create.mockResolvedValue(USER);
     db.user.update.mockResolvedValue(USER);
     db.emailVerificationToken.upsert.mockResolvedValue({} as never);
+    db.auditLog.create.mockResolvedValue({} as never);
   });
 
   // -------------------------------------------------------------------------
@@ -102,6 +114,11 @@ describe('AuthService', () => {
       await service.signup(input);
       expect(db.user.create).toHaveBeenCalledOnce();
       expect(db.emailVerificationToken.upsert).toHaveBeenCalledOnce();
+      expect(db.auditLog.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({ action: 'auth.signup', userId: USER.id }),
+        }),
+      );
       expect(mailer.sendVerificationEmail).toHaveBeenCalledOnce();
       const [to, name] = mailer.sendVerificationEmail.mock.calls[0]!;
       expect(to).toBe(input.email);
@@ -124,16 +141,21 @@ describe('AuthService', () => {
     it('returns token pair for valid credentials', async () => {
       const bcrypt = await import('bcrypt');
       const hash = await bcrypt.hash('Senha123', 1);
-      db.user.findUnique.mockResolvedValue({ ...USER, passwordHash: hash });
+      db.user.findFirst.mockResolvedValue({ ...USER, passwordHash: hash });
       db.refreshToken.create.mockResolvedValue({} as never);
 
       const result = await service.login({ email: USER.email, password: 'Senha123' });
       expect(result).toHaveProperty('accessToken');
       expect(result).toHaveProperty('refreshToken');
+      expect(db.auditLog.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({ action: 'auth.login', userId: USER.id }),
+        }),
+      );
     });
 
     it('throws 401 when user not found', async () => {
-      db.user.findUnique.mockResolvedValue(null);
+      db.user.findFirst.mockResolvedValue(null);
       await expect(service.login({ email: 'x@x.com', password: 'pass' })).rejects.toMatchObject({
         statusCode: 401,
       });
@@ -142,7 +164,7 @@ describe('AuthService', () => {
     it('throws 401 when password is wrong', async () => {
       const bcrypt = await import('bcrypt');
       const hash = await bcrypt.hash('correct', 1);
-      db.user.findUnique.mockResolvedValue({ ...USER, passwordHash: hash });
+      db.user.findFirst.mockResolvedValue({ ...USER, passwordHash: hash });
       await expect(service.login({ email: USER.email, password: 'wrong' })).rejects.toMatchObject({
         statusCode: 401,
       });
@@ -151,7 +173,7 @@ describe('AuthService', () => {
     it('throws 403 when email not verified', async () => {
       const bcrypt = await import('bcrypt');
       const hash = await bcrypt.hash('Senha123', 1);
-      db.user.findUnique.mockResolvedValue({ ...USER, passwordHash: hash, emailVerified: false });
+      db.user.findFirst.mockResolvedValue({ ...USER, passwordHash: hash, emailVerified: false });
       await expect(
         service.login({ email: USER.email, password: 'Senha123' }),
       ).rejects.toMatchObject({ statusCode: 403 });
@@ -203,9 +225,15 @@ describe('AuthService', () => {
 
   describe('logout', () => {
     it('revokes the refresh token', async () => {
+      db.refreshToken.findUnique.mockResolvedValue({ id: 'rt-1', userId: USER.id });
       db.refreshToken.updateMany.mockResolvedValue({ count: 1 });
       await service.logout('some-raw-token');
       expect(db.refreshToken.updateMany).toHaveBeenCalledOnce();
+      expect(db.auditLog.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({ action: 'auth.logout', userId: USER.id }),
+        }),
+      );
     });
   });
 
@@ -255,7 +283,7 @@ describe('AuthService', () => {
 
   describe('forgotPassword', () => {
     it('sends reset email when user exists', async () => {
-      db.user.findUnique.mockResolvedValue(USER);
+      db.user.findFirst.mockResolvedValue(USER);
       db.passwordResetToken.create.mockResolvedValue({} as never);
 
       await service.forgotPassword(USER.email);
@@ -263,7 +291,7 @@ describe('AuthService', () => {
     });
 
     it('returns silently when email does not exist', async () => {
-      db.user.findUnique.mockResolvedValue(null);
+      db.user.findFirst.mockResolvedValue(null);
       await expect(service.forgotPassword('unknown@example.com')).resolves.toBeUndefined();
       expect(mailer.sendPasswordResetEmail).not.toHaveBeenCalled();
     });
@@ -290,6 +318,11 @@ describe('AuthService', () => {
 
       await service.resetPassword('valid-token', 'NewPass1');
       expect(db.$transaction).toHaveBeenCalledOnce();
+      expect(db.auditLog.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({ action: 'auth.password_reset', userId: USER.id }),
+        }),
+      );
     });
 
     it('throws 401 for unknown token', async () => {
@@ -320,7 +353,7 @@ describe('AuthService', () => {
 
   describe('resendVerificationEmail', () => {
     it('sends a new verification email for unverified user', async () => {
-      db.user.findUnique.mockResolvedValue({ ...USER, emailVerified: false });
+      db.user.findFirst.mockResolvedValue({ ...USER, emailVerified: false });
       db.emailVerificationToken.upsert.mockResolvedValue({} as never);
 
       await service.resendVerificationEmail(USER.email);
@@ -333,13 +366,13 @@ describe('AuthService', () => {
     });
 
     it('returns silently when user does not exist', async () => {
-      db.user.findUnique.mockResolvedValue(null);
+      db.user.findFirst.mockResolvedValue(null);
       await expect(service.resendVerificationEmail('unknown@example.com')).resolves.toBeUndefined();
       expect(mailer.sendVerificationEmail).not.toHaveBeenCalled();
     });
 
     it('returns silently when email is already verified', async () => {
-      db.user.findUnique.mockResolvedValue({ ...USER, emailVerified: true });
+      db.user.findFirst.mockResolvedValue({ ...USER, emailVerified: true });
       await expect(service.resendVerificationEmail(USER.email)).resolves.toBeUndefined();
       expect(mailer.sendVerificationEmail).not.toHaveBeenCalled();
     });

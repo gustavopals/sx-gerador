@@ -32,7 +32,32 @@ export const UpdateUserSchema = z.object({
   locale: z.enum(['pt-BR', 'en-US', 'es-ES']).optional(),
 });
 
+export const AvatarUploadSchema = z.object({
+  avatarUrl: z
+    .string()
+    .regex(/^data:image\/(png|jpeg|jpg|webp);base64,/, 'Avatar deve ser uma imagem base64 válida')
+    .max(1_400_000, 'Avatar deve ter no máximo 1MB'),
+});
+
+export const ChangePasswordSchema = z.object({
+  currentPassword: z.string().min(1, 'Senha atual é obrigatória'),
+  newPassword: z
+    .string()
+    .min(8, 'Senha deve ter pelo menos 8 caracteres')
+    .regex(/[A-Z]/, 'Senha deve conter pelo menos 1 letra maiúscula')
+    .regex(/[0-9]/, 'Senha deve conter pelo menos 1 número'),
+});
+
+export const DeleteAccountSchema = z.object({
+  confirmation: z.literal('EXCLUIR', {
+    errorMap: () => ({ message: 'Digite EXCLUIR para confirmar' }),
+  }),
+});
+
 export type UserRole = z.infer<typeof UserRoleSchema>;
 export type User = z.infer<typeof UserSchema>;
 export type CreateUserInput = z.infer<typeof CreateUserSchema>;
 export type UpdateUserInput = z.infer<typeof UpdateUserSchema>;
+export type AvatarUploadInput = z.infer<typeof AvatarUploadSchema>;
+export type ChangePasswordInput = z.infer<typeof ChangePasswordSchema>;
+export type DeleteAccountInput = z.infer<typeof DeleteAccountSchema>;

@@ -1,11 +1,27 @@
 import type { Routes } from '@angular/router';
+import { authGuard, guestGuard, verifiedGuard } from './core/guards/auth.guard';
 import { ShellComponent } from './shell/shell.component';
 
 export const routes: Routes = [
   {
     path: 'login',
+    canActivate: [guestGuard],
     loadComponent: () =>
       import('./features/auth/login/login.component').then((m) => m.LoginComponent),
+  },
+  {
+    path: 'forgot-password',
+    loadComponent: () =>
+      import('./features/auth/forgot-password/forgot-password.component').then(
+        (m) => m.ForgotPasswordComponent,
+      ),
+  },
+  {
+    path: 'reset-password/:token',
+    loadComponent: () =>
+      import('./features/auth/reset-password/reset-password.component').then(
+        (m) => m.ResetPasswordComponent,
+      ),
   },
   {
     path: 'verify-email/:token',
@@ -19,6 +35,7 @@ export const routes: Routes = [
     children: [
       {
         path: '',
+        canActivate: [guestGuard],
         loadComponent: () =>
           import('./features/auth/signup/signup.component').then((m) => m.SignupComponent),
       },
@@ -32,12 +49,23 @@ export const routes: Routes = [
     ],
   },
   {
+    path: 'dashboard',
+    redirectTo: '',
+    pathMatch: 'full',
+  },
+  {
     path: '',
     component: ShellComponent,
+    canActivate: [authGuard, verifiedGuard],
     children: [
       {
         path: '',
         loadComponent: () => import('./features/home/home.component').then((m) => m.HomeComponent),
+      },
+      {
+        path: 'settings/profile',
+        loadComponent: () =>
+          import('./features/settings/profile/profile.component').then((m) => m.ProfileComponent),
       },
     ],
   },

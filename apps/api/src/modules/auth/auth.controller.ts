@@ -6,7 +6,9 @@ export class AuthController {
 
   signup = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      await this.service.signup(req.body);
+      await this.service.signup(req.body, {
+        userAgent: req.headers['user-agent'],
+      });
       res.status(201).json({ message: 'Conta criada. Verifique seu e-mail.' });
     } catch (err) {
       next(err);

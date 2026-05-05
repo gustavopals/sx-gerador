@@ -15,7 +15,7 @@ export function createApp(): express.Express {
       origin: env.corsOrigin,
     }),
   );
-  app.use(json({ limit: '1mb' }));
+  app.use(json({ limit: '2mb' }));
   app.use(urlencoded({ extended: true }));
 
   app.use(routes);

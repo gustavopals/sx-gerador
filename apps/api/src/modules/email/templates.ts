@@ -155,6 +155,42 @@ export function passwordResetEmailText(name: string, resetUrl: string): string {
 }
 
 // ---------------------------------------------------------------------------
+// Account deletion email
+// ---------------------------------------------------------------------------
+
+export function accountDeletionEmailHtml(name: string, scheduledAt: Date): string {
+  const scheduled = formatDate(scheduledAt);
+  const body = `
+    <h1 style="margin:0 0 8px;font-size:24px;font-weight:700;color:#1a1a1a;">
+      Conta marcada para exclusão
+    </h1>
+    <p style="margin:0 0 4px;font-size:16px;color:#595959;line-height:1.6;">
+      Olá, <strong>${name}</strong>.
+    </p>
+    <p style="margin:0;font-size:16px;color:#595959;line-height:1.6;">
+      Confirmamos a solicitação de exclusão da sua conta no SXGerador.
+      Seus acessos foram revogados e a remoção definitiva está agendada para
+      <strong>${scheduled}</strong>.
+    </p>
+    <p style="margin-top:20px;font-size:13px;color:#8c8c8c;line-height:1.6;">
+      Se você não solicitou isso, entre em contato com a manutenção do projeto o quanto antes.
+    </p>
+  `;
+  return layout('Conta marcada para exclusão — SXGerador', body);
+}
+
+export function accountDeletionEmailText(name: string, scheduledAt: Date): string {
+  return [
+    `Olá, ${name}.`,
+    '',
+    'Confirmamos a solicitação de exclusão da sua conta no SXGerador.',
+    `A remoção definitiva está agendada para ${formatDate(scheduledAt)}.`,
+    '',
+    'Se você não solicitou isso, entre em contato com a manutenção do projeto o quanto antes.',
+  ].join('\n');
+}
+
+// ---------------------------------------------------------------------------
 // Invitation email
 // ---------------------------------------------------------------------------
 
@@ -196,4 +232,11 @@ export function invitationEmailText(
     '',
     'Se você não esperava este convite, pode ignorar este e-mail.',
   ].join('\n');
+}
+
+function formatDate(date: Date): string {
+  return new Intl.DateTimeFormat('pt-BR', {
+    dateStyle: 'long',
+    timeZone: 'America/Sao_Paulo',
+  }).format(date);
 }

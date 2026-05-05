@@ -1,7 +1,18 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { computed, inject, Injectable, signal } from '@angular/core';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, tap, throwError, type Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
+
+export interface CurrentUser {
+  id: string;
+  email: string;
+  name: string;
+  avatarUrl: string | null;
+  emailVerified: boolean;
+  locale: string;
+  createdAt: string;
+  updatedAt: string;
+}
 
 export interface TokenPair {
   accessToken: string;
@@ -31,6 +42,51 @@ export class AuthService {
     );
   }
 
+  async forgotPassword(email: string): Promise<void> {
+    await firstValueFrom(this.http.post(`${environment.apiUrl}/auth/forgot-password`, { email }));
+  }
+
+  async resetPassword(token: string, password: string): Promise<void> {
+    await firstValueFrom(
+      this.http.post(`${environment.apiUrl}/auth/reset-password`, { token, password }),
+    );
+  }
+
+  async getCurrentUser(): Promise<CurrentUser> {
+    const response = await firstValueFrom(
+      this.http.get<{ user: CurrentUser }>(`${environment.apiUrl}/users/me`),
+    );
+    return response.user;
+  }
+
+  async updateProfile(input: { name?: string; locale?: string }): Promise<CurrentUser> {
+    const response = await firstValueFrom(
+      this.http.patch<{ user: CurrentUser }>(`${environment.apiUrl}/users/me`, input),
+    );
+    return response.user;
+  }
+
+  async uploadAvatar(avatarUrl: string): Promise<CurrentUser> {
+    const response = await firstValueFrom(
+      this.http.post<{ user: CurrentUser }>(`${environment.apiUrl}/users/me/avatar`, {
+        avatarUrl,
+      }),
+    );
+    return response.user;
+  }
+
+  async changePassword(input: { currentPassword: string; newPassword: string }): Promise<void> {
+    await firstValueFrom(this.http.post(`${environment.apiUrl}/users/me/change-password`, input));
+  }
+
+  async deleteAccount(confirmation: 'EXCLUIR'): Promise<{ hardDeleteScheduledAt: string }> {
+    return firstValueFrom(
+      this.http.delete<{ hardDeleteScheduledAt: string }>(`${environment.apiUrl}/users/me`, {
+        body: { confirmation },
+      }),
+    );
+  }
+
   async signup(input: {
     name: string;
     email: string;
@@ -41,11 +97,24 @@ export class AuthService {
     await firstValueFrom(this.http.post(`${environment.apiUrl}/auth/signup`, input));
   }
 
-  async login(email: string, password: string, remember: boolean): Promise<void> {
+  async login(email: string, password: string, remember: boolean): Promise<TokenPair> {
     const pair = await firstValueFrom(
       this.http.post<TokenPair>(`${environment.apiUrl}/auth/login`, { email, password }),
     );
     this.storeTokens(pair, remember);
+    return pair;
+  }
+
+  refreshSession(): Observable<TokenPair> {
+    const refreshToken = this.getRefreshToken();
+    if (!refreshToken) {
+      return throwError(() => new Error('Refresh token ausente.'));
+    }
+
+    const remember = localStorage.getItem(REFRESH_KEY) === refreshToken;
+    return this.http
+      .post<TokenPair>(`${environment.apiUrl}/auth/refresh`, { refreshToken })
+      .pipe(tap((pair) => this.storeTokens(pair, remember)));
   }
 
   logout(): void {
@@ -58,11 +127,20 @@ export class AuthService {
     this.clearTokens();
   }
 
+  clearSession(): void {
+    this.clearTokens();
+  }
+
   getAccessToken(): string | null {
     return this._accessToken();
   }
 
+  private getRefreshToken(): string | null {
+    return localStorage.getItem(REFRESH_KEY) ?? sessionStorage.getItem(REFRESH_KEY);
+  }
+
   private storeTokens(pair: TokenPair, remember: boolean): void {
+    this.clearTokens();
     const storage = remember ? localStorage : sessionStorage;
     storage.setItem(ACCESS_KEY, pair.accessToken);
     storage.setItem(REFRESH_KEY, pair.refreshToken);
