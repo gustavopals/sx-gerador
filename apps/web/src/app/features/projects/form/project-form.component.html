@@ -1,0 +1,86 @@
+<po-page-default [p-title]="pageTitle" [p-subtitle]="pageSubtitle" [p-actions]="pageActions">
+  @if (isLoading()) {
+    <div class="sxg-project-form__state">
+      <span class="sxg-project-form__spinner"></span>
+      <p>Carregando projeto...</p>
+    </div>
+  } @else {
+    <form class="sxg-project-form" [formGroup]="form" (ngSubmit)="save()" novalidate>
+      <section class="sxg-project-form__section">
+        <h3 class="sxg-project-form__section-title">Identificação</h3>
+
+        <po-input
+          p-label="Nome"
+          p-placeholder="Ex: Financeiro"
+          formControlName="name"
+          [p-error-pattern]="nameError"
+          p-required="true"
+          (p-change)="syncSlugFromName()"
+        ></po-input>
+
+        <div class="sxg-project-form__slug-field">
+          <po-input
+            p-label="Slug"
+            p-placeholder="Ex: financeiro"
+            formControlName="slug"
+            [p-error-pattern]="slugError"
+            p-required="true"
+          ></po-input>
+          @if (isSlugPending) {
+            <span class="sxg-project-form__slug-hint">Verificando disponibilidade...</span>
+          } @else if (!slugError && form.controls.slug.touched && form.controls.slug.valid) {
+            <span class="sxg-project-form__slug-hint sxg-project-form__slug-hint--ok">
+              Slug disponível
+            </span>
+          }
+        </div>
+
+        <po-textarea
+          p-label="Descrição"
+          p-placeholder="Escopo do dicionário de dados"
+          formControlName="description"
+          [p-rows]="3"
+        ></po-textarea>
+
+        <po-select
+          p-label="Visibilidade"
+          [p-options]="visibilityOptions"
+          formControlName="visibility"
+        ></po-select>
+      </section>
+
+      <section class="sxg-project-form__section">
+        <h3 class="sxg-project-form__section-title">Configurações Protheus</h3>
+
+        <po-select
+          p-label="Idioma padrão"
+          [p-options]="langOptions"
+          formControlName="defaultLang"
+        ></po-select>
+
+        <po-select
+          p-label="Tamanho do campo FILIAL (MV_TAMFIL)"
+          [p-options]="tamFilOptions"
+          formControlName="defaultTamFil"
+        ></po-select>
+      </section>
+
+      <footer class="sxg-project-form__footer">
+        <po-button
+          [p-label]="isEditMode() ? 'Salvar alterações' : 'Criar projeto'"
+          [p-loading]="isSaving()"
+          [p-disabled]="form.invalid || form.pending || isSaving()"
+          [p-type]="submitType"
+          p-kind="primary"
+          p-icon="an an-floppy-disk"
+        ></po-button>
+        <po-button
+          p-label="Cancelar"
+          p-kind="secondary"
+          [p-disabled]="isSaving()"
+          (p-click)="cancel()"
+        ></po-button>
+      </footer>
+    </form>
+  }
+</po-page-default>

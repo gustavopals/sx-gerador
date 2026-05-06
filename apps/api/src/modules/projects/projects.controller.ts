@@ -3,6 +3,10 @@ import { z } from 'zod';
 import type { ProjectsService } from './projects.service';
 
 const IdParamSchema = z.object({ id: z.string().cuid() });
+const CheckSlugQuerySchema = z.object({
+  slug: z.string().trim().min(1),
+  excludeId: z.string().cuid().optional(),
+});
 const BooleanQuerySchema = z
   .union([z.boolean(), z.enum(['true', 'false'])])
   .transform((value) => value === true || value === 'true');
@@ -21,6 +25,16 @@ export class ProjectsController {
       const query = ListQuerySchema.parse(req.query);
       const result = await this.service.list(query);
       res.json(result);
+    } catch (err) {
+      next(err);
+    }
+  };
+
+  checkSlug = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+    try {
+      const { slug, excludeId } = CheckSlugQuerySchema.parse(req.query);
+      const available = await this.service.isSlugAvailable(slug, excludeId);
+      res.json({ available });
     } catch (err) {
       next(err);
     }

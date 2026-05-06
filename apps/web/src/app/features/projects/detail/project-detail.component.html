@@ -1,0 +1,97 @@
+<po-page-default
+  [p-title]="project()?.name ?? 'Carregando...'"
+  [p-subtitle]="project()?.description ?? ''"
+  [p-breadcrumb]="breadcrumb"
+  [p-actions]="pageActions"
+>
+  @if (isLoading()) {
+    <div class="sxg-detail__state">
+      <span class="sxg-detail__spinner"></span>
+      <p>Carregando projeto...</p>
+    </div>
+  } @else if (project(); as p) {
+    @if (p.deletedAt) {
+      <div class="sxg-detail__archived-banner">
+        <span class="an an-archive"></span>
+        Projeto arquivado em {{ p.deletedAt | date: 'dd/MM/yyyy' }}. Restaure para retomar o
+        trabalho.
+      </div>
+    }
+
+    <po-tabs>
+      <po-tab p-label="Tabelas" [p-active]="true">
+        <div class="sxg-detail__empty-tab">
+          <span class="an an-table an-2x"></span>
+          <h3>Nenhuma tabela cadastrada</h3>
+          <p>As tabelas (SX2) deste projeto aparecerão aqui. Em breve disponível.</p>
+        </div>
+      </po-tab>
+
+      <po-tab p-label="Migrations">
+        <div class="sxg-detail__empty-tab">
+          <span class="an an-file-arrow-up an-2x"></span>
+          <h3>Nenhuma migration gerada</h3>
+          <p>Scripts AdvPL gerados a partir do dicionário aparecerão aqui.</p>
+        </div>
+      </po-tab>
+
+      <po-tab p-label="Configurações">
+        <section class="sxg-detail__settings">
+          <dl class="sxg-detail__settings-grid">
+            <div class="sxg-detail__setting-item">
+              <dt>Slug</dt>
+              <dd class="sxg-detail__setting-mono">{{ p.slug }}</dd>
+            </div>
+
+            <div class="sxg-detail__setting-item">
+              <dt>Visibilidade</dt>
+              <dd>
+                <po-tag
+                  [p-value]="visibilityLabel(p.visibility)"
+                  [p-type]="p.deletedAt ? tagType.Warning : tagType.Info"
+                ></po-tag>
+              </dd>
+            </div>
+
+            <div class="sxg-detail__setting-item">
+              <dt>Idioma padrão</dt>
+              <dd>{{ langLabel(p.defaultLang) }}</dd>
+            </div>
+
+            <div class="sxg-detail__setting-item">
+              <dt>Tamanho FILIAL (MV_TAMFIL)</dt>
+              <dd>{{ p.defaultTamFil }}</dd>
+            </div>
+
+            <div class="sxg-detail__setting-item">
+              <dt>Criado em</dt>
+              <dd>{{ p.createdAt | date: 'dd/MM/yyyy HH:mm' }}</dd>
+            </div>
+
+            <div class="sxg-detail__setting-item">
+              <dt>Última atualização</dt>
+              <dd>{{ p.updatedAt | date: 'dd/MM/yyyy HH:mm' }}</dd>
+            </div>
+          </dl>
+
+          @if (!p.deletedAt) {
+            <po-button
+              p-label="Editar configurações"
+              p-icon="an an-pencil"
+              p-kind="secondary"
+              (p-click)="navigateToEdit()"
+            ></po-button>
+          }
+        </section>
+      </po-tab>
+
+      <po-tab p-label="Histórico">
+        <div class="sxg-detail__empty-tab">
+          <span class="an an-clock-counter-clockwise an-2x"></span>
+          <h3>Sem registros de histórico</h3>
+          <p>Alterações e eventos do projeto aparecerão aqui.</p>
+        </div>
+      </po-tab>
+    </po-tabs>
+  }
+</po-page-default>

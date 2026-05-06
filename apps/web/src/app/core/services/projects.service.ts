@@ -1,6 +1,10 @@
 import { HttpClient, HttpErrorResponse, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import type { CreateProjectInput, ProjectVisibility } from '@sxgerador/shared-types';
+import type {
+  CreateProjectInput,
+  ProjectVisibility,
+  UpdateProjectInput,
+} from '@sxgerador/shared-types';
 import { firstValueFrom } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
@@ -58,6 +62,36 @@ export class ProjectsService {
   async create(input: CreateProjectInput): Promise<ProjectSummary> {
     const response = await firstValueFrom(
       this.http.post<{ project: ProjectSummary }>(this.baseUrl, input),
+    );
+    return response.project;
+  }
+
+  async get(id: string): Promise<ProjectSummary> {
+    const response = await firstValueFrom(
+      this.http.get<{ project: ProjectSummary }>(`${this.baseUrl}/${id}`),
+    );
+    return response.project;
+  }
+
+  async update(id: string, input: UpdateProjectInput): Promise<ProjectSummary> {
+    const response = await firstValueFrom(
+      this.http.patch<{ project: ProjectSummary }>(`${this.baseUrl}/${id}`, input),
+    );
+    return response.project;
+  }
+
+  async checkSlugAvailability(slug: string, excludeId?: string): Promise<boolean> {
+    let params = new HttpParams().set('slug', slug);
+    if (excludeId) params = params.set('excludeId', excludeId);
+    const response = await firstValueFrom(
+      this.http.get<{ available: boolean }>(`${this.baseUrl}/check-slug`, { params }),
+    );
+    return response.available;
+  }
+
+  async duplicate(id: string): Promise<ProjectSummary> {
+    const response = await firstValueFrom(
+      this.http.post<{ project: ProjectSummary }>(`${this.baseUrl}/${id}/duplicate`, {}),
     );
     return response.project;
   }

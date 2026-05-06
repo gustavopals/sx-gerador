@@ -109,6 +109,11 @@
   font-size: 0.875rem;
 }
 
+.sxg-project-card__actions {
+  display: flex;
+  gap: 8px;
+}
+
 .sxg-projects__empty,
 .sxg-projects__state {
   display: grid;
@@ -163,6 +168,7 @@
   .sxg-projects__filter-actions,
   .sxg-project-card__header,
   .sxg-project-card__footer,
+  .sxg-project-card__actions,
   .sxg-projects__pagination,
   .sxg-projects__pagination > div {
     align-items: stretch;

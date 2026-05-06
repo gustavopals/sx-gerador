@@ -11,6 +11,7 @@ export function createProjectsRouter(service: ProjectsService): Router {
 
   router.get('/projects', requireAuth, ctrl.list);
   router.post('/projects', requireAuth, validate(CreateProjectSchema), ctrl.create);
+  router.get('/projects/check-slug', requireAuth, ctrl.checkSlug);
   router.get('/projects/:id', requireAuth, ctrl.get);
   router.patch('/projects/:id', requireAuth, validate(UpdateProjectSchema), ctrl.update);
   router.delete('/projects/:id', requireAuth, ctrl.delete);

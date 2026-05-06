@@ -43,7 +43,7 @@
           p-label="Novo projeto"
           p-icon="an an-plus"
           p-kind="primary"
-          (p-click)="openCreateModal()"
+          [routerLink]="['/projects/new']"
         ></po-button>
       </div>
     } @else {
@@ -84,21 +84,31 @@
 
             <footer class="sxg-project-card__footer">
               <span>Atualizado {{ project.updatedAt | date: 'dd/MM/yyyy HH:mm' }}</span>
-              @if (project.deletedAt) {
-                <po-button
-                  p-label="Restaurar"
-                  p-icon="an an-arrow-u-up-left"
-                  p-kind="secondary"
-                  (p-click)="restoreProject(project)"
-                ></po-button>
-              } @else {
-                <po-button
-                  p-label="Arquivar"
-                  p-icon="an an-archive"
-                  p-kind="secondary"
-                  (p-click)="archiveProject(project)"
-                ></po-button>
-              }
+              <div class="sxg-project-card__actions">
+                @if (!project.deletedAt) {
+                  <po-button
+                    p-label="Editar"
+                    p-icon="an an-pencil"
+                    p-kind="secondary"
+                    (p-click)="editProject(project)"
+                  ></po-button>
+                }
+                @if (project.deletedAt) {
+                  <po-button
+                    p-label="Restaurar"
+                    p-icon="an an-arrow-u-up-left"
+                    p-kind="secondary"
+                    (p-click)="restoreProject(project)"
+                  ></po-button>
+                } @else {
+                  <po-button
+                    p-label="Arquivar"
+                    p-icon="an an-archive"
+                    p-kind="secondary"
+                    (p-click)="archiveProject(project)"
+                  ></po-button>
+                }
+              </div>
             </footer>
           </article>
         }
@@ -126,44 +136,3 @@
     }
   </section>
 </po-page-default>
-
-<po-modal
-  #createProjectModal
-  p-title="Novo projeto"
-  p-icon="an an-folder-plus"
-  [p-primary-action]="createPrimaryAction"
-  [p-secondary-action]="createSecondaryAction"
-  [p-hide-close]="isCreating()"
->
-  <form class="sxg-projects__modal-form" [formGroup]="createForm" novalidate>
-    <po-input
-      p-label="Nome"
-      p-placeholder="Financeiro"
-      formControlName="name"
-      [p-error-pattern]="nameError"
-      p-required="true"
-      (p-change)="syncSlugFromName()"
-    ></po-input>
-
-    <po-input
-      p-label="Slug"
-      p-placeholder="financeiro"
-      formControlName="slug"
-      [p-error-pattern]="slugError"
-      p-required="true"
-    ></po-input>
-
-    <po-textarea
-      p-label="Descrição"
-      p-placeholder="Escopo do dicionário"
-      formControlName="description"
-      [p-rows]="3"
-    ></po-textarea>
-
-    <po-select
-      p-label="Visibilidade"
-      [p-options]="visibilityOptions"
-      formControlName="visibility"
-    ></po-select>
-  </form>
-</po-modal>

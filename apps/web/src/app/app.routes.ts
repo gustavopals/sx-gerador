@@ -70,6 +70,27 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'projects/new',
+        loadComponent: () =>
+          import('./features/projects/form/project-form.component').then(
+            (m) => m.ProjectFormComponent,
+          ),
+      },
+      {
+        path: 'projects/:id/edit',
+        loadComponent: () =>
+          import('./features/projects/form/project-form.component').then(
+            (m) => m.ProjectFormComponent,
+          ),
+      },
+      {
+        path: 'projects/:id',
+        loadComponent: () =>
+          import('./features/projects/detail/project-detail.component').then(
+            (m) => m.ProjectDetailComponent,
+          ),
+      },
+      {
         path: 'settings/profile',
         loadComponent: () =>
           import('./features/settings/profile/profile.component').then((m) => m.ProfileComponent),

@@ -135,6 +135,13 @@ export class ProjectsService {
     return duplicate;
   }
 
+  async isSlugAvailable(slug: string, ignoreProjectId?: string): Promise<boolean> {
+    const existing = await this.db.project.findUnique({ where: { slug } });
+    if (!existing) return true;
+    if (ignoreProjectId && existing.id === ignoreProjectId) return true;
+    return false;
+  }
+
   private async ensureSlugAvailable(slug: string, ignoreProjectId?: string): Promise<void> {
     const existing = await this.db.project.findUnique({ where: { slug } });
     if (existing && existing.id !== ignoreProjectId) throw ProjectErrors.SLUG_IN_USE;

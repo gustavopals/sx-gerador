@@ -1968,17 +1968,17 @@ sxgerador/
 - [x] Filtro por arquivados/ativos
 
 #### Task F2.5 — Tela de criação/edição (M)
-- [ ] Form com nome, slug auto-gerado (com edição), descrição, idioma default, tamanho de filial
-- [ ] Validação inline de slug único
+- [x] Form com nome, slug auto-gerado (com edição), descrição, idioma default, tamanho de filial
+- [x] Validação inline de slug único
 
 #### Task F2.6 — Tela de detalhe do projeto (M)
-- [ ] `ProjectDetailPage` com `po-tabs`: Tabelas / Migrations / Configurações / Histórico
-- [ ] Header com nome, descrição, botões de ação
-- [ ] Breadcrumb
+- [x] `ProjectDetailPage` com `po-tabs`: Tabelas / Migrations / Configurações / Histórico
+- [x] Header com nome, descrição, botões de ação
+- [x] Breadcrumb
 
 #### Task F2.7 — Project Signal Store (S)
-- [ ] State: `currentProject`, `projects`, `isLoading`
-- [ ] Methods: `loadProjects`, `loadProject`, `create`, `update`, `delete`, `restore`, `duplicate`
+- [x] State: `currentProject`, `projects`, `isLoading`
+- [x] Methods: `loadProjects`, `loadProject`, `create`, `update`, `delete`, `restore`, `duplicate`
 
 ---
 
