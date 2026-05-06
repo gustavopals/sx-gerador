@@ -1,0 +1,62 @@
+<section class="sxg-combobox-editor">
+  <header class="sxg-combobox-editor__header">
+    <h4>Combobox trilíngue</h4>
+    <po-button
+      p-label="Adicionar linha"
+      p-kind="secondary"
+      p-icon="an an-plus"
+      [p-disabled]="isDisabled"
+      (p-click)="addRow()"
+    ></po-button>
+  </header>
+
+  <div class="sxg-combobox-editor__grid sxg-combobox-editor__grid--head">
+    <span>Chave</span>
+    <span>Valor PT</span>
+    <span>Valor ES</span>
+    <span>Valor EN</span>
+    <span>Ações</span>
+  </div>
+
+  @for (row of rows; track $index) {
+    <div class="sxg-combobox-editor__grid">
+      <po-input
+        p-placeholder="Ex: 1"
+        [ngModel]="row.key"
+        (ngModelChange)="row.key = $event; onRowChange()"
+      ></po-input>
+
+      <po-input
+        p-placeholder="Ex: Sim"
+        [ngModel]="row.pt"
+        (ngModelChange)="row.pt = $event; onRowChange()"
+      ></po-input>
+
+      <po-input
+        p-placeholder="Ex: Sí"
+        [ngModel]="row.es"
+        (ngModelChange)="row.es = $event; onRowChange()"
+      ></po-input>
+
+      <po-input
+        p-placeholder="Ex: Yes"
+        [ngModel]="row.en"
+        (ngModelChange)="row.en = $event; onRowChange()"
+      ></po-input>
+
+      <div class="sxg-combobox-editor__actions">
+        <po-button
+          p-icon="an an-trash"
+          p-kind="tertiary"
+          p-label="Remover"
+          [p-disabled]="isDisabled"
+          (p-click)="removeRow($index)"
+        ></po-button>
+      </div>
+    </div>
+
+    @if (isDuplicateKey($index)) {
+      <p class="sxg-combobox-editor__error">Chave duplicada: {{ row.key }}</p>
+    }
+  }
+</section>

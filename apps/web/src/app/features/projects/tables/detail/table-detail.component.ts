@@ -11,15 +11,17 @@ import {
   type PoBreadcrumb,
   type PoPageAction,
 } from '@po-ui/ng-components';
+import { FieldsService, type FieldSummary } from '../../../../core/services/fields.service';
 import {
   mapTablesError,
   TablesService,
   type TableSummary,
 } from '../../../../core/services/tables.service';
+import { FieldsListComponent } from '../../fields/list/fields-list.component';
 
 @Component({
   selector: 'sxg-table-detail',
-  imports: [DatePipe, PoButtonModule, PoPageModule, PoTabsModule, PoTagModule],
+  imports: [DatePipe, PoButtonModule, PoPageModule, PoTabsModule, PoTagModule, FieldsListComponent],
   templateUrl: './table-detail.component.html',
   styleUrl: './table-detail.component.scss',
 })
@@ -27,6 +29,7 @@ export class TableDetailComponent implements OnInit {
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
   private readonly tablesService = inject(TablesService);
+  private readonly fieldsService = inject(FieldsService);
   private readonly notification = inject(PoNotificationService);
 
   readonly table = signal<TableSummary | null>(null);
@@ -34,8 +37,11 @@ export class TableDetailComponent implements OnInit {
   readonly isLoading = signal(false);
   readonly isActing = signal(false);
   readonly tagType = PoTagType;
+  readonly fields = signal<FieldSummary[]>([]);
 
-  readonly hasFilialField = computed(() => false);
+  readonly hasFilialField = computed(() =>
+    this.fields().some((field) => field.name === `${this.table()?.prefix ?? ''}_FILIAL`),
+  );
   readonly hasPrimaryIndex = computed(() => false);
 
   get breadcrumb(): PoBreadcrumb {
@@ -105,10 +111,32 @@ export class TableDetailComponent implements OnInit {
     void this.router.navigate(['/projects', this.projectId(), 'tables', t.id, 'edit']);
   }
 
+  navigateToNewField(): void {
+    const t = this.table();
+    if (!t) return;
+    void this.router.navigate(['/projects', this.projectId(), 'tables', t.id, 'fields', 'new']);
+  }
+
+  navigateToEditField(fieldId: string): void {
+    const t = this.table();
+    if (!t || t.deletedAt) return;
+    void this.router.navigate([
+      '/projects',
+      this.projectId(),
+      'tables',
+      t.id,
+      'fields',
+      fieldId,
+      'edit',
+    ]);
+  }
+
   private async loadTable(projectId: string, tableId: string): Promise<void> {
     this.isLoading.set(true);
     try {
       this.table.set(await this.tablesService.get(projectId, tableId));
+      const fieldsResponse = await this.fieldsService.list(projectId, tableId);
+      this.fields.set(fieldsResponse.fields.filter((field) => !field.deletedAt));
     } catch {
       this.notification.error('Tabela não encontrada.');
       void this.router.navigate(['/projects', projectId]);

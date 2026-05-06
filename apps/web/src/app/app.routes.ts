@@ -98,6 +98,20 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'projects/:projectId/tables/:tableId/fields/new',
+        loadComponent: () =>
+          import('./features/projects/fields/form/field-form.component').then(
+            (m) => m.FieldFormComponent,
+          ),
+      },
+      {
+        path: 'projects/:projectId/tables/:tableId/fields/:fieldId/edit',
+        loadComponent: () =>
+          import('./features/projects/fields/form/field-form.component').then(
+            (m) => m.FieldFormComponent,
+          ),
+      },
+      {
         path: 'projects/:projectId/tables/:tableId',
         loadComponent: () =>
           import('./features/projects/tables/detail/table-detail.component').then(

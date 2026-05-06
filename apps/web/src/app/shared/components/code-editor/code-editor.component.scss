@@ -1,0 +1,46 @@
+.sxg-code-editor {
+  display: grid;
+  gap: 8px;
+}
+
+.sxg-code-editor__label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #2f3c4d;
+}
+
+.sxg-code-editor__textarea {
+  width: 100%;
+  min-height: 140px;
+  resize: vertical;
+  border: 1px solid #d9e4ea;
+  border-radius: 6px;
+  padding: 10px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.84rem;
+  line-height: 1.4;
+  background: #ffffff;
+}
+
+.sxg-code-editor__preview {
+  margin: 0;
+  padding: 10px;
+  border: 1px solid #e6edf2;
+  border-radius: 6px;
+  background: #f8fbfd;
+  overflow: auto;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.82rem;
+  line-height: 1.4;
+}
+
+:host ::ng-deep .sxg-code-editor__kw {
+  color: #0c5f79;
+  font-weight: 700;
+}
+
+.sxg-code-editor__error {
+  margin: 0;
+  font-size: 0.75rem;
+  color: #c44f3d;
+}

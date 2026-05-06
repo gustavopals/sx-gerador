@@ -1,0 +1,216 @@
+<po-page-default
+  [p-title]="isEditMode() ? 'Editar campo' : 'Novo campo'"
+  p-subtitle="Aba Básico (SX3)"
+  [p-breadcrumb]="breadcrumb"
+  [p-actions]="pageActions"
+>
+  @if (isLoading()) {
+    <div class="sxg-field-form__state">
+      <span class="sxg-field-form__spinner"></span>
+      <p>Carregando contexto da tabela...</p>
+    </div>
+  } @else {
+    <form
+      class="sxg-field-form"
+      [formGroup]="form"
+      (ngSubmit)="save()"
+      (keydown)="onKeyDown($event)"
+    >
+      <po-tabs>
+        <po-tab p-label="Básico" [p-active]="true">
+          <section class="sxg-field-form__section">
+            <h3 class="sxg-field-form__section-title">Básico</h3>
+
+            <div class="sxg-field-form__name-row">
+              <div class="sxg-field-form__prefix-box">
+                <span class="sxg-field-form__prefix-label">Prefixo (bloqueado)</span>
+                <code>{{ tablePrefix() }}</code>
+              </div>
+              <po-input
+                p-label="Sufixo do campo"
+                p-placeholder="Ex: CODIGO"
+                p-required="true"
+                [p-auto-focus]="true"
+                formControlName="suffix"
+                [p-error-pattern]="suffixError"
+                (p-change)="onSuffixInput()"
+              ></po-input>
+            </div>
+
+            <p class="sxg-field-form__preview">
+              Nome completo (X3_CAMPO):
+              <code>{{ fieldNamePreview }}</code>
+            </p>
+
+            <div class="sxg-field-form__row-3">
+              <po-select
+                p-label="Tipo (X3_TIPO)"
+                [p-options]="fieldTypeOptions"
+                formControlName="type"
+              ></po-select>
+              <po-number p-label="Tamanho (X3_TAMANHO)" formControlName="size"></po-number>
+              <po-number p-label="Decimais (X3_DECIMAL)" formControlName="decimals"></po-number>
+            </div>
+
+            <div class="sxg-field-form__row-3">
+              <po-input p-label="Título PT" p-required="true" formControlName="titlePt"></po-input>
+              <po-input p-label="Título ES" formControlName="titleEs"></po-input>
+              <po-input p-label="Título EN" formControlName="titleEn"></po-input>
+            </div>
+
+            <div class="sxg-field-form__row-3">
+              <po-input
+                p-label="Descrição PT"
+                p-required="true"
+                formControlName="descPt"
+              ></po-input>
+              <po-input p-label="Descrição ES" formControlName="descEs"></po-input>
+              <po-input p-label="Descrição EN" formControlName="descEn"></po-input>
+            </div>
+          </section>
+        </po-tab>
+
+        <po-tab p-label="Comportamento">
+          <section class="sxg-field-form__section">
+            <h3 class="sxg-field-form__section-title">Comportamento</h3>
+
+            <div class="sxg-field-form__row-3">
+              <po-select
+                p-label="Sugestão de Picture"
+                [p-options]="pictureSuggestions"
+                formControlName="picturePreset"
+                (p-change)="applyPictureSuggestion($event)"
+              ></po-select>
+              <po-input p-label="Picture (X3_PICTURE)" formControlName="picture"></po-input>
+              <po-select
+                p-label="Aparece no browse (X3_BROWSE)"
+                [p-options]="yesNoOptions"
+                formControlName="showBrowse"
+              ></po-select>
+            </div>
+
+            <div class="sxg-field-form__row-2">
+              <po-select
+                p-label="Modo visual (X3_VISUAL)"
+                [p-options]="visualModeOptions"
+                formControlName="visualMode"
+              ></po-select>
+              <po-select
+                p-label="Contexto (X3_CONTEXT)"
+                [p-options]="contextModeOptions"
+                formControlName="contextMode"
+              ></po-select>
+            </div>
+
+            <sxg-code-editor
+              label="Validação (X3_VALID)"
+              language="advpl"
+              formControlName="validation"
+              placeholder="Ex: !Empty(ZZZ_CODIGO)"
+            ></sxg-code-editor>
+
+            <sxg-code-editor
+              label="Inicialização padrão (X3_RELACAO)"
+              language="advpl"
+              formControlName="defaultRel"
+              placeholder="Ex: xFilial('ZZZ')"
+            ></sxg-code-editor>
+
+            <sxg-code-editor
+              label="When (X3_WHEN)"
+              language="advpl"
+              formControlName="whenExpr"
+              placeholder="Ex: cUser == 'ADMIN'"
+            ></sxg-code-editor>
+          </section>
+        </po-tab>
+
+        <po-tab p-label="Avançado">
+          <section class="sxg-field-form__section">
+            <h3 class="sxg-field-form__section-title">Avançado</h3>
+
+            <sxg-combobox-editor formControlName="combobox"></sxg-combobox-editor>
+
+            <div class="sxg-field-form__row-2">
+              <sxg-usado-editor formControlName="usadoEncoded"></sxg-usado-editor>
+              <sxg-modules-editor
+                bitmapField="X3_MODULO"
+                formControlName="modulesBitmap"
+              ></sxg-modules-editor>
+            </div>
+
+            <div class="sxg-field-form__row-3">
+              <po-input
+                p-label="Consulta padrão F3 (X3_F3)"
+                p-placeholder="Ex: SA1"
+                formControlName="searchKey"
+              ></po-input>
+              <po-select
+                p-label="PYME (X3_PYME)"
+                [p-options]="yesNoOptions"
+                formControlName="pyme"
+              ></po-select>
+              <po-select
+                p-label="Ortografia (X3_ORTOGRA)"
+                [p-options]="yesNoOptions"
+                formControlName="spelling"
+              ></po-select>
+            </div>
+
+            <div class="sxg-field-form__row-3">
+              <po-select
+                p-label="Campo de índice (X3_IDXFLD)"
+                [p-options]="yesNoOptions"
+                formControlName="fieldIndex"
+              ></po-select>
+              <po-select
+                p-label="Índice servidor (X3_IDXSRV)"
+                [p-options]="yesNoOptions"
+                formControlName="serverIndex"
+              ></po-select>
+              <po-select
+                p-label="Modal (X3_MODAL)"
+                [p-options]="yesNoOptions"
+                formControlName="modal"
+              ></po-select>
+            </div>
+
+            <div class="sxg-field-form__row-2">
+              <po-select
+                p-label="Posiciona Logix (X3_POSLGT)"
+                [p-options]="yesNoOptions"
+                formControlName="positionLogix"
+              ></po-select>
+            </div>
+
+            <sxg-code-editor
+              label="Condição SQL (X3_CONDSQL)"
+              language="sql"
+              formControlName="sqlCondition"
+              placeholder="Ex: ZZZ_FILIAL = xFilial('ZZZ')"
+            ></sxg-code-editor>
+
+            <sxg-code-editor
+              label="Check SQL (X3_CHKSQL)"
+              language="sql"
+              formControlName="sqlCheck"
+              placeholder="Ex: ZZZ_VALOR >= 0"
+            ></sxg-code-editor>
+          </section>
+        </po-tab>
+      </po-tabs>
+
+      <footer class="sxg-field-form__footer">
+        <po-button
+          [p-label]="isEditMode() ? 'Salvar alterações' : 'Criar campo'"
+          [p-type]="submitType"
+          p-kind="primary"
+          p-icon="an an-floppy-disk"
+          [p-disabled]="form.invalid || isSaving()"
+          [p-loading]="isSaving()"
+        ></po-button>
+        <po-button p-label="Cancelar" p-kind="secondary" (p-click)="cancel()"></po-button>
+      </footer>
+    </form>
+  }
+</po-page-default>

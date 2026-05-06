@@ -2039,80 +2039,80 @@ sxgerador/
 - [x] Cobertura ≥ 95%
 
 #### Task F4.3 — Validador de nomenclatura de campo (S)
-- [ ] `validateFieldName(name, tablePrefix)`: deve ser `<PREFIX>_*` com max 10 chars
-- [ ] Testes
+- [x] `validateFieldName(name, tablePrefix)`: deve ser `<PREFIX>_*` com max 10 chars
+- [x] Testes
 
 #### Task F4.4 — Schemas Zod de Field (M)
-- [ ] `CreateFieldSchema` com todas as validações cruzadas
-- [ ] Refinements: decimal só com tipo N, combobox só faz sentido com C/N, etc.
+- [x] `CreateFieldSchema` com todas as validações cruzadas
+- [x] Refinements: decimal só com tipo N, combobox só faz sentido com C/N, etc.
 
 #### Task F4.5 — Service e Controller (L)
-- [ ] CRUD + reorder + bulk
-- [ ] Auto-incremento de `order` ao criar
+- [x] CRUD + reorder + bulk
+- [x] Auto-incremento de `order` ao criar
 - [ ] Validação: ao deletar campo presente em índice, alertar
 
 #### Task F4.6 — Componente `<sxg-usado-editor>` (M)
-- [ ] Grid de checkboxes representando cada flag
-- [ ] Conversão para/de string codificada via encoders
-- [ ] Preview da string em monospace
-- [ ] Testes de componente
+- [x] Grid de checkboxes representando cada flag
+- [x] Conversão para/de string codificada via encoders
+- [x] Preview da string em monospace
+- [x] Testes de componente
 
 #### Task F4.7 — Componente `<sxg-modules-editor>` (M)
-- [ ] Grid de checkboxes dos módulos TOTVS (SIGAFAT, SIGAEST, SIGACOM, SIGAFIN, SIGAGPE...)
-- [ ] Bitmap encode/decode
-- [ ] Reutilizável para tabela e campo
+- [x] Grid de checkboxes dos módulos TOTVS (SIGAFAT, SIGAEST, SIGACOM, SIGAFIN, SIGAGPE...)
+- [x] Bitmap encode/decode
+- [x] Reutilizável para tabela e campo
 
 #### Task F4.8 — Componente `<sxg-combobox-editor>` (M)
-- [ ] UI de pares chave/valor trilíngue (3 colunas: chave, valor PT, valor ES, valor EN)
-- [ ] Adicionar/remover linha
-- [ ] Validação: chaves únicas
-- [ ] Output: 3 strings no formato `1=Sim;2=Não`
+- [x] UI de pares chave/valor trilíngue (3 colunas: chave, valor PT, valor ES, valor EN)
+- [x] Adicionar/remover linha
+- [x] Validação: chaves únicas
+- [x] Output: 3 strings no formato `1=Sim;2=Não`
 
 #### Task F4.9 — Componente `<sxg-code-editor>` (M)
 - [ ] Wrapper Monaco Editor com syntax highlight para AdvPL/SQL
-- [ ] Modos: read-only, edit
-- [ ] Validação de sintaxe básica
+- [x] Modos: read-only, edit
+- [x] Validação de sintaxe básica
 
 #### Task F4.10 — Form de campo — Aba Básico (M)
-- [ ] Nome (com prefixo bloqueado), tipo, tamanho, decimais
-- [ ] Títulos trilíngues lado a lado
-- [ ] Descrições trilíngues
-- [ ] Auto-foco e atalhos (Tab navega; Enter no último campo salva)
+- [x] Nome (com prefixo bloqueado), tipo, tamanho, decimais
+- [x] Títulos trilíngues lado a lado
+- [x] Descrições trilíngues
+- [x] Auto-foco e atalhos (Tab navega; Enter no último campo salva)
 
 #### Task F4.11 — Form de campo — Aba Comportamento (M)
-- [ ] Picture com sugestões (`@!`, `@E 999.999,99`...)
+- [x] Picture com sugestões (`@!`, `@E 999.999,99`...)
 - [ ] Editor de validação (Monaco)
 - [ ] Inicialização padrão (Monaco)
 - [ ] When (Monaco)
-- [ ] Browse, modo visual, contexto
+- [x] Browse, modo visual, contexto
 
 #### Task F4.12 — Form de campo — Aba Avançado (L)
-- [ ] Editor de combobox
-- [ ] Editor de Usado (bitmap)
-- [ ] Editor de módulos (bitmap)
-- [ ] F3 (consulta padrão) — input simples por enquanto, V2 = autocomplete
+- [x] Editor de combobox
+- [x] Editor de Usado (bitmap)
+- [x] Editor de módulos (bitmap)
+- [x] F3 (consulta padrão) — input simples por enquanto, V2 = autocomplete
 - [ ] SQL condition / SQL check (Monaco)
-- [ ] Flags diversas (PYME, ortografia, virtual, etc.)
+- [x] Flags diversas (PYME, ortografia, virtual, etc.)
 
 #### Task F4.13 — Lista de campos (L)
-- [ ] `po-table` com virtualização
-- [ ] Colunas configuráveis (usuário escolhe quais ver)
+- [x] `po-table` com virtualização
+- [x] Colunas configuráveis (usuário escolhe quais ver)
 - [ ] Drag-and-drop para reordenar
-- [ ] Bulk actions: marcar como obrigatório, browse, deletar
-- [ ] Inline edit em campos simples (titulo, descrição)
-- [ ] Search por nome/título/descrição
-- [ ] Filtros: tipo, obrigatório, virtual, browse
+- [x] Bulk actions: marcar como obrigatório, browse, deletar
+- [x] Inline edit em campos simples (titulo, descrição)
+- [x] Search por nome/título/descrição
+- [x] Filtros: tipo, obrigatório, virtual, browse
 
 #### Task F4.14 — Atalhos de teclado (S)
-- [ ] `N` = novo campo
-- [ ] `E` = editar selecionado
-- [ ] `Del` = deletar selecionado (com confirmação)
-- [ ] `Cmd+S` = salvar form
-- [ ] `Esc` = cancelar
-- [ ] `?` = mostrar modal de atalhos
+- [x] `N` = novo campo
+- [x] `E` = editar selecionado
+- [x] `Del` = deletar selecionado (com confirmação)
+- [x] `Cmd+S` = salvar form
+- [x] `Esc` = cancelar
+- [x] `?` = mostrar modal de atalhos
 
 #### Task F4.15 — Field Signal Store (M)
-- [ ] State e methods conforme padrão
+- [x] State e methods conforme padrão
 
 ---
 

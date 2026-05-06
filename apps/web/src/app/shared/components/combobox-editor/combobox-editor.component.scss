@@ -1,0 +1,40 @@
+.sxg-combobox-editor {
+  display: grid;
+  gap: 8px;
+}
+
+.sxg-combobox-editor__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  h4 {
+    margin: 0;
+    font-size: 0.95rem;
+    font-weight: 600;
+  }
+}
+
+.sxg-combobox-editor__grid {
+  display: grid;
+  grid-template-columns: 100px 1fr 1fr 1fr 140px;
+  gap: 8px;
+  align-items: center;
+}
+
+.sxg-combobox-editor__grid--head {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #6b7a89;
+}
+
+.sxg-combobox-editor__actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.sxg-combobox-editor__error {
+  margin: -2px 0 6px;
+  font-size: 0.75rem;
+  color: #c44f3d;
+}

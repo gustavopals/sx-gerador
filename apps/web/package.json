@@ -7,7 +7,7 @@
     "start": "pnpm dev",
     "build": "ng build",
     "lint": "eslint . --ext .ts,.html",
-    "test": "echo \"No web tests configured yet\"",
+    "test": "vitest run",
     "watch": "ng build --watch --configuration development",
     "typecheck": "ng build --configuration development --no-progress"
   },
@@ -25,6 +25,7 @@
     "@po-ui/ng-components": "21.13.1",
     "@po-ui/ng-templates": "^21.13.1",
     "@po-ui/style": "21.13.1",
+    "@sxgerador/advpl-builder": "workspace:*",
     "@sxgerador/dictionary-validator": "workspace:*",
     "@sxgerador/shared-types": "workspace:*",
     "rxjs": "~7.8.0",
@@ -35,6 +36,7 @@
     "@angular/build": "^21.2.9",
     "@angular/cli": "^21.2.9",
     "@angular/compiler-cli": "^21.2.0",
-    "typescript": "~5.9.2"
+    "typescript": "~5.9.2",
+    "vitest": "^3.2.4"
   }
 }

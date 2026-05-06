@@ -50,11 +50,30 @@
 
     <po-tabs>
       <po-tab p-label="Campos" [p-active]="true">
-        <div class="sxg-td__empty-tab">
-          <span class="an an-columns an-2x"></span>
-          <h3>Nenhum campo cadastrado</h3>
-          <p>Os campos (SX3) desta tabela aparecerão aqui. Em breve disponível.</p>
+        <div class="sxg-td__tab-actions">
+          @if (!t.deletedAt) {
+            <po-button
+              p-label="Novo campo"
+              p-icon="an an-plus"
+              p-kind="primary"
+              (p-click)="navigateToNewField()"
+            ></po-button>
+          }
         </div>
+
+        @if (fields().length === 0) {
+          <div class="sxg-td__empty-tab">
+            <span class="an an-columns an-2x"></span>
+            <h3>Nenhum campo cadastrado</h3>
+            <p>Cadastre o primeiro campo SX3 para esta tabela.</p>
+          </div>
+        } @else {
+          <sxg-fields-list
+            [projectId]="projectId()"
+            [tableId]="t.id"
+            [isDisabled]="!!t.deletedAt"
+          ></sxg-fields-list>
+        }
       </po-tab>
 
       <po-tab p-label="Índices">

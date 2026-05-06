@@ -1,0 +1,15 @@
+<div class="sxg-usado-editor">
+  <po-checkbox-group
+    p-label="Flags X3_USADO"
+    [p-options]="flagOptions"
+    [p-columns]="2"
+    [p-disabled]="isDisabled"
+    [ngModel]="selectedFlags"
+    (ngModelChange)="onSelectionChange($event)"
+  ></po-checkbox-group>
+
+  <p class="sxg-usado-editor__preview">
+    <span class="sxg-usado-editor__preview-label">X3_USADO codificado:</span>
+    <code>{{ previewValue }}</code>
+  </p>
+</div>

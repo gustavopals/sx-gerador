@@ -1,0 +1,22 @@
+<section class="sxg-code-editor">
+  <span class="sxg-code-editor__label">{{ label() }}</span>
+
+  @if (isReadOnly()) {
+    <pre class="sxg-code-editor__preview"><code [innerHTML]="highlightedCode()"></code></pre>
+  } @else {
+    <textarea
+      class="sxg-code-editor__textarea"
+      [attr.rows]="rows()"
+      [attr.placeholder]="placeholder()"
+      [ngModel]="value()"
+      [disabled]="isDisabled()"
+      (ngModelChange)="onValueChange($event)"
+    ></textarea>
+
+    <pre class="sxg-code-editor__preview"><code [innerHTML]="highlightedCode()"></code></pre>
+  }
+
+  @if (syntaxError(); as error) {
+    <p class="sxg-code-editor__error">{{ error }}</p>
+  }
+</section>

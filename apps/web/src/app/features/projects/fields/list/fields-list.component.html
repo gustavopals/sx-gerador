@@ -1,0 +1,150 @@
+<section class="sxg-fields-list">
+  <div class="sxg-fields-list__toolbar">
+    <po-input
+      p-placeholder="Buscar por nome, título ou descrição"
+      [ngModel]="search()"
+      (ngModelChange)="search.set($event)"
+    ></po-input>
+    <po-select
+      p-label="Tipo"
+      [p-options]="typeOptions"
+      [ngModel]="typeFilter()"
+      (ngModelChange)="typeFilter.set($event)"
+    ></po-select>
+    <po-select
+      p-label="Browse"
+      [p-options]="yesNoFilterOptions"
+      [ngModel]="browseFilter()"
+      (ngModelChange)="browseFilter.set($event)"
+    ></po-select>
+    <po-select
+      p-label="Obrigatório"
+      [p-options]="yesNoFilterOptions"
+      [ngModel]="requiredFilter()"
+      (ngModelChange)="requiredFilter.set($event)"
+    ></po-select>
+    <po-select
+      p-label="Virtual"
+      [p-options]="yesNoFilterOptions"
+      [ngModel]="virtualFilter()"
+      (ngModelChange)="virtualFilter.set($event)"
+    ></po-select>
+  </div>
+
+  <div class="sxg-fields-list__toolbar">
+    <po-checkbox-group
+      p-label="Colunas visíveis"
+      [p-options]="columnOptions"
+      [ngModel]="visibleColumnKeys()"
+      (ngModelChange)="onVisibleColumnsChange($event)"
+    ></po-checkbox-group>
+  </div>
+
+  <div class="sxg-fields-list__bulk-actions">
+    <po-button p-label="Novo campo (N)" p-kind="primary" (p-click)="goToNewField()"></po-button>
+    <po-button
+      p-label="Editar selecionado (E)"
+      p-kind="secondary"
+      [p-disabled]="selectedRows().length !== 1"
+      (p-click)="editSelectedField()"
+    ></po-button>
+    <po-button
+      p-label="Browse: Sim"
+      p-kind="secondary"
+      [p-disabled]="selectedRows().length === 0"
+      (p-click)="bulkSetBrowse('S')"
+    ></po-button>
+    <po-button
+      p-label="Browse: Não"
+      p-kind="secondary"
+      [p-disabled]="selectedRows().length === 0"
+      (p-click)="bulkSetBrowse('N')"
+    ></po-button>
+    <po-button
+      p-label="Obrigatório: Sim"
+      p-kind="secondary"
+      [p-disabled]="selectedRows().length === 0"
+      (p-click)="bulkSetRequired('S')"
+    ></po-button>
+    <po-button
+      p-label="Obrigatório: Não"
+      p-kind="secondary"
+      [p-disabled]="selectedRows().length === 0"
+      (p-click)="bulkSetRequired('N')"
+    ></po-button>
+    <po-button
+      p-label="Arquivar selecionados (Del)"
+      p-kind="danger"
+      [p-disabled]="selectedRows().length === 0"
+      (p-click)="bulkDeleteWithConfirm()"
+    ></po-button>
+    <po-button
+      p-label="Atalhos (?)"
+      p-kind="tertiary"
+      (p-click)="showShortcuts.set(true)"
+    ></po-button>
+  </div>
+
+  <po-table
+    [p-columns]="columns"
+    [p-items]="filteredRows"
+    [p-loading]="isLoading()"
+    [p-selectable]="true"
+    [p-actions]="actions"
+    (p-selected)="onRowSelected($event)"
+    (p-unselected)="onRowUnselected($event)"
+    (p-all-selected)="onAllSelected($event)"
+    (p-all-unselected)="onAllUnselected()"
+    [p-height]="420"
+    [p-virtual-scroll]="true"
+    [p-striped]="true"
+  >
+    <ng-template p-table-cell-template let-row="row" p-property="titlePt">
+      @if (row._editing) {
+        <po-input
+          [ngModel]="row._editTitlePt ?? row.titlePt"
+          (ngModelChange)="row._editTitlePt = $event"
+        ></po-input>
+      } @else {
+        {{ row.titlePt }}
+      }
+    </ng-template>
+
+    <ng-template p-table-cell-template let-row="row" p-property="descPt">
+      @if (row._editing) {
+        <po-input
+          [ngModel]="row._editDescPt ?? row.descPt"
+          (ngModelChange)="row._editDescPt = $event"
+        ></po-input>
+      } @else {
+        {{ row.descPt }}
+      }
+    </ng-template>
+  </po-table>
+
+  @if (showShortcuts()) {
+    <div
+      class="sxg-fields-list__shortcuts-backdrop"
+      role="button"
+      tabindex="0"
+      aria-label="Fechar atalhos de teclado"
+      (click)="closeShortcutsFromBackdrop($event)"
+      (keydown.enter)="closeShortcutsFromBackdrop($event)"
+      (keydown.space)="closeShortcutsFromBackdrop($event)"
+    >
+      <div class="sxg-fields-list__shortcuts-modal" role="dialog" aria-modal="true">
+        <h3>Atalhos de teclado</h3>
+        <p><strong>N</strong> - Novo campo</p>
+        <p><strong>E</strong> - Editar campo selecionado</p>
+        <p><strong>Del</strong> - Arquivar selecionados (com confirmação)</p>
+        <p><strong>?</strong> - Abrir este modal</p>
+        <p><strong>Esc</strong> - Fechar modal</p>
+        <po-button
+          p-label="Fechar"
+          p-kind="primary"
+          (p-click)="showShortcuts.set(false)"
+        ></po-button>
+      </div>
+    </div>
+  }
+</section>

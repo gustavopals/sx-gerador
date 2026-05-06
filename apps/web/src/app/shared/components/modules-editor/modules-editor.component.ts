@@ -1,26 +1,26 @@
-import { Component, forwardRef } from '@angular/core';
+import { Component, forwardRef, input } from '@angular/core';
 import { FormsModule, NG_VALUE_ACCESSOR, type ControlValueAccessor } from '@angular/forms';
 import { PoCheckboxGroupModule, type PoCheckboxGroupOption } from '@po-ui/ng-components';
+import { decodeX2Modulo, encodeX2Modulo, type ProtheusModule } from '@sxgerador/advpl-builder';
 
 export interface TotvModule {
-  code: string;
+  code: ProtheusModule;
   label: string;
-  bit: number;
 }
 
 export const TOTVS_MODULES: TotvModule[] = [
-  { code: 'SIGAFAT', label: 'Faturamento (SIGAFAT)', bit: 0 },
-  { code: 'SIGAEST', label: 'Estoque e Custos (SIGAEST)', bit: 1 },
-  { code: 'SIGACOM', label: 'Compras (SIGACOM)', bit: 2 },
-  { code: 'SIGAFIN', label: 'Financeiro (SIGAFIN)', bit: 3 },
-  { code: 'SIGAGPE', label: 'Gestão de Pessoal (SIGAGPE)', bit: 4 },
-  { code: 'SIGAMNT', label: 'Manutenção (SIGAMNT)', bit: 5 },
-  { code: 'SIGAATF', label: 'Ativo Fixo (SIGAATF)', bit: 6 },
-  { code: 'SIGAOFE', label: 'Manufatura (SIGAOFE)', bit: 7 },
-  { code: 'SIGATMS', label: 'Transportes (SIGATMS)', bit: 8 },
-  { code: 'SIGACRM', label: 'CRM (SIGACRM)', bit: 9 },
-  { code: 'SIGAHOSP', label: 'Hospitalar (SIGAHOSP)', bit: 10 },
-  { code: 'SIGAPLS', label: 'Plano de Saúde (SIGAPLS)', bit: 11 },
+  { code: 'SIGAFAT', label: 'Faturamento (SIGAFAT)' },
+  { code: 'SIGAEST', label: 'Estoque e Custos (SIGAEST)' },
+  { code: 'SIGACOM', label: 'Compras (SIGACOM)' },
+  { code: 'SIGAFIN', label: 'Financeiro (SIGAFIN)' },
+  { code: 'SIGAGPE', label: 'Gestão de Pessoal (SIGAGPE)' },
+  { code: 'SIGAMNT', label: 'Manutenção (SIGAMNT)' },
+  { code: 'SIGAATF', label: 'Ativo Fixo (SIGAATF)' },
+  { code: 'SIGAOFE', label: 'Manufatura (SIGAOFE)' },
+  { code: 'SIGATMS', label: 'Transportes (SIGATMS)' },
+  { code: 'SIGACRM', label: 'CRM (SIGACRM)' },
+  { code: 'SIGAHOSP', label: 'Hospitalar (SIGAHOSP)' },
+  { code: 'SIGAPLS', label: 'Plano de Saúde (SIGAPLS)' },
 ];
 
 @Component({
@@ -37,6 +37,8 @@ export const TOTVS_MODULES: TotvModule[] = [
   ],
 })
 export class ModulesEditorComponent implements ControlValueAccessor {
+  readonly bitmapField = input<'X2_MODULO' | 'X3_MODULO'>('X2_MODULO');
+
   readonly moduleOptions: PoCheckboxGroupOption[] = TOTVS_MODULES.map((m) => ({
     label: m.label,
     value: m.code,
@@ -76,12 +78,14 @@ export class ModulesEditorComponent implements ControlValueAccessor {
 }
 
 function codesToBitmap(codes: string[]): number {
-  return codes.reduce((acc, code) => {
-    const mod = TOTVS_MODULES.find((m) => m.code === code);
-    return mod ? acc | (1 << mod.bit) : acc;
-  }, 0);
+  const knownCodes = codes.filter((code): code is ProtheusModule =>
+    TOTVS_MODULES.some((module) => module.code === code),
+  );
+  return encodeX2Modulo(knownCodes);
 }
 
 function bitmapToCodes(bitmap: number): string[] {
-  return TOTVS_MODULES.filter((m) => (bitmap & (1 << m.bit)) !== 0).map((m) => m.code);
+  return decodeX2Modulo(bitmap);
 }
+
+export { bitmapToCodes, codesToBitmap };
