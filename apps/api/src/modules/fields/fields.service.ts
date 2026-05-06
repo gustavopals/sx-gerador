@@ -1,6 +1,7 @@
 import { validateFieldName } from '@sxgerador/dictionary-validator';
 import type { CreateFieldData, UpdateFieldInput } from '@sxgerador/shared-types';
 import type { Field, Prisma, PrismaClient } from '../../generated/prisma';
+import type { MigrationsService } from '../migrations/migrations.service';
 import { ProjectErrors } from '../projects/projects.errors';
 import { FieldErrors } from './fields.errors';
 
@@ -40,7 +41,10 @@ interface TableContext {
 }
 
 export class FieldsService {
-  constructor(private readonly db: PrismaClient) {}
+  constructor(
+    private readonly db: PrismaClient,
+    private readonly migrationsService?: MigrationsService,
+  ) {}
 
   async list(
     projectId: string,
@@ -88,7 +92,7 @@ export class FieldsService {
     const order = input.order ?? (await this.generateNextOrder(tableId));
     await this.ensureFieldOrderAvailable(tableId, order);
 
-    return this.db.field.create({
+    const field = await this.db.field.create({
       data: {
         ...input,
         usadoFlags: input.usadoFlags as Prisma.InputJsonValue,
@@ -97,6 +101,17 @@ export class FieldsService {
         order,
       },
     });
+
+    await this.migrationsService?.recordChange({
+      projectId,
+      operation: 'CREATE_FIELD',
+      targetType: 'FIELD',
+      targetId: field.id,
+      targetName: field.name,
+      beforeState: null,
+      afterState: field as unknown as Prisma.JsonValue,
+    });
+    return field;
   }
 
   async update(
@@ -106,7 +121,7 @@ export class FieldsService {
     input: UpdateFieldInput,
   ): Promise<Field> {
     const table = await this.ensureTableExists(projectId, tableId);
-    await this.get(projectId, tableId, id);
+    const before = await this.get(projectId, tableId, id);
 
     if (input.name) {
       this.ensureFieldNameMatchesTable(input.name, table.prefix);
@@ -114,10 +129,20 @@ export class FieldsService {
     }
     if (input.order) await this.ensureFieldOrderAvailable(tableId, input.order, id);
 
-    return this.db.field.update({
+    const field = await this.db.field.update({
       where: { id },
       data: buildUpdateData(input),
     });
+    await this.migrationsService?.recordChange({
+      projectId,
+      operation: 'ALTER_FIELD',
+      targetType: 'FIELD',
+      targetId: field.id,
+      targetName: field.name,
+      beforeState: before as unknown as Prisma.JsonValue,
+      afterState: field as unknown as Prisma.JsonValue,
+    });
+    return field;
   }
 
   async delete(projectId: string, tableId: string, id: string): Promise<Field> {
@@ -126,10 +151,20 @@ export class FieldsService {
     if (!field) throw FieldErrors.NOT_FOUND;
     if (field.deletedAt) throw FieldErrors.ALREADY_ARCHIVED;
 
-    return this.db.field.update({
+    const archived = await this.db.field.update({
       where: { id },
       data: { deletedAt: new Date() },
     });
+    await this.migrationsService?.recordChange({
+      projectId,
+      operation: 'DROP_FIELD',
+      targetType: 'FIELD',
+      targetId: field.id,
+      targetName: field.name,
+      beforeState: field as unknown as Prisma.JsonValue,
+      afterState: null,
+    });
+    return archived;
   }
 
   async restore(projectId: string, tableId: string, id: string): Promise<Field> {
@@ -138,10 +173,20 @@ export class FieldsService {
     if (!field) throw FieldErrors.NOT_FOUND;
     if (!field.deletedAt) throw FieldErrors.NOT_ARCHIVED;
 
-    return this.db.field.update({
+    const restored = await this.db.field.update({
       where: { id },
       data: { deletedAt: null },
     });
+    await this.migrationsService?.recordChange({
+      projectId,
+      operation: 'ALTER_FIELD',
+      targetType: 'FIELD',
+      targetId: restored.id,
+      targetName: restored.name,
+      beforeState: field as unknown as Prisma.JsonValue,
+      afterState: restored as unknown as Prisma.JsonValue,
+    });
+    return restored;
   }
 
   async reorder(projectId: string, tableId: string, input: ReorderFieldsInput): Promise<Field[]> {

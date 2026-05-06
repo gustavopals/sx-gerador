@@ -19,6 +19,7 @@
   },
   "dependencies": {
     "@prisma/client": "6.19.3",
+    "@sxgerador/advpl-builder": "workspace:*",
     "@sxgerador/dictionary-validator": "workspace:*",
     "@sxgerador/shared-types": "workspace:*",
     "bcrypt": "^6.0.0",

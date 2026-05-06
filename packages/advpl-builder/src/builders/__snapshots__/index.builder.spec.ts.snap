@@ -1,0 +1,48 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`index.builder > buildIndexAlteration should create SIX update block 1`] = `
+"    // ========================================================================
+    // SIX - Alteração do índice 2
+    // ========================================================================
+    aIndice := {;
+        "2" ,;  // SIX.ORDEM
+        "ZZZ_FILIAL+ZZZ_APELIDO" ,;  // SIX.CHAVE
+        "Apelido" ,;  // SIX.DESCRICAO
+        "" ,;  // SIX.DESCSPA
+        "" ,;  // SIX.DESCENG
+        "U" ,;  // SIX.PROPRI
+        "" ,;  // SIX.F3
+        "" ,;  // SIX.NICKNAME
+        "S" ,;  // SIX.SHOWPESQ
+        "N" ,;  // SIX.IX_VIRTUAL
+        "N" ;   // SIX.IX_VIRCUST
+    }
+    U_SXGCriaIdx(aIndice)"
+`;
+
+exports[`index.builder > buildIndexCreation should create SIX creation block 1`] = `
+"    // ========================================================================
+    // SIX - Criação do índice 1
+    // ========================================================================
+    aIndice := {;
+        "1" ,;  // SIX.ORDEM
+        "ZZZ_FILIAL+ZZZ_CODIGO" ,;  // SIX.CHAVE
+        "Código" ,;  // SIX.DESCRICAO
+        "" ,;  // SIX.DESCSPA
+        "" ,;  // SIX.DESCENG
+        "U" ,;  // SIX.PROPRI
+        "" ,;  // SIX.F3
+        "" ,;  // SIX.NICKNAME
+        "S" ,;  // SIX.SHOWPESQ
+        "N" ,;  // SIX.IX_VIRTUAL
+        "N" ;   // SIX.IX_VIRCUST
+    }
+    U_SXGCriaIdx(aIndice)"
+`;
+
+exports[`index.builder > buildIndexDeletion should create SIX deletion block 1`] = `
+"    // ========================================================================
+    // SIX - Exclusão do índice 3
+    // ========================================================================
+    U_SXGDropIdx("3", "ZZZ_FILIAL+ZZZ_OUTRO")"
+`;

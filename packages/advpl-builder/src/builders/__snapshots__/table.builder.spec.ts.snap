@@ -1,0 +1,42 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`table.builder > buildTableAlteration should create SX2 update block 1`] = `
+"    // ========================================================================
+    // SX2 - Alteração da tabela ZZZ
+    // ========================================================================
+    aTabela := {;
+        "ZZZ"                 ,;  // X2_CHAVE
+        "ZZZ010"              ,;  // X2_ARQUIVO
+        "Novo nome" ,;  // X2_NOME
+        "" ,;  // X2_NOMESPA
+        "" ,;  // X2_NOMEENG
+        "C"                   ,;  // X2_MODO
+        "S"                   ,;  // X2_TTS
+        "" ;   // X2_UNICO
+    }
+    U_SXGCriaSX2(aTabela)"
+`;
+
+exports[`table.builder > buildTableCreation should create SX2 creation block 1`] = `
+"    // ========================================================================
+    // SX2 - Criação da tabela ZZZ
+    // ========================================================================
+    aTabela := {;
+        "ZZZ"                 ,;  // X2_CHAVE
+        "ZZZ010"              ,;  // X2_ARQUIVO
+        "Cadastro de Contratos" ,;  // X2_NOME
+        "" ,;  // X2_NOMESPA
+        "" ,;  // X2_NOMEENG
+        "C"                   ,;  // X2_MODO
+        "S"                   ,;  // X2_TTS
+        "ZZZ_FILIAL+ZZZ_CODIGO" ;   // X2_UNICO
+    }
+    U_SXGCriaSX2(aTabela)"
+`;
+
+exports[`table.builder > buildTableDeletion should create SX2 deletion block 1`] = `
+"    // ========================================================================
+    // SX2 - Exclusão da tabela ZZZ
+    // ========================================================================
+    U_SXGDropSX2("ZZZ")"
+`;

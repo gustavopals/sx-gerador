@@ -7,7 +7,7 @@ import type { MigrationInput } from '../types';
  * @returns String com o bloco de cabeçalho
  * @todo Implementar na Task F6.3
  */
-export function buildHeader(migration: MigrationInput): string {
+export function buildHeader(migration: MigrationInput, functionName: string): string {
   const seq = String(migration.sequence).padStart(3, '0');
   const date = new Date().toLocaleDateString('pt-BR');
 
@@ -15,7 +15,7 @@ export function buildHeader(migration: MigrationInput): string {
     '#INCLUDE "PROTHEUS.CH"',
     '',
     '/*/',
-    `{Protheus.doc} U_SXG${seq}Migration`,
+    `{Protheus.doc} U_${functionName}`,
     `@description Migration gerada por SXGerador — ${migration.name}`,
     `@author ${migration.author.name} (${migration.author.email})`,
     `@since ${date}`,

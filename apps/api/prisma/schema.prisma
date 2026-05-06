@@ -99,9 +99,27 @@ model Project {
   deletedAt     DateTime?
 
   tables Table[]
+  migrations Migration[]
 
   @@index([visibility])
   @@index([deletedAt])
+}
+
+enum MigrationOperation {
+  CREATE_TABLE
+  ALTER_TABLE
+  DROP_TABLE
+  CREATE_FIELD
+  ALTER_FIELD
+  DROP_FIELD
+  CREATE_INDEX
+  ALTER_INDEX
+  DROP_INDEX
+}
+
+enum MigrationStatus {
+  DRAFT
+  GENERATED
 }
 
 enum SharingMode {
@@ -292,4 +310,39 @@ model Field {
   @@unique([tableId, order])
   @@index([tableId])
   @@index([deletedAt])
+}
+
+model Migration {
+  id          String          @id @default(cuid())
+  projectId   String
+  sequence    Int
+  name        String
+  status      MigrationStatus @default(DRAFT)
+  advplCode   String?         @db.Text
+  generatedAt DateTime?
+  createdBy   String
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
+  project Project          @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  items   MigrationItem[]
+
+  @@unique([projectId, sequence])
+  @@index([projectId])
+}
+
+model MigrationItem {
+  id          String             @id @default(cuid())
+  migrationId String
+  operation   MigrationOperation
+  beforeState Json?
+  afterState  Json?
+  targetType  String
+  targetId    String?
+  targetName  String
+  createdAt   DateTime           @default(now())
+
+  migration Migration @relation(fields: [migrationId], references: [id], onDelete: Cascade)
+
+  @@index([migrationId])
 }

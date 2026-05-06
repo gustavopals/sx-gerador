@@ -1,0 +1,72 @@
+<po-page-default
+  p-title="Gerar migration"
+  p-subtitle="Selecione mudanças, valide e gere o .PRW"
+  [p-breadcrumb]="breadcrumb"
+  [p-actions]="pageActions"
+>
+  @if (isLoading()) {
+    <div class="sxg-gm__state">
+      <span class="sxg-gm__spinner"></span>
+      <p>Carregando draft de migration...</p>
+    </div>
+  } @else {
+    <section class="sxg-gm">
+      <po-input
+        p-label="Nome amigável da migration"
+        p-placeholder="Ex: Cria tabela ZZZ com campos iniciais"
+        [ngModel]="migrationName()"
+        (ngModelChange)="migrationName.set($event)"
+      ></po-input>
+
+      <div class="sxg-gm__table-wrap">
+        <po-table [p-columns]="columns" [p-items]="draftItems()" [p-striped]="true">
+          <ng-template p-table-cell-template let-row="row" p-property="operation">
+            <label class="sxg-gm__row-select">
+              <input type="checkbox" [checked]="isSelected(row.id)" (change)="toggleItem(row.id)" />
+              <span>{{ row.operation }}</span>
+            </label>
+          </ng-template>
+        </po-table>
+      </div>
+
+      @if (validationErrors().length > 0) {
+        <div class="sxg-gm__errors">
+          <h4>Validações pré-geração</h4>
+          <ul>
+            @for (err of validationErrors(); track err) {
+              <li>{{ err }}</li>
+            }
+          </ul>
+        </div>
+      }
+      @if (validationWarnings().length > 0) {
+        <div class="sxg-gm__warnings">
+          <h4>Avisos</h4>
+          <ul>
+            @for (warning of validationWarnings(); track warning) {
+              <li>{{ warning }}</li>
+            }
+          </ul>
+        </div>
+      }
+
+      <div class="sxg-gm__actions">
+        <po-button
+          p-label="Gerar e baixar"
+          p-kind="primary"
+          p-icon="an an-download"
+          [p-loading]="isGenerating()"
+          [p-disabled]="validationErrors().length > 0 || isGenerating()"
+          (p-click)="generateAndDownload()"
+        ></po-button>
+      </div>
+
+      @if (previewCode()) {
+        <div class="sxg-gm__preview">
+          <h4>Preview do código gerado</h4>
+          <pre [innerHTML]="highlightedPreview()"></pre>
+        </div>
+      }
+    </section>
+  }
+</po-page-default>

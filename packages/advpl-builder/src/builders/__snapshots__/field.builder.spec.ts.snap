@@ -1,0 +1,66 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`field.builder > buildFieldAlteration should create SX3 update block 1`] = `
+"    // ========================================================================
+    // SX3 - Alteração do campo ZZZ_CODIGO
+    // ========================================================================
+    aCampo := {;
+        "ZZZ_CODIGO" ,;  // X3_CAMPO
+        "01" ,;  // X3_ORDEM
+        "C" ,;  // X3_TIPO
+        10 ,;  // X3_TAMANHO
+        0 ,;  // X3_DECIMAL
+        "Código novo" ,;  // X3_TITULO
+        "" ,;  // X3_TITSPA
+        "" ,;  // X3_TITENG
+        "ZZZ_CODIGO" ,;  // X3_DESCRIC
+        "" ,;  // X3_DESCSPA
+        "" ,;  // X3_DESCENG
+        "" ,;  // X3_PICTURE
+        "" ,;  // X3_VALID
+        "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000" ,;  // X3_USADO
+        "" ,;  // X3_RELACAO
+        0 ,;  // X3_NIVEL
+        "U" ,;  // X3_PROPRI
+        "S" ,;  // X3_BROWSE
+        "A" ,;  // X3_VISUAL
+        "R" ;   // X3_CONTEXT
+    }
+    U_SXGCriaSX3(aCampo)"
+`;
+
+exports[`field.builder > buildFieldCreation should create SX3 creation block 1`] = `
+"    // ========================================================================
+    // SX3 - Criação do campo ZZZ_CODIGO
+    // ========================================================================
+    aCampo := {;
+        "ZZZ_CODIGO" ,;  // X3_CAMPO
+        "02" ,;  // X3_ORDEM
+        "C" ,;  // X3_TIPO
+        10 ,;  // X3_TAMANHO
+        0 ,;  // X3_DECIMAL
+        "Código" ,;  // X3_TITULO
+        "" ,;  // X3_TITSPA
+        "" ,;  // X3_TITENG
+        "Código do contrato" ,;  // X3_DESCRIC
+        "" ,;  // X3_DESCSPA
+        "" ,;  // X3_DESCENG
+        "" ,;  // X3_PICTURE
+        "" ,;  // X3_VALID
+        "111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111" ,;  // X3_USADO
+        "" ,;  // X3_RELACAO
+        0 ,;  // X3_NIVEL
+        "U" ,;  // X3_PROPRI
+        "S" ,;  // X3_BROWSE
+        "A" ,;  // X3_VISUAL
+        "R" ;   // X3_CONTEXT
+    }
+    U_SXGCriaSX3(aCampo)"
+`;
+
+exports[`field.builder > buildFieldDeletion should create SX3 deletion block 1`] = `
+"    // ========================================================================
+    // SX3 - Exclusão do campo ZZZ_CODIGO
+    // ========================================================================
+    U_SXGDropSX3("ZZZ_CODIGO")"
+`;

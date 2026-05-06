@@ -58,6 +58,11 @@ export class ProjectDetailComponent implements OnInit {
 
     return [
       {
+        label: 'Gerar migration',
+        icon: 'an an-file-arrow-up',
+        action: () => void this.router.navigate(['/projects', p.id, 'migrations', 'generate']),
+      },
+      {
         label: 'Editar',
         icon: 'an an-pencil',
         kind: 'primary',
@@ -98,6 +103,16 @@ export class ProjectDetailComponent implements OnInit {
   navigateToEdit(): void {
     const p = this.project();
     if (p) void this.router.navigate(['/projects', p.id, 'edit']);
+  }
+
+  navigateToGenerateMigration(): void {
+    const p = this.project();
+    if (p) void this.router.navigate(['/projects', p.id, 'migrations', 'generate']);
+  }
+
+  navigateToMigrationsList(): void {
+    const p = this.project();
+    if (p) void this.router.navigate(['/projects', p.id, 'migrations']);
   }
 
   private async loadProject(id: string): Promise<void> {

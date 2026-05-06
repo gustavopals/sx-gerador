@@ -1,6 +1,7 @@
 import type { CreateTableData, UpdateTableInput } from '@sxgerador/shared-types';
 import type { Prisma, PrismaClient, Table } from '../../generated/prisma';
 import { logAudit } from '../audit';
+import type { MigrationsService } from '../migrations/migrations.service';
 import { ProjectErrors } from '../projects/projects.errors';
 import { TableErrors } from './tables.errors';
 
@@ -26,7 +27,10 @@ export interface PaginatedTables {
 }
 
 export class TablesService {
-  constructor(private readonly db: PrismaClient) {}
+  constructor(
+    private readonly db: PrismaClient,
+    private readonly migrationsService?: MigrationsService,
+  ) {}
 
   async list(projectId: string, input: ListTablesInput = {}): Promise<PaginatedTables> {
     await this.ensureProjectExists(projectId);
@@ -78,6 +82,18 @@ export class TablesService {
       projectId,
       tableId: table.id,
     });
+    await this.migrationsService?.recordChange(
+      {
+        projectId,
+        operation: 'CREATE_TABLE',
+        targetType: 'TABLE',
+        targetId: table.id,
+        targetName: table.prefix,
+        beforeState: null,
+        afterState: table as unknown as Prisma.JsonValue,
+      },
+      actorUserId ?? 'system',
+    );
     return table;
   }
 
@@ -87,7 +103,7 @@ export class TablesService {
     input: UpdateTableInput,
     actorUserId?: string,
   ): Promise<Table> {
-    await this.get(projectId, id);
+    const before = await this.get(projectId, id);
 
     const table = await this.db.table.update({
       where: { id },
@@ -98,6 +114,18 @@ export class TablesService {
       projectId,
       tableId: id,
     });
+    await this.migrationsService?.recordChange(
+      {
+        projectId,
+        operation: 'ALTER_TABLE',
+        targetType: 'TABLE',
+        targetId: table.id,
+        targetName: table.prefix,
+        beforeState: before as unknown as Prisma.JsonValue,
+        afterState: table as unknown as Prisma.JsonValue,
+      },
+      actorUserId ?? 'system',
+    );
     return table;
   }
 
@@ -115,6 +143,18 @@ export class TablesService {
       projectId,
       tableId: id,
     });
+    await this.migrationsService?.recordChange(
+      {
+        projectId,
+        operation: 'DROP_TABLE',
+        targetType: 'TABLE',
+        targetId: archived.id,
+        targetName: archived.prefix,
+        beforeState: table as unknown as Prisma.JsonValue,
+        afterState: null,
+      },
+      actorUserId ?? 'system',
+    );
     return archived;
   }
 
@@ -132,6 +172,18 @@ export class TablesService {
       projectId,
       tableId: id,
     });
+    await this.migrationsService?.recordChange(
+      {
+        projectId,
+        operation: 'ALTER_TABLE',
+        targetType: 'TABLE',
+        targetId: restored.id,
+        targetName: restored.prefix,
+        beforeState: table as unknown as Prisma.JsonValue,
+        afterState: restored as unknown as Prisma.JsonValue,
+      },
+      actorUserId ?? 'system',
+    );
     return restored;
   }
 

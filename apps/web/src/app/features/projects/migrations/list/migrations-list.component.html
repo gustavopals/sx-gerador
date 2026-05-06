@@ -1,0 +1,84 @@
+<po-page-default
+  p-title="Migrations geradas"
+  p-subtitle="Histórico de scripts AdvPL por projeto"
+  [p-breadcrumb]="breadcrumb"
+  [p-actions]="pageActions"
+>
+  @if (isLoading()) {
+    <div class="sxg-ml__state">
+      <span class="sxg-ml__spinner"></span>
+      <p>Carregando migrations...</p>
+    </div>
+  } @else if (migrations().length === 0) {
+    <div class="sxg-ml__empty">
+      <span class="an an-file-arrow-up an-2x"></span>
+      <h3>Nenhuma migration gerada</h3>
+      <p>Quando você gerar uma migration, ela aparecerá aqui para consulta e download.</p>
+    </div>
+  } @else {
+    <div class="sxg-ml__table-wrap">
+      <table class="sxg-ml__table">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Nº</th>
+            <th>Data</th>
+            <th>Autor</th>
+            <th>Nome</th>
+            <th>Qtd items</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (migration of migrations(); track trackMigration($index, migration)) {
+            <tr>
+              <td>
+                <button class="sxg-ml__expand-btn" (click)="toggleExpanded(migration.id)">
+                  <span
+                    class="an"
+                    [class.an-caret-down]="!isExpanded(migration.id)"
+                    [class.an-caret-up]="isExpanded(migration.id)"
+                  ></span>
+                </button>
+              </td>
+              <td>{{ migration.sequence }}</td>
+              <td>{{ displayDate(migration) | date: 'dd/MM/yyyy HH:mm' }}</td>
+              <td>{{ migration.createdBy }}</td>
+              <td>{{ migration.name }}</td>
+              <td>{{ migration.itemsCount }}</td>
+              <td>
+                <po-button
+                  p-label="Baixar novamente"
+                  p-size="small"
+                  p-icon="an an-download"
+                  [p-loading]="isDownloading() === migration.id"
+                  (p-click)="downloadAgain(migration)"
+                ></po-button>
+              </td>
+            </tr>
+            @if (isExpanded(migration.id)) {
+              <tr class="sxg-ml__detail-row">
+                <td colspan="7">
+                  <div class="sxg-ml__detail">
+                    <h4>Itens da migration</h4>
+                    <ul>
+                      @for (item of migration.items; track trackItem($index, item)) {
+                        <li>
+                          <span class="sxg-ml__op">{{ item.operation }}</span>
+                          <span class="sxg-ml__sep">•</span>
+                          <span>{{ item.targetType }}</span>
+                          <span class="sxg-ml__sep">•</span>
+                          <span>{{ item.targetName }}</span>
+                        </li>
+                      }
+                    </ul>
+                  </div>
+                </td>
+              </tr>
+            }
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</po-page-default>

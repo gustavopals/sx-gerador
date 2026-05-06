@@ -24,11 +24,22 @@
       </po-tab>
 
       <po-tab p-label="Migrations">
-        <div class="sxg-detail__empty-tab">
-          <span class="an an-file-arrow-up an-2x"></span>
-          <h3>Nenhuma migration gerada</h3>
-          <p>Scripts AdvPL gerados a partir do dicionário aparecerão aqui.</p>
-        </div>
+        <section class="sxg-detail__migrations">
+          <po-button
+            p-label="Ver histórico de migrations"
+            p-kind="secondary"
+            p-icon="an an-list"
+            (p-click)="navigateToMigrationsList()"
+          ></po-button>
+          @if (!p.deletedAt) {
+            <po-button
+              p-label="Gerar migration"
+              p-kind="primary"
+              p-icon="an an-file-arrow-up"
+              (p-click)="navigateToGenerateMigration()"
+            ></po-button>
+          }
+        </section>
       </po-tab>
 
       <po-tab p-label="Configurações">

@@ -84,6 +84,20 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'projects/:id/migrations/generate',
+        loadComponent: () =>
+          import('./features/projects/migrations/generate/generate-migration.component').then(
+            (m) => m.GenerateMigrationComponent,
+          ),
+      },
+      {
+        path: 'projects/:id/migrations',
+        loadComponent: () =>
+          import('./features/projects/migrations/list/migrations-list.component').then(
+            (m) => m.MigrationsListComponent,
+          ),
+      },
+      {
         path: 'projects/:projectId/tables/new',
         loadComponent: () =>
           import('./features/projects/tables/form/table-form.component').then(

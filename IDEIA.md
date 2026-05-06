@@ -2147,61 +2147,61 @@ sxgerador/
 **Objetivo:** o coração do produto. Pegar o estado do projeto e gerar `.PRW` válido.
 
 #### Task F6.1 — Schema Prisma para Migration (M)
-- [ ] Modelos `Migration` e `MigrationItem`, migration
+- [x] Modelos `Migration` e `MigrationItem`, migration
 
 #### Task F6.2 — Service de Migration (L)
-- [ ] `getCurrentDraft(projectId)`: retorna draft em aberto ou cria
-- [ ] `recordChange(projectId, item)`: registra item no draft
-- [ ] `generateMigration(projectId, name)`: fecha draft, chama builder, salva código
-- [ ] Hooks em CRUD de Table/Field/Index para chamar `recordChange`
+- [x] `getCurrentDraft(projectId)`: retorna draft em aberto ou cria
+- [x] `recordChange(projectId, item)`: registra item no draft
+- [x] `generateMigration(projectId, name)`: fecha draft, chama builder, salva código
+- [x] Hooks em CRUD de Table/Field/Index para chamar `recordChange`
 
 #### Task F6.3 — Pacote `advpl-builder` — table.builder (L)
-- [ ] Função `buildSx2(table: Table): string`
-- [ ] Templates de array `aTabela := {...}`
-- [ ] Tratamento de campos opcionais
-- [ ] Testes com snapshots
+- [x] Função `buildSx2(table: Table): string`
+- [x] Templates de array `aTabela := {...}`
+- [x] Tratamento de campos opcionais
+- [x] Testes com snapshots
 
 #### Task F6.4 — `advpl-builder` — field.builder (XL)
-- [ ] Função `buildSx3(field: Field): string`
-- [ ] Inclui codificação `X3_USADO`
-- [ ] Testes exaustivos com snapshots
+- [x] Função `buildSx3(field: Field): string`
+- [x] Inclui codificação `X3_USADO`
+- [x] Testes exaustivos com snapshots
 
 #### Task F6.5 — `advpl-builder` — index.builder (M)
-- [ ] Função `buildSix(index: Index): string`
+- [x] Função `buildSix(index: Index): string`
 
 #### Task F6.6 — `advpl-builder` — composer (L)
-- [ ] Função `buildMigration(items: MigrationItem[], meta): string`
-- [ ] Header com metadados
-- [ ] Seções: SX2 / SX3 / SIX
-- [ ] Footer com mensagem final
-- [ ] Numeração sequencial de migration name (`SXG001CriaTblZZZ`)
+- [x] Função `buildMigration(items: MigrationItem[], meta): string`
+- [x] Header com metadados
+- [x] Seções: SX2 / SX3 / SIX
+- [x] Footer com mensagem final
+- [x] Numeração sequencial de migration name (`SXG001CriaTblZZZ`)
 
 #### Task F6.7 — Helpers AdvPL (`SXG_HELPERS.PRW`) (L)
-- [ ] Implementar `U_SXGCriaSX2`, `U_SXGCriaSX3`, `U_SXGCriaIdx` em AdvPL
-- [ ] Cada função: `dbSelectArea` na SX correspondente, `RecLock`, `Replace`, `MsUnLock`
-- [ ] Tratamento de "atualizar se já existe"
-- [ ] Compatível com Protheus 12.1.x+
-- [ ] Distribuído como string no pacote (gerado junto)
+- [x] Implementar `U_SXGCriaSX2`, `U_SXGCriaSX3`, `U_SXGCriaIdx` em AdvPL
+- [x] Cada função: `dbSelectArea` na SX correspondente, `RecLock`, `Replace`, `MsUnLock`
+- [x] Tratamento de "atualizar se já existe"
+- [x] Compatível com Protheus 12.1.x+
+- [x] Distribuído como string no pacote (gerado junto)
 
 #### Task F6.8 — Endpoint de geração e download (M)
-- [ ] `POST /projects/:id/migrations/generate` retorna metadados
-- [ ] `GET /projects/:id/migrations/:id/download` retorna `.PRW` como text/plain
-- [ ] `GET /projects/:id/migrations/:id/preview` retorna código sem download
+- [x] `POST /projects/:id/migrations/generate` retorna metadados
+- [x] `GET /projects/:id/migrations/:id/download` retorna `.PRW` como text/plain
+- [x] `GET /projects/:id/migrations/:id/preview` retorna código sem download
 
 #### Task F6.9 — Tela de geração de migration (L)
-- [ ] Modal/página com:
-  - [ ] Lista de mudanças desde a última migration (checkbox para incluir)
-  - [ ] Input de nome amigável
-  - [ ] Validações pré-geração (lista de erros e warnings)
-  - [ ] Preview do `.PRW` com syntax highlight
-  - [ ] Botão "Gerar e baixar"
-- [ ] Toast de sucesso após geração
+- [x] Modal/página com:
+  - [x] Lista de mudanças desde a última migration (checkbox para incluir)
+  - [x] Input de nome amigável
+  - [x] Validações pré-geração (lista de erros e warnings)
+  - [x] Preview do `.PRW` com syntax highlight
+  - [x] Botão "Gerar e baixar"
+- [x] Toast de sucesso após geração
 
 #### Task F6.10 — Lista de migrations (M)
-- [ ] `MigrationsListPage` com tabela expansível
-- [ ] Cada linha: nº, data, autor, nome, qtd items
-- [ ] Expandir mostra os items detalhados
-- [ ] Botão "Baixar novamente"
+- [x] `MigrationsListPage` com tabela expansível
+- [x] Cada linha: nº, data, autor, nome, qtd items
+- [x] Expandir mostra os items detalhados
+- [x] Botão "Baixar novamente"
 
 ---
 

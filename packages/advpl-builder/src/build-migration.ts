@@ -1,5 +1,21 @@
+import {
+  buildFieldAlteration,
+  buildFieldCreation,
+  buildFieldDeletion,
+} from './builders/field.builder';
+import {
+  buildIndexAlteration,
+  buildIndexCreation,
+  buildIndexDeletion,
+} from './builders/index.builder';
+import {
+  buildTableAlteration,
+  buildTableCreation,
+  buildTableDeletion,
+} from './builders/table.builder';
 import { buildFooter, buildHeader } from './templates/header.tpl';
-import type { BuildResult, MigrationInput, ValidationError } from './types';
+import { SXG_HELPERS_PRW } from './templates/helpers.advpl';
+import type { BuildResult, MigrationInput, MigrationItemInput, ValidationError } from './types';
 import { validateMigration } from './validators/migration.validator';
 
 /**
@@ -24,22 +40,76 @@ export function buildMigration(input: MigrationInput): string {
     throw new Error(`Validação falhou:\n${messages}`);
   }
 
-  const seq = String(migrationInput.sequence).padStart(3, '0');
-  const funcName = `U_SXG${seq}Migration`;
+  const functionName = buildMigrationFunctionName(migrationInput.sequence, migrationInput.items);
 
-  const header = buildHeader(migrationInput);
+  const header = buildHeader(migrationInput, functionName);
   const footer = buildFooter(migrationInput);
 
-  // TODO (Task F6.3): gerar blocos reais de criação/alteração/exclusão
-  // de tabelas, campos e índices processando migrationInput.items
-  const bodyPlaceholder = [
-    `User Function SXG${seq}Migration()`,
-    `    // TODO (Task F6.3): geração real dos blocos SX2/SX3/SIX`,
-    `    // ${migrationInput.items.length} item(s) a processar`,
-    `    MsgStop("${funcName}: stub — implemente na Task F6.3", "SXGerador")`,
+  const tableSections = migrationInput.items
+    .filter((item) => item.targetType === 'TABLE')
+    .map((item) => {
+      switch (item.operation) {
+        case 'CREATE_TABLE':
+          return buildTableCreation(item);
+        case 'ALTER_TABLE':
+          return buildTableAlteration(item);
+        case 'DROP_TABLE':
+          return buildTableDeletion(item);
+        default:
+          return '';
+      }
+    })
+    .filter((section) => section.length > 0);
+
+  const fieldSections = migrationInput.items
+    .filter((item) => item.targetType === 'FIELD')
+    .map((item) => {
+      switch (item.operation) {
+        case 'CREATE_FIELD':
+          return buildFieldCreation(item);
+        case 'ALTER_FIELD':
+          return buildFieldAlteration(item);
+        case 'DROP_FIELD':
+          return buildFieldDeletion(item);
+        default:
+          return '';
+      }
+    })
+    .filter((section) => section.length > 0);
+
+  const indexSections = migrationInput.items
+    .filter((item) => item.targetType === 'INDEX')
+    .map((item) => {
+      switch (item.operation) {
+        case 'CREATE_INDEX':
+          return buildIndexCreation(item);
+        case 'ALTER_INDEX':
+          return buildIndexAlteration(item);
+        case 'DROP_INDEX':
+          return buildIndexDeletion(item);
+        default:
+          return '';
+      }
+    })
+    .filter((section) => section.length > 0);
+
+  const body = [
+    `User Function ${functionName}()`,
+    `    Local aTabela := {}`,
+    `    Local aCampo := {}`,
+    `    Local aIndice := {}`,
+    ...(tableSections.length > 0
+      ? ['', ...tableSections]
+      : ['    // Nenhuma operação SX2 nesta migration']),
+    ...(fieldSections.length > 0
+      ? ['', ...fieldSections]
+      : ['    // Nenhuma operação SX3 nesta migration']),
+    ...(indexSections.length > 0
+      ? ['', ...indexSections]
+      : ['    // Nenhuma operação SIX nesta migration']),
   ].join('\n');
 
-  return [header, bodyPlaceholder, footer].join('\n\n');
+  return [header, body, footer].join('\n\n');
 }
 
 /**
@@ -51,11 +121,44 @@ export function buildMigration(input: MigrationInput): string {
  */
 export function buildMigrationFull(input: MigrationInput): BuildResult {
   const code = buildMigration(input);
-
-  // TODO (Task F6.3): gerar helper real e coletar warnings
   return {
     code,
-    helperCode: '',
+    helperCode: SXG_HELPERS_PRW,
     warnings: [],
   };
+}
+
+export function buildMigrationFunctionName(sequence: number, items: MigrationItemInput[]): string {
+  const seq = String(sequence).padStart(3, '0');
+  const first = items[0];
+  if (!first) return `SXG${seq}Migration`;
+
+  const action = mapOperationAction(first.operation);
+  const target = normalizeFunctionToken(first.targetName);
+  return `SXG${seq}${action}${target}`;
+}
+
+function mapOperationAction(operation: MigrationItemInput['operation']): string {
+  switch (operation) {
+    case 'CREATE_TABLE':
+    case 'CREATE_FIELD':
+    case 'CREATE_INDEX':
+      return 'Cria';
+    case 'ALTER_TABLE':
+    case 'ALTER_FIELD':
+    case 'ALTER_INDEX':
+      return 'Altera';
+    case 'DROP_TABLE':
+    case 'DROP_FIELD':
+    case 'DROP_INDEX':
+      return 'Drop';
+    default:
+      return 'Exec';
+  }
+}
+
+function normalizeFunctionToken(token: string): string {
+  const normalized = token.replace(/[^A-Za-z0-9]/g, '');
+  if (!normalized) return 'Migration';
+  return normalized[0].toUpperCase() + normalized.slice(1);
 }

@@ -1,6 +1,7 @@
 import { validateIndexKeyFields, validatePrimaryIndexOrder } from '@sxgerador/dictionary-validator';
 import type { CreateIndexData, UpdateIndexInput } from '@sxgerador/shared-types';
 import type { Index, Prisma, PrismaClient } from '../../generated/prisma';
+import type { MigrationsService } from '../migrations/migrations.service';
 import { ProjectErrors } from '../projects/projects.errors';
 import { IndexErrors } from './indexes.errors';
 
@@ -26,7 +27,10 @@ export interface PaginatedIndexes {
 }
 
 export class IndexesService {
-  constructor(private readonly db: PrismaClient) {}
+  constructor(
+    private readonly db: PrismaClient,
+    private readonly migrationsService?: MigrationsService,
+  ) {}
 
   async list(
     projectId: string,
@@ -72,12 +76,22 @@ export class IndexesService {
     await this.ensurePrimaryOrderRule(tableId, input.order);
     await this.ensureIndexKeyFieldsExist(tableId, input.key);
 
-    return this.db.index.create({
+    const index = await this.db.index.create({
       data: {
         ...input,
         tableId,
       },
     });
+    await this.migrationsService?.recordChange({
+      projectId,
+      operation: 'CREATE_INDEX',
+      targetType: 'INDEX',
+      targetId: index.id,
+      targetName: index.key,
+      beforeState: null,
+      afterState: index as unknown as Prisma.JsonValue,
+    });
+    return index;
   }
 
   async update(
@@ -98,10 +112,20 @@ export class IndexesService {
       await this.ensureIndexKeyFieldsExist(tableId, input.key);
     }
 
-    return this.db.index.update({
+    const updated = await this.db.index.update({
       where: { id },
       data: buildUpdateData(input),
     });
+    await this.migrationsService?.recordChange({
+      projectId,
+      operation: 'ALTER_INDEX',
+      targetType: 'INDEX',
+      targetId: updated.id,
+      targetName: updated.key,
+      beforeState: current as unknown as Prisma.JsonValue,
+      afterState: updated as unknown as Prisma.JsonValue,
+    });
+    return updated;
   }
 
   async delete(projectId: string, tableId: string, id: string): Promise<Index> {
@@ -110,10 +134,20 @@ export class IndexesService {
     if (!index) throw IndexErrors.NOT_FOUND;
     if (index.deletedAt) throw IndexErrors.ALREADY_ARCHIVED;
 
-    return this.db.index.update({
+    const archived = await this.db.index.update({
       where: { id },
       data: { deletedAt: new Date() },
     });
+    await this.migrationsService?.recordChange({
+      projectId,
+      operation: 'DROP_INDEX',
+      targetType: 'INDEX',
+      targetId: index.id,
+      targetName: index.key,
+      beforeState: index as unknown as Prisma.JsonValue,
+      afterState: null,
+    });
+    return archived;
   }
 
   async restore(projectId: string, tableId: string, id: string): Promise<Index> {
@@ -122,10 +156,20 @@ export class IndexesService {
     if (!index) throw IndexErrors.NOT_FOUND;
     if (!index.deletedAt) throw IndexErrors.NOT_ARCHIVED;
 
-    return this.db.index.update({
+    const restored = await this.db.index.update({
       where: { id },
       data: { deletedAt: null },
     });
+    await this.migrationsService?.recordChange({
+      projectId,
+      operation: 'ALTER_INDEX',
+      targetType: 'INDEX',
+      targetId: restored.id,
+      targetName: restored.key,
+      beforeState: index as unknown as Prisma.JsonValue,
+      afterState: restored as unknown as Prisma.JsonValue,
+    });
+    return restored;
   }
 
   private async ensureProjectExists(projectId: string): Promise<void> {

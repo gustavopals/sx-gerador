@@ -4,6 +4,7 @@ import { logger } from '../config/logger';
 import { AuthError } from '../modules/auth/auth.errors';
 import { FieldsError } from '../modules/fields/fields.errors';
 import { IndexesError } from '../modules/indexes/indexes.errors';
+import { MigrationsError } from '../modules/migrations/migrations.errors';
 import { ProjectsError } from '../modules/projects/projects.errors';
 import { TablesError } from '../modules/tables/tables.errors';
 
@@ -41,6 +42,11 @@ export const errorHandler: ErrorRequestHandler = (err, _req, res, next) => {
 
   if (err instanceof IndexesError) {
     res.status(err.statusCode).json({ error: { code: 'INDEXES_ERROR', message: err.message } });
+    return;
+  }
+
+  if (err instanceof MigrationsError) {
+    res.status(err.statusCode).json({ error: { code: 'MIGRATIONS_ERROR', message: err.message } });
     return;
   }
 
