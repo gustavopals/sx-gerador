@@ -2210,31 +2210,31 @@ sxgerador/
 **Objetivo:** múltiplos usuários trabalhando no mesmo dicionário.
 
 #### Task F7.1 — Schema Prisma de Teams (S)
-- [ ] Modelos `Team`, `TeamMember`, `ProjectInvite`
-- [ ] Migration
+- [x] Modelos `Team`, `TeamMember`, `ProjectInvite`
+- [x] Migration
 
 #### Task F7.2 — Service e Controller de Teams (L)
-- [ ] CRUD de teams
-- [ ] Listar membros
-- [ ] Convites (gerar token, enviar email)
-- [ ] Aceitar/recusar convite
-- [ ] Mudar role / remover membro
-- [ ] Transferir ownership
+- [x] CRUD de teams
+- [x] Listar membros
+- [x] Convites (gerar token, enviar email)
+- [x] Aceitar/recusar convite
+- [x] Mudar role / remover membro
+- [x] Transferir ownership
 
 #### Task F7.3 — Permissões (RBAC) (L)
-- [ ] Helper `canUserDo(user, action, resource)` no backend
-- [ ] Aplicar em todos os endpoints de project/table/field/index
-- [ ] Testes exaustivos das permissões
+- [x] Helper `canUserDo(user, action, resource)` no backend
+- [x] Aplicar em todos os endpoints de project/table/field/index
+- [x] Testes exaustivos das permissões
 
 #### Task F7.4 — Telas de teams (L)
-- [ ] Lista de teams
-- [ ] Detalhe + membros + convites
-- [ ] Modal de convite
-- [ ] Página de aceite de convite (`/invites/:token`)
-- [ ] Settings da team (nome, slug, avatar, exclusão)
+- [x] Lista de teams
+- [x] Detalhe + membros + convites
+- [x] Modal de convite
+- [x] Página de aceite de convite (`/invites/:token`)
+- [x] Settings da team (nome, slug, avatar, exclusão)
 
 #### Task F7.5 — UI de seleção de "owner" ao criar projeto (M)
-- [ ] Dropdown: "Pessoal" ou cada team que o user é membro
+- [x] Dropdown: "Pessoal" ou cada team que o user é membro
 - [ ] Lógica de transferência entre owners (V2)
 
 ---

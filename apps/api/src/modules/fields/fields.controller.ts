@@ -29,7 +29,7 @@ export class FieldsController {
     try {
       const { projectId, tableId } = ParamsSchema.parse(req.params);
       const query = ListQuerySchema.parse(req.query);
-      const result = await this.service.list(projectId, tableId, query);
+      const result = await this.service.list(projectId, tableId, query, req.user?.sub);
       res.json(result);
     } catch (err) {
       next(err);
@@ -39,7 +39,7 @@ export class FieldsController {
   get = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const { projectId, tableId, id } = IdParamsSchema.parse(req.params);
-      const field = await this.service.get(projectId, tableId, id);
+      const field = await this.service.get(projectId, tableId, id, req.user?.sub);
       res.json({ field });
     } catch (err) {
       next(err);
@@ -49,7 +49,7 @@ export class FieldsController {
   create = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const { projectId, tableId } = ParamsSchema.parse(req.params);
-      const field = await this.service.create(projectId, tableId, req.body);
+      const field = await this.service.create(projectId, tableId, req.body, req.user?.sub);
       res.status(201).json({ field });
     } catch (err) {
       next(err);
@@ -59,7 +59,7 @@ export class FieldsController {
   update = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const { projectId, tableId, id } = IdParamsSchema.parse(req.params);
-      const field = await this.service.update(projectId, tableId, id, req.body);
+      const field = await this.service.update(projectId, tableId, id, req.body, req.user?.sub);
       res.json({ field });
     } catch (err) {
       next(err);
@@ -69,7 +69,7 @@ export class FieldsController {
   delete = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const { projectId, tableId, id } = IdParamsSchema.parse(req.params);
-      const field = await this.service.delete(projectId, tableId, id);
+      const field = await this.service.delete(projectId, tableId, id, req.user?.sub);
       res.json({ field });
     } catch (err) {
       next(err);
@@ -79,7 +79,7 @@ export class FieldsController {
   restore = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const { projectId, tableId, id } = IdParamsSchema.parse(req.params);
-      const field = await this.service.restore(projectId, tableId, id);
+      const field = await this.service.restore(projectId, tableId, id, req.user?.sub);
       res.json({ field });
     } catch (err) {
       next(err);
@@ -89,7 +89,7 @@ export class FieldsController {
   reorder = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const { projectId, tableId } = ParamsSchema.parse(req.params);
-      const fields = await this.service.reorder(projectId, tableId, req.body);
+      const fields = await this.service.reorder(projectId, tableId, req.body, req.user?.sub);
       res.json({ fields });
     } catch (err) {
       next(err);
@@ -99,7 +99,7 @@ export class FieldsController {
   bulkUpdate = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const { projectId, tableId } = ParamsSchema.parse(req.params);
-      const result = await this.service.bulkUpdate(projectId, tableId, req.body);
+      const result = await this.service.bulkUpdate(projectId, tableId, req.body, req.user?.sub);
       res.json(result);
     } catch (err) {
       next(err);

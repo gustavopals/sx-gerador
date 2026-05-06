@@ -66,7 +66,13 @@ const TABLE: Table = {
   deletedAt: null,
 };
 
-const ACTIVE_PROJECT = { id: PROJECT_ID };
+const ACTIVE_PROJECT = {
+  id: PROJECT_ID,
+  visibility: 'PRIVATE',
+  ownerUserId: 'user-1',
+  ownerTeamId: null,
+  ownerTeam: null,
+};
 
 describe('TablesService', () => {
   let db: MockedPrisma;
@@ -76,6 +82,7 @@ describe('TablesService', () => {
     db = mockPrisma();
     service = new TablesService(db as unknown as PrismaClient);
     db.auditLog.create.mockResolvedValue({} as never);
+    db.project.findFirst.mockResolvedValue(ACTIVE_PROJECT);
   });
 
   describe('list', () => {
@@ -84,7 +91,7 @@ describe('TablesService', () => {
       db.table.findMany.mockResolvedValue([TABLE]);
       db.table.count.mockResolvedValue(1);
 
-      const result = await service.list(PROJECT_ID, { page: 1, pageSize: 10 });
+      const result = await service.list(PROJECT_ID, { page: 1, pageSize: 10 }, 'user-1');
 
       expect(db.table.findMany).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -102,7 +109,7 @@ describe('TablesService', () => {
       db.table.findMany.mockResolvedValue([]);
       db.table.count.mockResolvedValue(0);
 
-      await service.list(PROJECT_ID, { search: 'zzz' });
+      await service.list(PROJECT_ID, { search: 'zzz' }, 'user-1');
 
       expect(db.table.findMany).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -121,7 +128,7 @@ describe('TablesService', () => {
       db.table.findMany.mockResolvedValue([]);
       db.table.count.mockResolvedValue(0);
 
-      await service.list(PROJECT_ID, { includeArchived: true });
+      await service.list(PROJECT_ID, { includeArchived: true }, 'user-1');
 
       const call = db.table.findMany.mock.calls[0][0] as { where: Record<string, unknown> };
       expect(call.where).not.toHaveProperty('deletedAt');
@@ -130,7 +137,9 @@ describe('TablesService', () => {
     it('throws NOT_FOUND when project does not exist', async () => {
       db.project.findFirst.mockResolvedValue(null);
 
-      await expect(service.list(PROJECT_ID)).rejects.toMatchObject({ statusCode: 404 });
+      await expect(service.list(PROJECT_ID, {}, 'user-1')).rejects.toMatchObject({
+        statusCode: 404,
+      });
     });
   });
 
@@ -138,7 +147,7 @@ describe('TablesService', () => {
     it('returns the table when found', async () => {
       db.table.findFirst.mockResolvedValue(TABLE);
 
-      const result = await service.get(PROJECT_ID, TABLE_ID);
+      const result = await service.get(PROJECT_ID, TABLE_ID, 'user-1');
 
       expect(result).toBe(TABLE);
       expect(db.table.findFirst).toHaveBeenCalledWith({
@@ -149,7 +158,9 @@ describe('TablesService', () => {
     it('throws NOT_FOUND when table does not exist', async () => {
       db.table.findFirst.mockResolvedValue(null);
 
-      await expect(service.get(PROJECT_ID, TABLE_ID)).rejects.toMatchObject({ statusCode: 404 });
+      await expect(service.get(PROJECT_ID, TABLE_ID, 'user-1')).rejects.toMatchObject({
+        statusCode: 404,
+      });
     });
   });
 
@@ -198,14 +209,18 @@ describe('TablesService', () => {
       db.project.findFirst.mockResolvedValue(ACTIVE_PROJECT);
       db.table.findUnique.mockResolvedValue(TABLE);
 
-      await expect(service.create(PROJECT_ID, input)).rejects.toMatchObject({ statusCode: 409 });
+      await expect(service.create(PROJECT_ID, input, 'user-1')).rejects.toMatchObject({
+        statusCode: 409,
+      });
       expect(db.table.create).not.toHaveBeenCalled();
     });
 
     it('rejects create when project does not exist', async () => {
       db.project.findFirst.mockResolvedValue(null);
 
-      await expect(service.create(PROJECT_ID, input)).rejects.toMatchObject({ statusCode: 404 });
+      await expect(service.create(PROJECT_ID, input, 'user-1')).rejects.toMatchObject({
+        statusCode: 404,
+      });
       expect(db.table.create).not.toHaveBeenCalled();
     });
   });
@@ -226,7 +241,9 @@ describe('TablesService', () => {
     it('throws NOT_FOUND when updating a non-existent table', async () => {
       db.table.findFirst.mockResolvedValue(null);
 
-      await expect(service.update(PROJECT_ID, TABLE_ID, { namePt: 'X' })).rejects.toMatchObject({
+      await expect(
+        service.update(PROJECT_ID, TABLE_ID, { namePt: 'X' }, 'user-1'),
+      ).rejects.toMatchObject({
         statusCode: 404,
       });
     });
@@ -248,14 +265,18 @@ describe('TablesService', () => {
     it('rejects soft-delete when table is already archived', async () => {
       db.table.findFirst.mockResolvedValue({ ...TABLE, deletedAt: new Date() });
 
-      await expect(service.delete(PROJECT_ID, TABLE_ID)).rejects.toMatchObject({ statusCode: 409 });
+      await expect(service.delete(PROJECT_ID, TABLE_ID, 'user-1')).rejects.toMatchObject({
+        statusCode: 409,
+      });
       expect(db.table.update).not.toHaveBeenCalled();
     });
 
     it('throws NOT_FOUND when table does not exist', async () => {
       db.table.findFirst.mockResolvedValue(null);
 
-      await expect(service.delete(PROJECT_ID, TABLE_ID)).rejects.toMatchObject({ statusCode: 404 });
+      await expect(service.delete(PROJECT_ID, TABLE_ID, 'user-1')).rejects.toMatchObject({
+        statusCode: 404,
+      });
     });
   });
 
@@ -275,7 +296,7 @@ describe('TablesService', () => {
     it('rejects restore when table is not archived', async () => {
       db.table.findFirst.mockResolvedValue(TABLE);
 
-      await expect(service.restore(PROJECT_ID, TABLE_ID)).rejects.toMatchObject({
+      await expect(service.restore(PROJECT_ID, TABLE_ID, 'user-1')).rejects.toMatchObject({
         statusCode: 409,
       });
       expect(db.table.update).not.toHaveBeenCalled();
@@ -284,7 +305,7 @@ describe('TablesService', () => {
     it('throws NOT_FOUND when table does not exist', async () => {
       db.table.findFirst.mockResolvedValue(null);
 
-      await expect(service.restore(PROJECT_ID, TABLE_ID)).rejects.toMatchObject({
+      await expect(service.restore(PROJECT_ID, TABLE_ID, 'user-1')).rejects.toMatchObject({
         statusCode: 404,
       });
     });

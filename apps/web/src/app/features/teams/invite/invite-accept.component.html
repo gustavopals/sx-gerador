@@ -1,0 +1,40 @@
+<po-page-default p-title="Convite de equipe" p-subtitle="Aceite ou recuse seu acesso ao projeto">
+  <section class="sxg-invite">
+    @if (invite(); as answeredInvite) {
+      <div class="sxg-invite__state">
+        <po-tag [p-value]="answeredInvite.status" [p-type]="tagType.Success"></po-tag>
+        <h2>Convite respondido</h2>
+        <p>{{ answeredInvite.email }}</p>
+        <po-button
+          p-label="Ir para equipes"
+          p-icon="an an-users"
+          p-kind="primary"
+          (p-click)="goToTeams()"
+        ></po-button>
+      </div>
+    } @else {
+      <div class="sxg-invite__state">
+        <span class="an an-envelope-simple an-2x"></span>
+        <h2>Você recebeu um convite</h2>
+        <p>Ao aceitar, seu usuário será adicionado à equipe dona do projeto.</p>
+        <div class="sxg-invite__actions">
+          <po-button
+            p-label="Aceitar convite"
+            p-icon="an an-check"
+            p-kind="primary"
+            [p-loading]="isLoading()"
+            [p-disabled]="isLoading()"
+            (p-click)="accept()"
+          ></po-button>
+          <po-button
+            p-label="Recusar"
+            p-icon="an an-x"
+            p-kind="secondary"
+            [p-disabled]="isLoading()"
+            (p-click)="reject()"
+          ></po-button>
+        </div>
+      </div>
+    }
+  </section>
+</po-page-default>

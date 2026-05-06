@@ -15,7 +15,16 @@ export type AuditAction =
   | 'tables.create'
   | 'tables.update'
   | 'tables.delete'
-  | 'tables.restore';
+  | 'tables.restore'
+  | 'teams.create'
+  | 'teams.update'
+  | 'teams.delete'
+  | 'teams.invite'
+  | 'teams.invite.accept'
+  | 'teams.invite.reject'
+  | 'teams.member.role'
+  | 'teams.member.remove'
+  | 'teams.ownership.transfer';
 
 export type AuditMetadata = Record<string, string | number | boolean | null>;
 

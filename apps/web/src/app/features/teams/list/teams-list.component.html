@@ -1,0 +1,90 @@
+<po-page-default
+  p-title="Equipes"
+  p-subtitle="Times que compartilham projetos e dicionários"
+  [p-actions]="pageActions"
+>
+  <section class="sxg-teams">
+    @if (isLoading()) {
+      <div class="sxg-teams__state">
+        <span class="sxg-teams__spinner"></span>
+        <p>Carregando equipes</p>
+      </div>
+    } @else if (teams().length === 0) {
+      <div class="sxg-teams__empty">
+        <h2>Nenhuma equipe encontrada</h2>
+        <p>Crie uma equipe para colaborar em projetos privados com outros usuários.</p>
+        <po-button
+          p-label="Nova equipe"
+          p-icon="an an-plus"
+          p-kind="primary"
+          (p-click)="openCreateModal()"
+        ></po-button>
+      </div>
+    } @else {
+      <div class="sxg-teams__grid">
+        @for (team of teams(); track team.id) {
+          <article class="sxg-team-card">
+            <button class="sxg-team-card__main" type="button" (click)="openTeam(team)">
+              <span class="sxg-team-card__avatar">
+                @if (team.avatarUrl) {
+                  <img [src]="team.avatarUrl" alt="" />
+                } @else {
+                  {{ team.name.slice(0, 1).toUpperCase() }}
+                }
+              </span>
+              <span>
+                <strong>{{ team.name }}</strong>
+                <small>{{ team.slug }}</small>
+              </span>
+            </button>
+
+            <p>{{ team.description || 'Sem descrição cadastrada.' }}</p>
+
+            <footer>
+              <span>Atualizada {{ team.updatedAt | date: 'dd/MM/yyyy HH:mm' }}</span>
+              <po-button
+                p-label="Abrir"
+                p-icon="an an-arrow-right"
+                p-kind="secondary"
+                [routerLink]="['/teams', team.id]"
+              ></po-button>
+            </footer>
+          </article>
+        }
+      </div>
+    }
+  </section>
+</po-page-default>
+
+<po-modal
+  #teamModal
+  p-title="Nova equipe"
+  p-icon="an an-users"
+  [p-primary-action]="primaryAction"
+  [p-secondary-action]="secondaryAction"
+  [p-hide-close]="isSaving()"
+>
+  <form class="sxg-team-modal" [formGroup]="form" novalidate>
+    <po-input
+      p-label="Nome"
+      p-placeholder="Ex: Produto"
+      formControlName="name"
+      [p-error-pattern]="nameError"
+      p-required="true"
+      (p-change)="syncSlugFromName()"
+    ></po-input>
+    <po-input
+      p-label="Slug"
+      p-placeholder="produto"
+      formControlName="slug"
+      [p-error-pattern]="slugError"
+      p-required="true"
+    ></po-input>
+    <po-textarea
+      p-label="Descrição"
+      p-placeholder="Escopo da equipe"
+      formControlName="description"
+      [p-rows]="3"
+    ></po-textarea>
+  </form>
+</po-modal>

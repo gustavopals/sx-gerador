@@ -2,6 +2,7 @@ import { validateIndexKeyFields, validatePrimaryIndexOrder } from '@sxgerador/di
 import type { CreateIndexData, UpdateIndexInput } from '@sxgerador/shared-types';
 import type { Index, Prisma, PrismaClient } from '../../generated/prisma';
 import type { MigrationsService } from '../migrations/migrations.service';
+import { assertProjectPermission } from '../permissions';
 import { ProjectErrors } from '../projects/projects.errors';
 import { IndexErrors } from './indexes.errors';
 
@@ -36,8 +37,10 @@ export class IndexesService {
     projectId: string,
     tableId: string,
     input: ListIndexesInput = {},
+    actorUserId?: string,
   ): Promise<PaginatedIndexes> {
     await this.ensureTableExists(projectId, tableId);
+    await assertProjectPermission(this.db, actorUserId, 'dictionary:read', projectId);
 
     const page = normalizePositiveInt(input.page, DEFAULT_PAGE);
     const pageSize = Math.min(
@@ -61,8 +64,9 @@ export class IndexesService {
     };
   }
 
-  async get(projectId: string, tableId: string, id: string): Promise<Index> {
+  async get(projectId: string, tableId: string, id: string, actorUserId?: string): Promise<Index> {
     await this.ensureTableExists(projectId, tableId);
+    await assertProjectPermission(this.db, actorUserId, 'dictionary:read', projectId);
     const index = await this.db.index.findFirst({
       where: { id, tableId, deletedAt: null },
     });
@@ -70,8 +74,14 @@ export class IndexesService {
     return index;
   }
 
-  async create(projectId: string, tableId: string, input: CreateIndexData): Promise<Index> {
+  async create(
+    projectId: string,
+    tableId: string,
+    input: CreateIndexData,
+    actorUserId?: string,
+  ): Promise<Index> {
     await this.ensureTableExists(projectId, tableId);
+    await assertProjectPermission(this.db, actorUserId, 'dictionary:write', projectId);
     await this.ensureIndexOrderAvailable(tableId, input.order);
     await this.ensurePrimaryOrderRule(tableId, input.order);
     await this.ensureIndexKeyFieldsExist(tableId, input.key);
@@ -99,8 +109,10 @@ export class IndexesService {
     tableId: string,
     id: string,
     input: UpdateIndexInput,
+    actorUserId?: string,
   ): Promise<Index> {
     await this.ensureTableExists(projectId, tableId);
+    await assertProjectPermission(this.db, actorUserId, 'dictionary:write', projectId);
     const current = await this.db.index.findFirst({ where: { id, tableId } });
     if (!current) throw IndexErrors.NOT_FOUND;
 
@@ -128,8 +140,14 @@ export class IndexesService {
     return updated;
   }
 
-  async delete(projectId: string, tableId: string, id: string): Promise<Index> {
+  async delete(
+    projectId: string,
+    tableId: string,
+    id: string,
+    actorUserId?: string,
+  ): Promise<Index> {
     await this.ensureTableExists(projectId, tableId);
+    await assertProjectPermission(this.db, actorUserId, 'dictionary:write', projectId);
     const index = await this.db.index.findFirst({ where: { id, tableId } });
     if (!index) throw IndexErrors.NOT_FOUND;
     if (index.deletedAt) throw IndexErrors.ALREADY_ARCHIVED;
@@ -150,8 +168,14 @@ export class IndexesService {
     return archived;
   }
 
-  async restore(projectId: string, tableId: string, id: string): Promise<Index> {
+  async restore(
+    projectId: string,
+    tableId: string,
+    id: string,
+    actorUserId?: string,
+  ): Promise<Index> {
     await this.ensureTableExists(projectId, tableId);
+    await assertProjectPermission(this.db, actorUserId, 'dictionary:write', projectId);
     const index = await this.db.index.findFirst({ where: { id, tableId } });
     if (!index) throw IndexErrors.NOT_FOUND;
     if (!index.deletedAt) throw IndexErrors.NOT_ARCHIVED;

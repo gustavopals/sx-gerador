@@ -20,6 +20,7 @@ export class ShellComponent {
   readonly menus: PoMenuItem[] = [
     { label: 'Dashboard', icon: 'an an-house', shortLabel: 'Home', link: '/' },
     { label: 'Projetos', icon: 'an an-folder', shortLabel: 'Proj.', link: '/projects' },
+    { label: 'Equipes', icon: 'an an-users', shortLabel: 'Teams', link: '/teams' },
     { label: 'Templates', icon: 'an an-copy', shortLabel: 'Tmpl.', link: '/templates' },
     { label: 'Migrations', icon: 'an an-code', shortLabel: 'Migr.', link: '/migrations' },
     { label: 'Perfil', icon: 'an an-user', shortLabel: 'Perfil', link: '/settings/profile' },

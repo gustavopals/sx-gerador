@@ -5,8 +5,10 @@ import { AuthError } from '../modules/auth/auth.errors';
 import { FieldsError } from '../modules/fields/fields.errors';
 import { IndexesError } from '../modules/indexes/indexes.errors';
 import { MigrationsError } from '../modules/migrations/migrations.errors';
+import { PermissionsError } from '../modules/permissions';
 import { ProjectsError } from '../modules/projects/projects.errors';
 import { TablesError } from '../modules/tables/tables.errors';
+import { TeamsError } from '../modules/teams/teams.errors';
 
 export const notFoundHandler: RequestHandler = (req, res) => {
   res.status(404).json({
@@ -47,6 +49,16 @@ export const errorHandler: ErrorRequestHandler = (err, _req, res, next) => {
 
   if (err instanceof MigrationsError) {
     res.status(err.statusCode).json({ error: { code: 'MIGRATIONS_ERROR', message: err.message } });
+    return;
+  }
+
+  if (err instanceof PermissionsError) {
+    res.status(err.statusCode).json({ error: { code: 'PERMISSIONS_ERROR', message: err.message } });
+    return;
+  }
+
+  if (err instanceof TeamsError) {
+    res.status(err.statusCode).json({ error: { code: 'TEAMS_ERROR', message: err.message } });
     return;
   }
 

@@ -23,8 +23,11 @@ model User {
   deletedAt             DateTime?
   hardDeleteScheduledAt DateTime?
 
-  refreshTokens RefreshToken[]
-  auditLogs     AuditLog[]
+  refreshTokens   RefreshToken[]
+  auditLogs       AuditLog[]
+  ownedProjects   Project[]       @relation("ProjectOwner")
+  teamMemberships TeamMember[]
+  invitesSent     ProjectInvite[] @relation("ProjectInviteSender")
 
   @@index([email])
   @@index([deletedAt])
@@ -86,23 +89,105 @@ enum ProjectVisibility {
   PUBLIC
 }
 
+model Team {
+  id          String    @id @default(cuid())
+  name        String
+  slug        String    @unique
+  description String?
+  avatarUrl   String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  deletedAt   DateTime?
+
+  members  TeamMember[]
+  projects Project[]    @relation("TeamOwner")
+
+  @@index([slug])
+  @@index([deletedAt])
+}
+
+enum TeamRole {
+  OWNER
+  ADMIN
+  MEMBER
+  VIEWER
+}
+
+model TeamMember {
+  id        String    @id @default(cuid())
+  teamId    String
+  userId    String
+  role      TeamRole  @default(MEMBER)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  removedAt DateTime?
+
+  team Team @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([teamId, userId])
+  @@index([teamId])
+  @@index([userId])
+  @@index([removedAt])
+}
+
 model Project {
   id            String            @id @default(cuid())
   name          String
   slug          String            @unique
   description   String?
   visibility    ProjectVisibility @default(PRIVATE)
+  ownerUserId   String?
+  ownerTeamId   String?
   defaultTamFil Int               @default(2)
   defaultLang   String            @default("pt-BR")
   createdAt     DateTime          @default(now())
   updatedAt     DateTime          @updatedAt
   deletedAt     DateTime?
 
-  tables Table[]
+  ownerUser  User?           @relation("ProjectOwner", fields: [ownerUserId], references: [id], onDelete: SetNull)
+  ownerTeam  Team?           @relation("TeamOwner", fields: [ownerTeamId], references: [id], onDelete: SetNull)
+  tables     Table[]
   migrations Migration[]
+  invites    ProjectInvite[]
 
   @@index([visibility])
+  @@index([ownerUserId])
+  @@index([ownerTeamId])
   @@index([deletedAt])
+}
+
+enum ProjectInviteStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+  EXPIRED
+  REVOKED
+}
+
+model ProjectInvite {
+  id          String              @id @default(cuid())
+  projectId   String
+  email       String
+  invitedById String
+  role        TeamRole            @default(MEMBER)
+  tokenHash   String              @unique
+  status      ProjectInviteStatus @default(PENDING)
+  expiresAt   DateTime
+  acceptedAt  DateTime?
+  rejectedAt  DateTime?
+  revokedAt   DateTime?
+  createdAt   DateTime            @default(now())
+  updatedAt   DateTime            @updatedAt
+
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  invitedBy User    @relation("ProjectInviteSender", fields: [invitedById], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+  @@index([invitedById])
+  @@index([email])
+  @@index([status])
+  @@index([expiresAt])
 }
 
 enum MigrationOperation {
@@ -324,7 +409,7 @@ model Migration {
   createdAt   DateTime        @default(now())
   updatedAt   DateTime        @updatedAt
 
-  project Project          @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  project Project         @relation(fields: [projectId], references: [id], onDelete: Cascade)
   items   MigrationItem[]
 
   @@unique([projectId, sequence])

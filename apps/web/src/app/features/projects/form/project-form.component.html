@@ -42,6 +42,14 @@
           [p-rows]="3"
         ></po-textarea>
 
+        @if (!isEditMode()) {
+          <po-select
+            p-label="Dono"
+            [p-options]="ownerOptions()"
+            formControlName="owner"
+          ></po-select>
+        }
+
         <po-select
           p-label="Visibilidade"
           [p-options]="visibilityOptions"

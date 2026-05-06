@@ -25,7 +25,7 @@ export class TablesController {
     try {
       const { projectId } = ProjectIdParamSchema.parse(req.params);
       const query = ListQuerySchema.parse(req.query);
-      const result = await this.service.list(projectId, query);
+      const result = await this.service.list(projectId, query, req.user?.sub);
       res.json(result);
     } catch (err) {
       next(err);
@@ -35,7 +35,7 @@ export class TablesController {
   get = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const { projectId, id } = IdParamSchema.parse(req.params);
-      const table = await this.service.get(projectId, id);
+      const table = await this.service.get(projectId, id, req.user?.sub);
       res.json({ table });
     } catch (err) {
       next(err);

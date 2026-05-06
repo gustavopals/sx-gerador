@@ -19,10 +19,13 @@ const PROJECT = {
   visibility: 'PRIVATE',
   defaultTamFil: 2,
   defaultLang: 'pt-BR',
+  ownerUserId: 'user-1',
+  ownerTeamId: null,
   createdAt: new Date('2026-01-01T00:00:00.000Z'),
   updatedAt: new Date('2026-01-01T00:00:00.000Z'),
   deletedAt: null,
 };
+const TEAM_ID = 'clwteam000000000000000001';
 
 function buildApp(service: Partial<ProjectsService>) {
   const app = express();
@@ -53,12 +56,15 @@ describe('projects routes', () => {
       .set('Authorization', AUTH);
 
     expect(res.status).toBe(200);
-    expect(service.list).toHaveBeenCalledWith({
-      page: 2,
-      pageSize: 10,
-      search: 'fin',
-      includeArchived: true,
-    });
+    expect(service.list).toHaveBeenCalledWith(
+      {
+        page: 2,
+        pageSize: 10,
+        search: 'fin',
+        includeArchived: true,
+      },
+      'user-1',
+    );
   });
 
   it('parses includeArchived=false without enabling archived projects', async () => {
@@ -74,7 +80,7 @@ describe('projects routes', () => {
       .set('Authorization', AUTH);
 
     expect(res.status).toBe(200);
-    expect(service.list).toHaveBeenCalledWith({ includeArchived: false });
+    expect(service.list).toHaveBeenCalledWith({ includeArchived: false }, 'user-1');
   });
 
   it('creates a project with validated payload', async () => {
@@ -91,6 +97,28 @@ describe('projects routes', () => {
       {
         name: 'Financeiro',
         slug: 'financeiro',
+        visibility: 'PRIVATE',
+        defaultTamFil: 2,
+        defaultLang: 'pt-BR',
+      },
+      'user-1',
+    );
+  });
+
+  it('passes ownerTeamId when creating a team-owned project', async () => {
+    const service = { create: vi.fn().mockResolvedValue({ ...PROJECT, ownerTeamId: TEAM_ID }) };
+
+    const res = await request(buildApp(service))
+      .post('/api/v1/projects')
+      .set('Authorization', AUTH)
+      .send({ name: 'Financeiro', slug: 'financeiro', ownerTeamId: TEAM_ID });
+
+    expect(res.status).toBe(201);
+    expect(service.create).toHaveBeenCalledWith(
+      {
+        name: 'Financeiro',
+        slug: 'financeiro',
+        ownerTeamId: TEAM_ID,
         visibility: 'PRIVATE',
         defaultTamFil: 2,
         defaultLang: 'pt-BR',
@@ -119,7 +147,7 @@ describe('projects routes', () => {
       .set('Authorization', AUTH);
 
     expect(res.status).toBe(200);
-    expect(service.get).toHaveBeenCalledWith(PROJECT.id);
+    expect(service.get).toHaveBeenCalledWith(PROJECT.id, 'user-1');
   });
 
   it('updates a project', async () => {

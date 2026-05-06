@@ -14,6 +14,8 @@ export interface ProjectSummary {
   slug: string;
   description: string | null;
   visibility: ProjectVisibility;
+  ownerUserId: string | null;
+  ownerTeamId: string | null;
   defaultTamFil: number;
   defaultLang: string;
   createdAt: string;

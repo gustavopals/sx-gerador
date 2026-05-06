@@ -105,7 +105,13 @@ describe('FieldsService', () => {
   beforeEach(() => {
     db = mockPrisma();
     service = new FieldsService(db as unknown as PrismaClient);
-    db.project.findFirst.mockResolvedValue({ id: PROJECT_ID });
+    db.project.findFirst.mockResolvedValue({
+      id: PROJECT_ID,
+      visibility: 'PRIVATE',
+      ownerUserId: 'user-1',
+      ownerTeamId: null,
+      ownerTeam: null,
+    });
     db.table.findFirst.mockResolvedValue({ id: TABLE_ID, prefix: 'ZZZ' });
   });
 
@@ -125,6 +131,7 @@ describe('FieldsService', () => {
         titlePt: 'Nome',
         descPt: 'Nome',
       }),
+      'user-1',
     );
 
     expect(result.order).toBe('02');
@@ -148,6 +155,7 @@ describe('FieldsService', () => {
           titlePt: 'Nome',
           descPt: 'Nome',
         }),
+        'user-1',
       ),
     ).rejects.toMatchObject({ statusCode: 422 });
     expect(db.field.create).not.toHaveBeenCalled();
@@ -157,7 +165,13 @@ describe('FieldsService', () => {
     db.field.findFirst.mockResolvedValueOnce(FIELD).mockResolvedValueOnce(FIELD);
     db.field.update.mockResolvedValue({ ...FIELD, titlePt: 'Codigo Novo' });
 
-    const result = await service.update(PROJECT_ID, TABLE_ID, FIELD_ID, { titlePt: 'Codigo Novo' });
+    const result = await service.update(
+      PROJECT_ID,
+      TABLE_ID,
+      FIELD_ID,
+      { titlePt: 'Codigo Novo' },
+      'user-1',
+    );
     expect(result.titlePt).toBe('Codigo Novo');
   });
 
@@ -170,7 +184,7 @@ describe('FieldsService', () => {
     ]);
     db.field.update.mockResolvedValue(FIELD);
 
-    const result = await service.reorder(PROJECT_ID, TABLE_ID, { fieldIds: [id2, id1] });
+    const result = await service.reorder(PROJECT_ID, TABLE_ID, { fieldIds: [id2, id1] }, 'user-1');
     expect(db.$transaction).toHaveBeenCalled();
     expect(result[0].id).toBe(id2);
   });
@@ -178,10 +192,15 @@ describe('FieldsService', () => {
   it('bulk updates active fields', async () => {
     db.field.updateMany.mockResolvedValue({ count: 2 });
 
-    const result = await service.bulkUpdate(PROJECT_ID, TABLE_ID, {
-      fieldIds: ['clwfield00000000000000001', 'clwfield00000000000000002'],
-      changes: { showBrowse: 'N' },
-    });
+    const result = await service.bulkUpdate(
+      PROJECT_ID,
+      TABLE_ID,
+      {
+        fieldIds: ['clwfield00000000000000001', 'clwfield00000000000000002'],
+        changes: { showBrowse: 'N' },
+      },
+      'user-1',
+    );
 
     expect(result.updatedCount).toBe(2);
     expect(db.field.updateMany).toHaveBeenCalledWith(

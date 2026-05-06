@@ -15,6 +15,7 @@ interface MockedPrisma {
     create: AnyFn;
     update: AnyFn;
   }>;
+  teamMember: MockedTable<{ findFirst: AnyFn }>;
   auditLog: MockedTable<{ create: AnyFn }>;
   $transaction: ReturnType<typeof vi.fn>;
 }
@@ -29,6 +30,9 @@ function mockPrisma(): MockedPrisma {
       create: vi.fn(),
       update: vi.fn(),
     },
+    teamMember: {
+      findFirst: vi.fn(),
+    },
     auditLog: {
       create: vi.fn(),
     },
@@ -42,12 +46,15 @@ const PROJECT: Project = {
   slug: 'financeiro',
   description: null,
   visibility: 'PRIVATE',
+  ownerUserId: 'user-1',
+  ownerTeamId: null,
   defaultTamFil: 2,
   defaultLang: 'pt-BR',
   createdAt: new Date('2026-01-01T00:00:00.000Z'),
   updatedAt: new Date('2026-01-01T00:00:00.000Z'),
   deletedAt: null,
 };
+const TEAM_ID = 'clwteam000000000000000001';
 
 describe('ProjectsService', () => {
   let db: MockedPrisma;
@@ -57,20 +64,30 @@ describe('ProjectsService', () => {
     db = mockPrisma();
     service = new ProjectsService(db as unknown as PrismaClient);
     db.auditLog.create.mockResolvedValue({} as never);
+    db.project.findFirst.mockResolvedValue(PROJECT);
   });
 
   it('lists active projects with pagination and search', async () => {
     db.project.findMany.mockResolvedValue([PROJECT]);
     db.project.count.mockResolvedValue(1);
 
-    const result = await service.list({ page: 2, pageSize: 10, search: 'fin' });
+    const result = await service.list({ page: 2, pageSize: 10, search: 'fin' }, 'user-1');
 
     expect(db.project.findMany).toHaveBeenCalledWith({
       where: {
         deletedAt: null,
         OR: [
-          { name: { contains: 'fin', mode: 'insensitive' } },
-          { slug: { contains: 'fin', mode: 'insensitive' } },
+          { ownerUserId: 'user-1' },
+          { ownerTeam: { members: { some: { userId: 'user-1', removedAt: null } } } },
+          { visibility: { in: ['PUBLIC', 'UNLISTED'] } },
+        ],
+        AND: [
+          {
+            OR: [
+              { name: { contains: 'fin', mode: 'insensitive' } },
+              { slug: { contains: 'fin', mode: 'insensitive' } },
+            ],
+          },
         ],
       },
       orderBy: { updatedAt: 'desc' },
@@ -93,6 +110,7 @@ describe('ProjectsService', () => {
         slug: 'financeiro',
         description: null,
         visibility: 'PRIVATE',
+        ownerUser: { connect: { id: 'user-1' } },
         defaultTamFil: 2,
         defaultLang: 'pt-BR',
       },
@@ -104,12 +122,44 @@ describe('ProjectsService', () => {
     );
   });
 
+  it('creates a project owned by a team when the user is a member', async () => {
+    db.project.findUnique.mockResolvedValue(null);
+    db.teamMember.findFirst.mockResolvedValue({ id: 'membership-1' });
+    db.project.create.mockResolvedValue({ ...PROJECT, ownerUserId: null, ownerTeamId: TEAM_ID });
+
+    await service.create(
+      { name: 'Financeiro', slug: 'financeiro', ownerTeamId: TEAM_ID },
+      'user-1',
+    );
+
+    expect(db.teamMember.findFirst).toHaveBeenCalledWith({
+      where: {
+        teamId: TEAM_ID,
+        userId: 'user-1',
+        removedAt: null,
+        team: { deletedAt: null },
+      },
+      select: { id: true },
+    });
+    expect(db.project.create).toHaveBeenCalledWith({
+      data: {
+        name: 'Financeiro',
+        slug: 'financeiro',
+        description: null,
+        visibility: 'PRIVATE',
+        ownerTeam: { connect: { id: TEAM_ID } },
+        defaultTamFil: 2,
+        defaultLang: 'pt-BR',
+      },
+    });
+  });
+
   it('rejects create when slug is already in use', async () => {
     db.project.findUnique.mockResolvedValue(PROJECT);
 
-    await expect(service.create({ name: 'Financeiro', slug: 'financeiro' })).rejects.toMatchObject({
-      statusCode: 409,
-    });
+    await expect(
+      service.create({ name: 'Financeiro', slug: 'financeiro' }, 'user-1'),
+    ).rejects.toMatchObject({ statusCode: 409 });
     expect(db.project.create).not.toHaveBeenCalled();
   });
 
@@ -178,6 +228,7 @@ describe('ProjectsService', () => {
         slug: 'financeiro-copy-2',
         description: null,
         visibility: 'PRIVATE',
+        ownerUser: { connect: { id: 'user-1' } },
         defaultTamFil: 2,
         defaultLang: 'pt-BR',
       },

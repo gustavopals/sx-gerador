@@ -70,7 +70,13 @@ describe('IndexesService', () => {
   beforeEach(() => {
     db = mockPrisma();
     service = new IndexesService(db as unknown as PrismaClient);
-    db.project.findFirst.mockResolvedValue({ id: PROJECT_ID });
+    db.project.findFirst.mockResolvedValue({
+      id: PROJECT_ID,
+      visibility: 'PRIVATE',
+      ownerUserId: 'user-1',
+      ownerTeamId: null,
+      ownerTeam: null,
+    });
     db.table.findFirst.mockResolvedValue({ id: TABLE_ID });
     db.index.findMany.mockResolvedValue([]);
     db.field.findMany.mockResolvedValue([{ name: 'ZZZ_FILIAL' }, { name: 'ZZZ_CODIGO' }]);
@@ -88,6 +94,7 @@ describe('IndexesService', () => {
         key: 'ZZZ_FILIAL+ZZZ_CODIGO',
         descPt: 'Principal',
       }),
+      'user-1',
     );
 
     expect(result.id).toBe(INDEX_ID);
@@ -114,6 +121,7 @@ describe('IndexesService', () => {
           key: 'ZZZ_FILIAL+ZZZ_CODIGO',
           descPt: 'Principal',
         }),
+        'user-1',
       ),
     ).rejects.toMatchObject({ statusCode: 422 });
   });
@@ -130,6 +138,7 @@ describe('IndexesService', () => {
           key: 'ZZZ_FILIAL+ZZZ_INEXISTENTE',
           descPt: 'Secundario',
         }),
+        'user-1',
       ),
     ).rejects.toMatchObject({ statusCode: 422 });
   });
@@ -140,9 +149,15 @@ describe('IndexesService', () => {
     db.index.findMany.mockResolvedValue([{ order: '1' }]);
     db.index.update.mockResolvedValue({ ...INDEX, order: '2' });
 
-    const result = await service.update(PROJECT_ID, TABLE_ID, INDEX_ID, {
-      order: '2',
-    });
+    const result = await service.update(
+      PROJECT_ID,
+      TABLE_ID,
+      INDEX_ID,
+      {
+        order: '2',
+      },
+      'user-1',
+    );
 
     expect(result.order).toBe('2');
   });
@@ -156,10 +171,10 @@ describe('IndexesService', () => {
       .mockResolvedValueOnce({ ...INDEX, deletedAt: new Date('2026-01-02T00:00:00.000Z') })
       .mockResolvedValueOnce(INDEX);
 
-    const archived = await service.delete(PROJECT_ID, TABLE_ID, INDEX_ID);
+    const archived = await service.delete(PROJECT_ID, TABLE_ID, INDEX_ID, 'user-1');
     expect(archived.deletedAt).not.toBeNull();
 
-    const restored = await service.restore(PROJECT_ID, TABLE_ID, INDEX_ID);
+    const restored = await service.restore(PROJECT_ID, TABLE_ID, INDEX_ID, 'user-1');
     expect(restored.deletedAt).toBeNull();
   });
 });

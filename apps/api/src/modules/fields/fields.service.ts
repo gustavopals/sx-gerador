@@ -2,6 +2,7 @@ import { validateFieldName } from '@sxgerador/dictionary-validator';
 import type { CreateFieldData, UpdateFieldInput } from '@sxgerador/shared-types';
 import type { Field, Prisma, PrismaClient } from '../../generated/prisma';
 import type { MigrationsService } from '../migrations/migrations.service';
+import { assertProjectPermission } from '../permissions';
 import { ProjectErrors } from '../projects/projects.errors';
 import { FieldErrors } from './fields.errors';
 
@@ -50,8 +51,10 @@ export class FieldsService {
     projectId: string,
     tableId: string,
     input: ListFieldsInput = {},
+    actorUserId?: string,
   ): Promise<PaginatedFields> {
     await this.ensureTableExists(projectId, tableId);
+    await assertProjectPermission(this.db, actorUserId, 'dictionary:read', projectId);
 
     const page = normalizePositiveInt(input.page, DEFAULT_PAGE);
     const pageSize = Math.min(
@@ -75,8 +78,9 @@ export class FieldsService {
     };
   }
 
-  async get(projectId: string, tableId: string, id: string): Promise<Field> {
+  async get(projectId: string, tableId: string, id: string, actorUserId?: string): Promise<Field> {
     await this.ensureTableExists(projectId, tableId);
+    await assertProjectPermission(this.db, actorUserId, 'dictionary:read', projectId);
     const field = await this.db.field.findFirst({
       where: { id, tableId, deletedAt: null },
     });
@@ -84,8 +88,14 @@ export class FieldsService {
     return field;
   }
 
-  async create(projectId: string, tableId: string, input: CreateFieldData): Promise<Field> {
+  async create(
+    projectId: string,
+    tableId: string,
+    input: CreateFieldData,
+    actorUserId?: string,
+  ): Promise<Field> {
     const table = await this.ensureTableExists(projectId, tableId);
+    await assertProjectPermission(this.db, actorUserId, 'dictionary:write', projectId);
     this.ensureFieldNameMatchesTable(input.name, table.prefix);
 
     await this.ensureFieldNameAvailable(tableId, input.name);
@@ -119,9 +129,11 @@ export class FieldsService {
     tableId: string,
     id: string,
     input: UpdateFieldInput,
+    actorUserId?: string,
   ): Promise<Field> {
     const table = await this.ensureTableExists(projectId, tableId);
-    const before = await this.get(projectId, tableId, id);
+    await assertProjectPermission(this.db, actorUserId, 'dictionary:write', projectId);
+    const before = await this.get(projectId, tableId, id, actorUserId);
 
     if (input.name) {
       this.ensureFieldNameMatchesTable(input.name, table.prefix);
@@ -145,8 +157,14 @@ export class FieldsService {
     return field;
   }
 
-  async delete(projectId: string, tableId: string, id: string): Promise<Field> {
+  async delete(
+    projectId: string,
+    tableId: string,
+    id: string,
+    actorUserId?: string,
+  ): Promise<Field> {
     await this.ensureTableExists(projectId, tableId);
+    await assertProjectPermission(this.db, actorUserId, 'dictionary:write', projectId);
     const field = await this.db.field.findFirst({ where: { id, tableId } });
     if (!field) throw FieldErrors.NOT_FOUND;
     if (field.deletedAt) throw FieldErrors.ALREADY_ARCHIVED;
@@ -167,8 +185,14 @@ export class FieldsService {
     return archived;
   }
 
-  async restore(projectId: string, tableId: string, id: string): Promise<Field> {
+  async restore(
+    projectId: string,
+    tableId: string,
+    id: string,
+    actorUserId?: string,
+  ): Promise<Field> {
     await this.ensureTableExists(projectId, tableId);
+    await assertProjectPermission(this.db, actorUserId, 'dictionary:write', projectId);
     const field = await this.db.field.findFirst({ where: { id, tableId } });
     if (!field) throw FieldErrors.NOT_FOUND;
     if (!field.deletedAt) throw FieldErrors.NOT_ARCHIVED;
@@ -189,8 +213,14 @@ export class FieldsService {
     return restored;
   }
 
-  async reorder(projectId: string, tableId: string, input: ReorderFieldsInput): Promise<Field[]> {
+  async reorder(
+    projectId: string,
+    tableId: string,
+    input: ReorderFieldsInput,
+    actorUserId?: string,
+  ): Promise<Field[]> {
     await this.ensureTableExists(projectId, tableId);
+    await assertProjectPermission(this.db, actorUserId, 'dictionary:write', projectId);
     const activeFields = await this.db.field.findMany({
       where: { tableId, deletedAt: null },
       select: { id: true },
@@ -238,8 +268,10 @@ export class FieldsService {
     projectId: string,
     tableId: string,
     input: BulkUpdateFieldsInput,
+    actorUserId?: string,
   ): Promise<{ updatedCount: number }> {
     await this.ensureTableExists(projectId, tableId);
+    await assertProjectPermission(this.db, actorUserId, 'dictionary:write', projectId);
 
     const uniqueIds = Array.from(new Set(input.fieldIds));
     const data = buildUpdateData(input.changes);

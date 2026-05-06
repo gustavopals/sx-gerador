@@ -23,7 +23,7 @@ export class ProjectsController {
   list = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const query = ListQuerySchema.parse(req.query);
-      const result = await this.service.list(query);
+      const result = await this.service.list(query, req.user?.sub);
       res.json(result);
     } catch (err) {
       next(err);
@@ -43,7 +43,7 @@ export class ProjectsController {
   get = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const { id } = IdParamSchema.parse(req.params);
-      const project = await this.service.get(id);
+      const project = await this.service.get(id, req.user?.sub);
       res.json({ project });
     } catch (err) {
       next(err);

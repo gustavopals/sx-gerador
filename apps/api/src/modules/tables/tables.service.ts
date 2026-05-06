@@ -2,6 +2,7 @@ import type { CreateTableData, UpdateTableInput } from '@sxgerador/shared-types'
 import type { Prisma, PrismaClient, Table } from '../../generated/prisma';
 import { logAudit } from '../audit';
 import type { MigrationsService } from '../migrations/migrations.service';
+import { assertProjectPermission } from '../permissions';
 import { ProjectErrors } from '../projects/projects.errors';
 import { TableErrors } from './tables.errors';
 
@@ -32,8 +33,13 @@ export class TablesService {
     private readonly migrationsService?: MigrationsService,
   ) {}
 
-  async list(projectId: string, input: ListTablesInput = {}): Promise<PaginatedTables> {
+  async list(
+    projectId: string,
+    input: ListTablesInput = {},
+    actorUserId?: string,
+  ): Promise<PaginatedTables> {
     await this.ensureProjectExists(projectId);
+    await assertProjectPermission(this.db, actorUserId, 'dictionary:read', projectId);
 
     const page = normalizePositiveInt(input.page, DEFAULT_PAGE);
     const pageSize = Math.min(
@@ -62,7 +68,8 @@ export class TablesService {
     };
   }
 
-  async get(projectId: string, id: string): Promise<Table> {
+  async get(projectId: string, id: string, actorUserId?: string): Promise<Table> {
+    await assertProjectPermission(this.db, actorUserId, 'dictionary:read', projectId);
     const table = await this.db.table.findFirst({
       where: { id, projectId, deletedAt: null },
     });
@@ -72,6 +79,7 @@ export class TablesService {
 
   async create(projectId: string, input: CreateTableData, actorUserId?: string): Promise<Table> {
     await this.ensureProjectExists(projectId);
+    await assertProjectPermission(this.db, actorUserId, 'dictionary:write', projectId);
     await this.ensurePrefixAvailable(projectId, input.prefix);
 
     const table = await this.db.table.create({
@@ -103,7 +111,8 @@ export class TablesService {
     input: UpdateTableInput,
     actorUserId?: string,
   ): Promise<Table> {
-    const before = await this.get(projectId, id);
+    await assertProjectPermission(this.db, actorUserId, 'dictionary:write', projectId);
+    const before = await this.get(projectId, id, actorUserId);
 
     const table = await this.db.table.update({
       where: { id },
@@ -130,6 +139,7 @@ export class TablesService {
   }
 
   async delete(projectId: string, id: string, actorUserId?: string): Promise<Table> {
+    await assertProjectPermission(this.db, actorUserId, 'dictionary:write', projectId);
     const table = await this.db.table.findFirst({ where: { id, projectId } });
     if (!table) throw TableErrors.NOT_FOUND;
     if (table.deletedAt) throw TableErrors.ALREADY_ARCHIVED;
@@ -159,6 +169,7 @@ export class TablesService {
   }
 
   async restore(projectId: string, id: string, actorUserId?: string): Promise<Table> {
+    await assertProjectPermission(this.db, actorUserId, 'dictionary:write', projectId);
     const table = await this.db.table.findFirst({ where: { id, projectId } });
     if (!table) throw TableErrors.NOT_FOUND;
     if (!table.deletedAt) throw TableErrors.NOT_ARCHIVED;

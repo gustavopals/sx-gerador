@@ -1,0 +1,26 @@
+.sxg-invite {
+  display: grid;
+  min-height: 360px;
+  place-items: center;
+}
+
+.sxg-invite__state {
+  display: grid;
+  max-width: 520px;
+  justify-items: center;
+  gap: 14px;
+  padding: 32px;
+  text-align: center;
+}
+
+.sxg-invite__state h2,
+.sxg-invite__state p {
+  margin: 0;
+}
+
+.sxg-invite__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: center;
+}

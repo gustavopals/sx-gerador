@@ -70,6 +70,25 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'teams',
+        loadComponent: () =>
+          import('./features/teams/list/teams-list.component').then((m) => m.TeamsListComponent),
+      },
+      {
+        path: 'teams/:id',
+        loadComponent: () =>
+          import('./features/teams/detail/team-detail.component').then(
+            (m) => m.TeamDetailComponent,
+          ),
+      },
+      {
+        path: 'invites/:token',
+        loadComponent: () =>
+          import('./features/teams/invite/invite-accept.component').then(
+            (m) => m.InviteAcceptComponent,
+          ),
+      },
+      {
         path: 'projects/new',
         loadComponent: () =>
           import('./features/projects/form/project-form.component').then(

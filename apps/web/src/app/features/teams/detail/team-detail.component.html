@@ -1,0 +1,157 @@
+<po-page-default
+  [p-title]="team()?.name ?? 'Equipe'"
+  [p-subtitle]="team()?.description ?? ''"
+  [p-breadcrumb]="breadcrumb"
+  [p-actions]="pageActions"
+>
+  @if (isLoading()) {
+    <div class="sxg-team-detail__state">
+      <span class="sxg-team-detail__spinner"></span>
+      <p>Carregando equipe...</p>
+    </div>
+  } @else if (team(); as currentTeam) {
+    <po-tabs>
+      <po-tab p-label="Membros" [p-active]="true">
+        <section class="sxg-team-detail__section">
+          <po-table
+            [p-columns]="memberColumns"
+            [p-items]="members()"
+            [p-actions]="memberActions"
+            [p-striped]="true"
+          ></po-table>
+        </section>
+      </po-tab>
+
+      <po-tab p-label="Projetos">
+        <section class="sxg-team-detail__section">
+          @if (projects().length === 0) {
+            <div class="sxg-team-detail__empty">
+              <h3>Nenhum projeto pertence a esta equipe</h3>
+              <p>Projetos transferidos para a equipe aparecerão aqui.</p>
+            </div>
+          } @else {
+            <div class="sxg-team-detail__projects">
+              @for (project of projects(); track project.id) {
+                <a class="sxg-team-project" [routerLink]="['/projects', project.id]">
+                  <strong>{{ project.name }}</strong>
+                  <span>{{ project.slug }}</span>
+                </a>
+              }
+            </div>
+          }
+        </section>
+      </po-tab>
+
+      <po-tab p-label="Convites">
+        <section class="sxg-team-detail__section">
+          <div class="sxg-team-detail__toolbar">
+            <po-button
+              p-label="Novo convite"
+              p-icon="an an-user-plus"
+              p-kind="primary"
+              [p-disabled]="projects().length === 0"
+              (p-click)="openInviteModal()"
+            ></po-button>
+          </div>
+          <po-table [p-columns]="inviteColumns" [p-items]="invites()" [p-striped]="true"></po-table>
+        </section>
+      </po-tab>
+
+      <po-tab p-label="Settings">
+        <form
+          class="sxg-team-detail__settings"
+          [formGroup]="settingsForm"
+          (ngSubmit)="saveSettings()"
+        >
+          <po-input p-label="Nome" formControlName="name" p-required="true"></po-input>
+          <po-input p-label="Slug" formControlName="slug" p-required="true"></po-input>
+          <po-input p-label="Avatar URL" formControlName="avatarUrl"></po-input>
+          <po-textarea p-label="Descrição" formControlName="description" [p-rows]="3"></po-textarea>
+
+          <footer>
+            <po-button
+              p-label="Salvar settings"
+              p-kind="primary"
+              p-icon="an an-floppy-disk"
+              [p-type]="submitType"
+              [p-loading]="isSaving()"
+              [p-disabled]="settingsForm.invalid || isSaving()"
+            ></po-button>
+            <po-button
+              p-label="Excluir equipe"
+              p-icon="an an-trash"
+              p-kind="danger"
+              (p-click)="openDeleteModal()"
+            ></po-button>
+          </footer>
+        </form>
+      </po-tab>
+    </po-tabs>
+
+    <po-modal
+      #inviteModal
+      p-title="Convidar membro"
+      p-icon="an an-user-plus"
+      [p-primary-action]="invitePrimaryAction"
+      [p-secondary-action]="closeModalAction"
+      [p-hide-close]="isInviting()"
+    >
+      <form class="sxg-team-modal" [formGroup]="inviteForm" novalidate>
+        <po-select
+          p-label="Projeto"
+          [p-options]="projectOptions()"
+          formControlName="projectId"
+          p-required="true"
+        ></po-select>
+        <po-input
+          p-label="Email"
+          p-placeholder="pessoa@empresa.com"
+          formControlName="email"
+          p-required="true"
+        ></po-input>
+        <po-select
+          p-label="Papel"
+          [p-options]="roleOptions"
+          formControlName="role"
+          p-required="true"
+        ></po-select>
+      </form>
+    </po-modal>
+
+    <po-modal
+      #transferModal
+      p-title="Transferir ownership"
+      p-icon="an an-warning-circle"
+      [p-primary-action]="transferPrimaryAction"
+      [p-secondary-action]="closeModalAction"
+    >
+      <div class="sxg-team-modal">
+        <p>
+          {{ selectedTransferMember()?.user?.name }} será o novo owner da equipe
+          {{ currentTeam.name }}.
+        </p>
+        <p>Seu usuário será alterado para Admin.</p>
+      </div>
+    </po-modal>
+
+    <po-modal
+      #deleteModal
+      p-title="Excluir equipe"
+      p-icon="an an-warning-circle"
+      [p-primary-action]="deletePrimaryAction"
+      [p-secondary-action]="closeModalAction"
+      [p-hide-close]="isDeleting()"
+    >
+      <form class="sxg-team-modal" [formGroup]="deleteForm" novalidate>
+        <p>Esta ação remove a equipe da navegação e impede novas ações nela.</p>
+        <p>Para confirmar, digite <strong>EXCLUIR</strong>.</p>
+        <po-input
+          p-label="Confirmação"
+          formControlName="confirmation"
+          p-placeholder="EXCLUIR"
+          p-required="true"
+        ></po-input>
+      </form>
+    </po-modal>
+  }
+</po-page-default>

@@ -19,8 +19,15 @@ import {
 import { from, of, timer } from 'rxjs';
 import { catchError, map, switchMap } from 'rxjs/operators';
 import { mapProjectsError, ProjectsService } from '../../../core/services/projects.service';
+import {
+  mapTeamsError,
+  TeamsService,
+  type TeamSummary,
+} from '../../../core/services/teams.service';
 
 const SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+const PERSONAL_OWNER = 'personal';
+const TEAM_OWNER_PREFIX = 'team:';
 
 @Component({
   selector: 'sxg-project-form',
@@ -32,6 +39,7 @@ export class ProjectFormComponent implements OnInit {
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
   private readonly projectsService = inject(ProjectsService);
+  private readonly teamsService = inject(TeamsService);
   private readonly notification = inject(PoNotificationService);
   private readonly fb = inject(FormBuilder);
 
@@ -39,7 +47,15 @@ export class ProjectFormComponent implements OnInit {
   readonly isEditMode = computed(() => this.projectId() !== null);
   readonly isLoading = signal(false);
   readonly isSaving = signal(false);
+  readonly teams = signal<TeamSummary[]>([]);
   readonly submitType = PoButtonType.Submit;
+  readonly ownerOptions = computed<PoSelectOption[]>(() => [
+    { label: 'Pessoal', value: PERSONAL_OWNER },
+    ...this.teams().map((team) => ({
+      label: `Equipe: ${team.name}`,
+      value: `${TEAM_OWNER_PREFIX}${team.id}`,
+    })),
+  ]);
 
   readonly visibilityOptions: PoSelectOption[] = [
     { label: 'Privado', value: 'PRIVATE' },
@@ -76,6 +92,7 @@ export class ProjectFormComponent implements OnInit {
     ],
     description: ['', [Validators.maxLength(500)]],
     visibility: ['PRIVATE'],
+    owner: [PERSONAL_OWNER],
     defaultLang: ['pt-BR'],
     defaultTamFil: [2],
   });
@@ -127,6 +144,8 @@ export class ProjectFormComponent implements OnInit {
     if (id) {
       this.projectId.set(id);
       void this.loadProject(id);
+    } else {
+      void this.loadOwnerTeams();
     }
   }
 
@@ -144,7 +163,7 @@ export class ProjectFormComponent implements OnInit {
 
     this.isSaving.set(true);
     try {
-      const { name, slug, description, visibility, defaultLang, defaultTamFil } =
+      const { name, slug, description, visibility, owner, defaultLang, defaultTamFil } =
         this.form.getRawValue();
       const id = this.projectId();
 
@@ -164,6 +183,7 @@ export class ProjectFormComponent implements OnInit {
           slug: slug!,
           description: description?.trim() || null,
           visibility: visibility as 'PRIVATE' | 'UNLISTED' | 'PUBLIC',
+          ownerTeamId: getOwnerTeamId(owner),
           defaultLang: defaultLang as 'pt-BR' | 'en-US' | 'es-ES',
           defaultTamFil: defaultTamFil!,
         });
@@ -203,6 +223,17 @@ export class ProjectFormComponent implements OnInit {
     }
   }
 
+  private async loadOwnerTeams(): Promise<void> {
+    this.isLoading.set(true);
+    try {
+      this.teams.set(await this.teamsService.list());
+    } catch (err) {
+      this.notification.error(mapTeamsError(err));
+    } finally {
+      this.isLoading.set(false);
+    }
+  }
+
   private slugAvailabilityValidator(): AsyncValidatorFn {
     return (control: AbstractControl) =>
       timer(500).pipe(
@@ -218,6 +249,11 @@ export class ProjectFormComponent implements OnInit {
         }),
       );
   }
+}
+
+function getOwnerTeamId(owner: string | null | undefined): string | null {
+  if (!owner?.startsWith(TEAM_OWNER_PREFIX)) return null;
+  return owner.slice(TEAM_OWNER_PREFIX.length);
 }
 
 function toSlug(value: string): string {

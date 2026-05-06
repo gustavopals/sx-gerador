@@ -29,7 +29,7 @@ export class IndexesController {
     try {
       const { projectId, tableId } = ParamsSchema.parse(req.params);
       const query = ListQuerySchema.parse(req.query);
-      const result = await this.service.list(projectId, tableId, query);
+      const result = await this.service.list(projectId, tableId, query, req.user?.sub);
       res.json(result);
     } catch (err) {
       next(err);
@@ -39,7 +39,7 @@ export class IndexesController {
   get = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const { projectId, tableId, id } = IdParamsSchema.parse(req.params);
-      const index = await this.service.get(projectId, tableId, id);
+      const index = await this.service.get(projectId, tableId, id, req.user?.sub);
       res.json({ index });
     } catch (err) {
       next(err);
@@ -49,7 +49,7 @@ export class IndexesController {
   create = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const { projectId, tableId } = ParamsSchema.parse(req.params);
-      const index = await this.service.create(projectId, tableId, req.body);
+      const index = await this.service.create(projectId, tableId, req.body, req.user?.sub);
       res.status(201).json({ index });
     } catch (err) {
       next(err);
@@ -59,7 +59,7 @@ export class IndexesController {
   update = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const { projectId, tableId, id } = IdParamsSchema.parse(req.params);
-      const index = await this.service.update(projectId, tableId, id, req.body);
+      const index = await this.service.update(projectId, tableId, id, req.body, req.user?.sub);
       res.json({ index });
     } catch (err) {
       next(err);
@@ -69,7 +69,7 @@ export class IndexesController {
   delete = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const { projectId, tableId, id } = IdParamsSchema.parse(req.params);
-      const index = await this.service.delete(projectId, tableId, id);
+      const index = await this.service.delete(projectId, tableId, id, req.user?.sub);
       res.json({ index });
     } catch (err) {
       next(err);
@@ -79,7 +79,7 @@ export class IndexesController {
   restore = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
       const { projectId, tableId, id } = IdParamsSchema.parse(req.params);
-      const index = await this.service.restore(projectId, tableId, id);
+      const index = await this.service.restore(projectId, tableId, id, req.user?.sub);
       res.json({ index });
     } catch (err) {
       next(err);

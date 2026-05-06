@@ -21,6 +21,8 @@ export const ProjectSchema = z.object({
   slug: ProjectSlugSchema,
   description: ProjectDescriptionSchema,
   visibility: ProjectVisibilitySchema.default('PRIVATE'),
+  ownerUserId: z.string().cuid().nullable().optional(),
+  ownerTeamId: z.string().cuid().nullable().optional(),
   defaultTamFil: z.number().int().min(1).max(6).default(2),
   defaultLang: z.enum(['pt-BR', 'en-US', 'es-ES']).default('pt-BR'),
   createdAt: z.coerce.date(),
@@ -33,6 +35,7 @@ export const CreateProjectSchema = z.object({
   slug: ProjectSlugSchema,
   description: ProjectDescriptionSchema,
   visibility: ProjectVisibilitySchema.default('PRIVATE'),
+  ownerTeamId: z.string().cuid().nullable().optional(),
   defaultTamFil: z.number().int().min(1).max(6).default(2),
   defaultLang: z.enum(['pt-BR', 'en-US', 'es-ES']).default('pt-BR'),
 });

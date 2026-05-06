@@ -1,6 +1,12 @@
 import type { CreateProjectInput, UpdateProjectInput } from '@sxgerador/shared-types';
 import type { Prisma, PrismaClient, Project } from '../../generated/prisma';
 import { logAudit } from '../audit';
+import {
+  assertProjectPermission,
+  buildProjectAccessWhere,
+  canUserDo,
+  PermissionErrors,
+} from '../permissions';
 import { ProjectErrors } from './projects.errors';
 
 const DEFAULT_PAGE = 1;
@@ -27,13 +33,14 @@ export interface PaginatedProjects {
 export class ProjectsService {
   constructor(private readonly db: PrismaClient) {}
 
-  async list(input: ListProjectsInput = {}): Promise<PaginatedProjects> {
+  async list(input: ListProjectsInput = {}, actorUserId?: string): Promise<PaginatedProjects> {
+    if (!actorUserId) throw PermissionErrors.AUTH_REQUIRED;
     const page = normalizePositiveInt(input.page, DEFAULT_PAGE);
     const pageSize = Math.min(
       normalizePositiveInt(input.pageSize, DEFAULT_PAGE_SIZE),
       MAX_PAGE_SIZE,
     );
-    const where = buildListWhere(input);
+    const where = buildListWhere(input, actorUserId);
     const [projects, total] = await this.db.$transaction([
       this.db.project.findMany({
         where,
@@ -55,17 +62,22 @@ export class ProjectsService {
     };
   }
 
-  async get(id: string): Promise<Project> {
+  async get(id: string, actorUserId?: string): Promise<Project> {
     const project = await this.db.project.findFirst({ where: { id, deletedAt: null } });
     if (!project) throw ProjectErrors.NOT_FOUND;
+    await assertProjectPermission(this.db, actorUserId, 'project:read', id);
     return project;
   }
 
   async create(input: CreateProjectInput, actorUserId?: string): Promise<Project> {
+    if (!actorUserId || !canUserDo({ id: actorUserId }, 'project:create')) {
+      throw PermissionErrors.AUTH_REQUIRED;
+    }
     await this.ensureSlugAvailable(input.slug);
+    if (input.ownerTeamId) await this.ensureUserCanCreateForTeam(input.ownerTeamId, actorUserId);
 
     const project = await this.db.project.create({
-      data: normalizeCreateProjectInput(input),
+      data: normalizeCreateProjectInput(input, actorUserId),
     });
 
     await logAudit(this.db, 'projects.create', actorUserId ?? null, { projectId: project.id });
@@ -73,7 +85,8 @@ export class ProjectsService {
   }
 
   async update(id: string, input: UpdateProjectInput, actorUserId?: string): Promise<Project> {
-    await this.get(id);
+    await this.get(id, actorUserId);
+    await assertProjectPermission(this.db, actorUserId, 'project:update', id);
     if (input.slug) await this.ensureSlugAvailable(input.slug, id);
 
     const project = await this.db.project.update({
@@ -89,6 +102,7 @@ export class ProjectsService {
     const project = await this.db.project.findUnique({ where: { id } });
     if (!project) throw ProjectErrors.NOT_FOUND;
     if (project.deletedAt) throw ProjectErrors.ALREADY_ARCHIVED;
+    await assertProjectPermission(this.db, actorUserId, 'project:delete', id);
 
     const archived = await this.db.project.update({
       where: { id },
@@ -103,6 +117,9 @@ export class ProjectsService {
     const project = await this.db.project.findUnique({ where: { id } });
     if (!project) throw ProjectErrors.NOT_FOUND;
     if (!project.deletedAt) throw ProjectErrors.NOT_ARCHIVED;
+    await assertProjectPermission(this.db, actorUserId, 'project:restore', id, {
+      includeArchived: true,
+    });
 
     const restored = await this.db.project.update({
       where: { id },
@@ -114,7 +131,8 @@ export class ProjectsService {
   }
 
   async duplicate(id: string, actorUserId?: string): Promise<Project> {
-    const project = await this.get(id);
+    const project = await this.get(id, actorUserId);
+    await assertProjectPermission(this.db, actorUserId, 'project:duplicate', id);
     const slug = await this.nextCopySlug(project.slug);
 
     const duplicate = await this.db.project.create({
@@ -123,6 +141,7 @@ export class ProjectsService {
         slug,
         description: project.description,
         visibility: project.visibility,
+        ownerUser: actorUserId ? { connect: { id: actorUserId } } : undefined,
         defaultTamFil: project.defaultTamFil,
         defaultLang: project.defaultLang,
       },
@@ -147,6 +166,19 @@ export class ProjectsService {
     if (existing && existing.id !== ignoreProjectId) throw ProjectErrors.SLUG_IN_USE;
   }
 
+  private async ensureUserCanCreateForTeam(teamId: string, actorUserId: string): Promise<void> {
+    const membership = await this.db.teamMember.findFirst({
+      where: {
+        teamId,
+        userId: actorUserId,
+        removedAt: null,
+        team: { deletedAt: null },
+      },
+      select: { id: true },
+    });
+    if (!membership) throw PermissionErrors.FORBIDDEN;
+  }
+
   private async nextCopySlug(sourceSlug: string): Promise<string> {
     const base = `${sourceSlug}-copy`;
     let candidate = base;
@@ -161,15 +193,21 @@ export class ProjectsService {
   }
 }
 
-function buildListWhere(input: ListProjectsInput): Prisma.ProjectWhereInput {
-  const where: Prisma.ProjectWhereInput = {};
-  if (!input.includeArchived) where.deletedAt = null;
+function buildListWhere(input: ListProjectsInput, actorUserId: string): Prisma.ProjectWhereInput {
+  const where: Prisma.ProjectWhereInput = buildProjectAccessWhere(
+    actorUserId,
+    input.includeArchived,
+  );
 
   const search = input.search?.trim();
   if (search) {
-    where.OR = [
-      { name: { contains: search, mode: 'insensitive' } },
-      { slug: { contains: search, mode: 'insensitive' } },
+    where.AND = [
+      {
+        OR: [
+          { name: { contains: search, mode: 'insensitive' } },
+          { slug: { contains: search, mode: 'insensitive' } },
+        ],
+      },
     ];
   }
 
@@ -181,12 +219,18 @@ function normalizePositiveInt(value: number | undefined, fallback: number): numb
   return value;
 }
 
-function normalizeCreateProjectInput(input: CreateProjectInput): Prisma.ProjectCreateInput {
+function normalizeCreateProjectInput(
+  input: CreateProjectInput,
+  actorUserId: string,
+): Prisma.ProjectCreateInput {
   return {
     name: input.name,
     slug: input.slug,
     description: input.description || null,
     visibility: input.visibility ?? 'PRIVATE',
+    ...(input.ownerTeamId
+      ? { ownerTeam: { connect: { id: input.ownerTeamId } } }
+      : { ownerUser: { connect: { id: actorUserId } } }),
     defaultTamFil: input.defaultTamFil ?? 2,
     defaultLang: input.defaultLang ?? 'pt-BR',
   };

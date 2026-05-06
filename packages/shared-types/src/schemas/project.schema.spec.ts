@@ -14,6 +14,15 @@ describe('CreateProjectSchema', () => {
     expect(result.defaultLang).toBe('pt-BR');
   });
 
+  it('accepts team ownership', () => {
+    const result = CreateProjectSchema.parse({
+      ...valid,
+      ownerTeamId: 'clwteam000000000000000001',
+    });
+
+    expect(result.ownerTeamId).toBe('clwteam000000000000000001');
+  });
+
   it('rejects invalid slug', () => {
     expect(() => CreateProjectSchema.parse({ ...valid, slug: 'Financeiro DEV' })).toThrow();
   });
