@@ -1,0 +1,94 @@
+<section class="sxg-key-builder">
+  <header class="sxg-key-builder__header">
+    <h4>Builder de chave do índice</h4>
+  </header>
+
+  <div class="sxg-key-builder__content">
+    <section class="sxg-key-builder__column">
+      <h5>Campos disponíveis</h5>
+      <div
+        class="sxg-key-builder__dropzone"
+        (dragover)="allowDrop($event)"
+        (drop)="onDropToAvailable($event)"
+      >
+        @for (field of availableFields(); track field; let idx = $index) {
+          <article
+            class="sxg-key-builder__token"
+            draggable="true"
+            [class.sxg-key-builder__token--disabled]="isDisabled"
+            [class.sxg-key-builder__token--used]="isFieldAlreadyInKey(field)"
+            (dragstart)="onDragStart($event, 'available', idx)"
+          >
+            <span>{{ field }}</span>
+            <po-button
+              p-label="Adicionar"
+              p-kind="tertiary"
+              p-size="small"
+              p-icon="an an-plus"
+              [p-disabled]="isDisabled"
+              (p-click)="addFieldToken(field)"
+            ></po-button>
+          </article>
+        }
+      </div>
+    </section>
+
+    <section class="sxg-key-builder__column">
+      <h5>Chave do índice (arraste para ordenar)</h5>
+      <div
+        class="sxg-key-builder__dropzone"
+        (dragover)="allowDrop($event)"
+        (drop)="onDropToSelected($event)"
+      >
+        @if (keyTokens.length === 0) {
+          <p class="sxg-key-builder__empty">
+            Arraste campos para cá ou adicione itens especiais abaixo.
+          </p>
+        }
+
+        @for (token of keyTokens; track $index) {
+          <article
+            class="sxg-key-builder__token sxg-key-builder__token--selected"
+            draggable="true"
+            [class.sxg-key-builder__token--disabled]="isDisabled"
+            (dragstart)="onDragStart($event, 'selected', $index)"
+            (dragover)="allowDrop($event)"
+            (drop)="onDropToSelected($event, $index)"
+          >
+            <span>{{ token }}</span>
+            <po-button
+              p-label="Remover"
+              p-kind="tertiary"
+              p-size="small"
+              p-icon="an an-trash"
+              [p-disabled]="isDisabled"
+              (p-click)="removeToken($index)"
+            ></po-button>
+          </article>
+        }
+      </div>
+    </section>
+  </div>
+
+  <section class="sxg-key-builder__special">
+    <po-select
+      name="specialToken"
+      p-label="Adicionar função especial"
+      [p-options]="normalizedSpecialTokens"
+      [ngModel]="selectedSpecialToken"
+      (ngModelChange)="selectedSpecialToken = $event"
+    ></po-select>
+    <po-button
+      p-label="Adicionar função"
+      p-kind="secondary"
+      p-icon="an an-plus"
+      [p-disabled]="isDisabled || !selectedSpecialToken"
+      (p-click)="addSpecialToken()"
+    ></po-button>
+  </section>
+
+  <p class="sxg-key-builder__preview">
+    <span>Preview:</span>
+    <code>{{ keyPreview || '(vazio)' }}</code>
+  </p>
+</section>

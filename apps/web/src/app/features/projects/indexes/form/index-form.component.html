@@ -1,0 +1,75 @@
+<po-page-default
+  [p-title]="isEditMode() ? 'Editar índice' : 'Novo índice'"
+  p-subtitle="Cadastro de índice SIX"
+  [p-breadcrumb]="breadcrumb"
+  [p-actions]="pageActions"
+>
+  @if (isLoading()) {
+    <div class="sxg-index-form__state">
+      <span class="sxg-index-form__spinner"></span>
+      <p>Carregando contexto da tabela...</p>
+    </div>
+  } @else {
+    <form class="sxg-index-form" [formGroup]="form" (ngSubmit)="save()">
+      <section class="sxg-index-form__section">
+        <div class="sxg-index-form__row-3">
+          <po-input p-label="Ordem (SIX.ORDEM)" formControlName="order"></po-input>
+          <po-select
+            p-label="Proprietário (SIX.PROPRI)"
+            [p-options]="ownerOptions"
+            formControlName="owner"
+          ></po-select>
+          <po-input p-label="Apelido (SIX.NICKNAME)" formControlName="nickname"></po-input>
+        </div>
+
+        <sxg-key-builder
+          formControlName="key"
+          [availableFields]="availableFields()"
+          [tablePrefix]="tablePrefix()"
+        ></sxg-key-builder>
+
+        <div class="sxg-index-form__row-3">
+          <po-input p-label="Descrição PT (SIX.DESCRICAO)" formControlName="descPt"></po-input>
+          <po-input p-label="Descrição ES (SIX.DESCSPA)" formControlName="descEs"></po-input>
+          <po-input p-label="Descrição EN (SIX.DESCENG)" formControlName="descEn"></po-input>
+        </div>
+
+        <div class="sxg-index-form__row-2">
+          <po-input p-label="Expressão F3 (SIX.F3)" formControlName="searchExpr"></po-input>
+          <po-select
+            p-label="Mostra na pesquisa (SIX.SHOWPESQ)"
+            [p-options]="yesNoOptions"
+            formControlName="showSearch"
+          ></po-select>
+        </div>
+
+        <div class="sxg-index-form__row-2">
+          <po-select
+            p-label="Índice virtual (SIX.IX_VIRTUAL)"
+            [p-options]="yesNoOptions"
+            formControlName="isVirtual"
+          ></po-select>
+          <po-select
+            p-label="Virtual customizável (SIX.IX_VIRCUST)"
+            [p-options]="yesNoOptions"
+            formControlName="virtualCustomizable"
+          ></po-select>
+        </div>
+
+        <po-textarea p-label="Observações" formControlName="notes"></po-textarea>
+      </section>
+
+      <footer class="sxg-index-form__footer">
+        <po-button
+          [p-label]="isEditMode() ? 'Salvar alterações' : 'Criar índice'"
+          [p-type]="submitType"
+          p-kind="primary"
+          p-icon="an an-floppy-disk"
+          [p-disabled]="form.invalid || isSaving()"
+          [p-loading]="isSaving()"
+        ></po-button>
+        <po-button p-label="Cancelar" p-kind="secondary" (p-click)="cancel()"></po-button>
+      </footer>
+    </form>
+  }
+</po-page-default>

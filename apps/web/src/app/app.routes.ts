@@ -112,6 +112,20 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'projects/:projectId/tables/:tableId/indexes/new',
+        loadComponent: () =>
+          import('./features/projects/indexes/form/index-form.component').then(
+            (m) => m.IndexFormComponent,
+          ),
+      },
+      {
+        path: 'projects/:projectId/tables/:tableId/indexes/:indexId/edit',
+        loadComponent: () =>
+          import('./features/projects/indexes/form/index-form.component').then(
+            (m) => m.IndexFormComponent,
+          ),
+      },
+      {
         path: 'projects/:projectId/tables/:tableId',
         loadComponent: () =>
           import('./features/projects/tables/detail/table-detail.component').then(

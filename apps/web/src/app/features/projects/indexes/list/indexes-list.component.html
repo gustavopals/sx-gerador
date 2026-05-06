@@ -1,0 +1,24 @@
+<section class="sxg-indexes-list">
+  <div class="sxg-indexes-list__toolbar">
+    <po-input
+      p-placeholder="Buscar por chave, descrição ou apelido"
+      [ngModel]="search()"
+      (ngModelChange)="search.set($event)"
+    ></po-input>
+    <po-button
+      p-label="Novo índice"
+      p-kind="primary"
+      p-icon="an an-plus"
+      [p-disabled]="isDisabled()"
+      (p-click)="goToNew()"
+    ></po-button>
+  </div>
+
+  <po-table
+    [p-columns]="columns"
+    [p-items]="rows"
+    [p-loading]="isLoading()"
+    [p-actions]="actions"
+    [p-striped]="true"
+  ></po-table>
+</section>

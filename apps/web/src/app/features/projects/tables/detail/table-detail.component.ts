@@ -12,16 +12,26 @@ import {
   type PoPageAction,
 } from '@po-ui/ng-components';
 import { FieldsService, type FieldSummary } from '../../../../core/services/fields.service';
+import { IndexesService, type IndexSummary } from '../../../../core/services/indexes.service';
 import {
   mapTablesError,
   TablesService,
   type TableSummary,
 } from '../../../../core/services/tables.service';
 import { FieldsListComponent } from '../../fields/list/fields-list.component';
+import { IndexesListComponent } from '../../indexes/list/indexes-list.component';
 
 @Component({
   selector: 'sxg-table-detail',
-  imports: [DatePipe, PoButtonModule, PoPageModule, PoTabsModule, PoTagModule, FieldsListComponent],
+  imports: [
+    DatePipe,
+    PoButtonModule,
+    PoPageModule,
+    PoTabsModule,
+    PoTagModule,
+    FieldsListComponent,
+    IndexesListComponent,
+  ],
   templateUrl: './table-detail.component.html',
   styleUrl: './table-detail.component.scss',
 })
@@ -30,6 +40,7 @@ export class TableDetailComponent implements OnInit {
   private readonly route = inject(ActivatedRoute);
   private readonly tablesService = inject(TablesService);
   private readonly fieldsService = inject(FieldsService);
+  private readonly indexesService = inject(IndexesService);
   private readonly notification = inject(PoNotificationService);
 
   readonly table = signal<TableSummary | null>(null);
@@ -38,11 +49,14 @@ export class TableDetailComponent implements OnInit {
   readonly isActing = signal(false);
   readonly tagType = PoTagType;
   readonly fields = signal<FieldSummary[]>([]);
+  readonly indexes = signal<IndexSummary[]>([]);
 
   readonly hasFilialField = computed(() =>
     this.fields().some((field) => field.name === `${this.table()?.prefix ?? ''}_FILIAL`),
   );
-  readonly hasPrimaryIndex = computed(() => false);
+  readonly hasPrimaryIndex = computed(() =>
+    this.indexes().some((index) => index.order === '1' && !index.deletedAt),
+  );
 
   get breadcrumb(): PoBreadcrumb {
     const t = this.table();
@@ -131,12 +145,22 @@ export class TableDetailComponent implements OnInit {
     ]);
   }
 
+  navigateToNewIndex(): void {
+    const t = this.table();
+    if (!t) return;
+    void this.router.navigate(['/projects', this.projectId(), 'tables', t.id, 'indexes', 'new']);
+  }
+
   private async loadTable(projectId: string, tableId: string): Promise<void> {
     this.isLoading.set(true);
     try {
       this.table.set(await this.tablesService.get(projectId, tableId));
-      const fieldsResponse = await this.fieldsService.list(projectId, tableId);
+      const [fieldsResponse, indexesResponse] = await Promise.all([
+        this.fieldsService.list(projectId, tableId),
+        this.indexesService.list(projectId, tableId),
+      ]);
       this.fields.set(fieldsResponse.fields.filter((field) => !field.deletedAt));
+      this.indexes.set(indexesResponse.indexes.filter((index) => !index.deletedAt));
     } catch {
       this.notification.error('Tabela não encontrada.');
       void this.router.navigate(['/projects', projectId]);

@@ -150,9 +150,38 @@ model Table {
 
   project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
   fields  Field[]
+  indexes Index[]
 
   @@unique([projectId, prefix])
   @@index([projectId])
+}
+
+model Index {
+  id      String @id @default(cuid())
+  tableId String
+
+  order               String // SIX.ORDEM (1, 2, 3...)
+  key                 String // SIX.CHAVE (ex "ZZZ_FILIAL+ZZZ_CODIGO")
+  descPt              String // SIX.DESCRICAO
+  descEs              String? // SIX.DESCSPA
+  descEn              String? // SIX.DESCENG
+  owner               OwnerType @default(U) // SIX.PROPRI
+  searchExpr          String? // SIX.F3
+  nickname            String? // SIX.NICKNAME
+  showSearch          YesNo     @default(S) // SIX.SHOWPESQ
+  isVirtual           YesNo     @default(N) // SIX.IX_VIRTUAL
+  virtualCustomizable YesNo     @default(N) // SIX.IX_VIRCUST
+
+  notes     String?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  table Table @relation(fields: [tableId], references: [id], onDelete: Cascade)
+
+  @@unique([tableId, order])
+  @@index([tableId])
+  @@index([deletedAt])
 }
 
 enum FieldType {

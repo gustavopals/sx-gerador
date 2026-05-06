@@ -77,11 +77,30 @@
       </po-tab>
 
       <po-tab p-label="Índices">
-        <div class="sxg-td__empty-tab">
-          <span class="an an-list-magnifying-glass an-2x"></span>
-          <h3>Nenhum índice cadastrado</h3>
-          <p>Os índices (SIX) desta tabela aparecerão aqui. Em breve disponível.</p>
+        <div class="sxg-td__tab-actions">
+          @if (!t.deletedAt) {
+            <po-button
+              p-label="Novo índice"
+              p-icon="an an-plus"
+              p-kind="primary"
+              (p-click)="navigateToNewIndex()"
+            ></po-button>
+          }
         </div>
+
+        @if (indexes().length === 0) {
+          <div class="sxg-td__empty-tab">
+            <span class="an an-list-magnifying-glass an-2x"></span>
+            <h3>Nenhum índice cadastrado</h3>
+            <p>Cadastre os índices SIX da tabela para garantir navegação e consistência.</p>
+          </div>
+        } @else {
+          <sxg-indexes-list
+            [projectId]="projectId()"
+            [tableId]="t.id"
+            [isDisabled]="!!t.deletedAt"
+          ></sxg-indexes-list>
+        }
       </po-tab>
 
       <po-tab p-label="Configurações">

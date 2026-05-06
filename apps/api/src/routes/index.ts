@@ -1,6 +1,7 @@
 import { Router, type Router as ExpressRouter } from 'express';
 import { authRouter } from '../modules/auth';
 import { fieldsRouter } from '../modules/fields';
+import { indexesRouter } from '../modules/indexes';
 import { projectsRouter } from '../modules/projects';
 import { tablesRouter } from '../modules/tables';
 import { usersRouter } from '../modules/users';
@@ -14,3 +15,4 @@ routes.use('/api/v1', usersRouter);
 routes.use('/api/v1', projectsRouter);
 routes.use('/api/v1', tablesRouter);
 routes.use('/api/v1', fieldsRouter);
+routes.use('/api/v1', indexesRouter);

@@ -2121,24 +2121,24 @@ sxgerador/
 **Objetivo:** CRUD de índices com builder visual de chave.
 
 #### Task F5.1 — Schema Prisma para Index (S)
-- [ ] Modelo `Index`, migration
+- [x] Modelo `Index`, migration
 
 #### Task F5.2 — Validações (S)
-- [ ] Apenas 1 índice de ordem `1` por tabela
-- [ ] Chave referencia somente campos existentes na tabela
+- [x] Apenas 1 índice de ordem `1` por tabela
+- [x] Chave referencia somente campos existentes na tabela
 
 #### Task F5.3 — Service e Controller (M)
-- [ ] CRUD + validações
+- [x] CRUD + validações
 
 #### Task F5.4 — Componente `<sxg-key-builder>` (M)
-- [ ] Drag-and-drop de campos disponíveis para a chave
-- [ ] Preview da string da chave (`A+B+C`)
-- [ ] Permite adicionar funções (ex: `xFilial('ZZZ')`) como itens especiais
-- [ ] Reordenação dentro da chave
+- [x] Drag-and-drop de campos disponíveis para a chave
+- [x] Preview da string da chave (`A+B+C`)
+- [x] Permite adicionar funções (ex: `xFilial('ZZZ')`) como itens especiais
+- [x] Reordenação dentro da chave
 
 #### Task F5.5 — Lista e form de índices (M)
-- [ ] `po-table` com colunas básicas
-- [ ] Form com builder, descrições trilíngues, flags
+- [x] `po-table` com colunas básicas
+- [x] Form com builder, descrições trilíngues, flags
 
 ---
 

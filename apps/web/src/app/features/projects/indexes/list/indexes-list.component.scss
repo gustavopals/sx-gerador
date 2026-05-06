@@ -1,0 +1,10 @@
+.sxg-indexes-list {
+  display: grid;
+  gap: 12px;
+}
+
+.sxg-indexes-list__toolbar {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px;
+}

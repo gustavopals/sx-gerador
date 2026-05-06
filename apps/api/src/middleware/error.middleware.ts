@@ -2,7 +2,10 @@ import type { ErrorRequestHandler, RequestHandler } from 'express';
 import { ZodError } from 'zod';
 import { logger } from '../config/logger';
 import { AuthError } from '../modules/auth/auth.errors';
+import { FieldsError } from '../modules/fields/fields.errors';
+import { IndexesError } from '../modules/indexes/indexes.errors';
 import { ProjectsError } from '../modules/projects/projects.errors';
+import { TablesError } from '../modules/tables/tables.errors';
 
 export const notFoundHandler: RequestHandler = (req, res) => {
   res.status(404).json({
@@ -23,6 +26,21 @@ export const errorHandler: ErrorRequestHandler = (err, _req, res, next) => {
 
   if (err instanceof ProjectsError) {
     res.status(err.statusCode).json({ error: { code: 'PROJECTS_ERROR', message: err.message } });
+    return;
+  }
+
+  if (err instanceof TablesError) {
+    res.status(err.statusCode).json({ error: { code: 'TABLES_ERROR', message: err.message } });
+    return;
+  }
+
+  if (err instanceof FieldsError) {
+    res.status(err.statusCode).json({ error: { code: 'FIELDS_ERROR', message: err.message } });
+    return;
+  }
+
+  if (err instanceof IndexesError) {
+    res.status(err.statusCode).json({ error: { code: 'INDEXES_ERROR', message: err.message } });
     return;
   }
 
