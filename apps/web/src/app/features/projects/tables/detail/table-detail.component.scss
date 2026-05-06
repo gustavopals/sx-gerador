@@ -1,0 +1,126 @@
+.sxg-td__state {
+  display: grid;
+  min-height: 240px;
+  place-items: center;
+  align-content: center;
+  gap: 12px;
+  color: #53616f;
+}
+
+.sxg-td__spinner {
+  width: 28px;
+  height: 28px;
+  border: 3px solid #d9e1e8;
+  border-top-color: #0c5f79;
+  border-radius: 50%;
+  animation: sxg-spin 0.8s linear infinite;
+}
+
+@keyframes sxg-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.sxg-td__archived-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+  padding: 12px 16px;
+  border-radius: 6px;
+  background: #fff8e6;
+  border: 1px solid #f5c842;
+  color: #7a5700;
+  font-size: 0.9375rem;
+}
+
+.sxg-td__health {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.sxg-td__health-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 6px;
+  background: #eaf7ea;
+  border: 1px solid #b2ddb2;
+  color: #1b6b1b;
+  font-size: 0.875rem;
+
+  &--warn {
+    background: #fff8e6;
+    border-color: #f5c842;
+    color: #7a5700;
+  }
+}
+
+.sxg-td__empty-tab {
+  display: grid;
+  min-height: 240px;
+  place-items: center;
+  align-content: center;
+  gap: 12px;
+  padding: 32px;
+  text-align: center;
+  color: #53616f;
+
+  h3 {
+    margin: 0;
+    color: #1d242b;
+    font-size: 1.125rem;
+  }
+
+  p {
+    margin: 0;
+    max-width: 360px;
+    line-height: 1.5;
+  }
+}
+
+.sxg-td__settings {
+  display: grid;
+  gap: 24px;
+  max-width: 760px;
+  padding: 4px 0;
+}
+
+.sxg-td__settings-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 16px;
+  margin: 0;
+}
+
+.sxg-td__setting-item {
+  padding: 12px 16px;
+  border-radius: 8px;
+  background: #f3f7f9;
+  border: 1px solid #e4eaf0;
+
+  dt {
+    margin-bottom: 6px;
+    color: #6b7a89;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  dd {
+    margin: 0;
+    color: #1d242b;
+    font-size: 0.9375rem;
+    font-weight: 500;
+  }
+}
+
+.sxg-td__mono {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.875rem !important;
+}

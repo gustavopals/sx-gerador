@@ -84,6 +84,27 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'projects/:projectId/tables/new',
+        loadComponent: () =>
+          import('./features/projects/tables/form/table-form.component').then(
+            (m) => m.TableFormComponent,
+          ),
+      },
+      {
+        path: 'projects/:projectId/tables/:tableId/edit',
+        loadComponent: () =>
+          import('./features/projects/tables/form/table-form.component').then(
+            (m) => m.TableFormComponent,
+          ),
+      },
+      {
+        path: 'projects/:projectId/tables/:tableId',
+        loadComponent: () =>
+          import('./features/projects/tables/detail/table-detail.component').then(
+            (m) => m.TableDetailComponent,
+          ),
+      },
+      {
         path: 'projects/:id',
         loadComponent: () =>
           import('./features/projects/detail/project-detail.component').then(

@@ -11,7 +11,11 @@ export type AuditAction =
   | 'projects.update'
   | 'projects.delete'
   | 'projects.restore'
-  | 'projects.duplicate';
+  | 'projects.duplicate'
+  | 'tables.create'
+  | 'tables.update'
+  | 'tables.delete'
+  | 'tables.restore';
 
 export type AuditMetadata = Record<string, string | number | boolean | null>;
 

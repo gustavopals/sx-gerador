@@ -98,6 +98,169 @@ model Project {
   updatedAt     DateTime          @updatedAt
   deletedAt     DateTime?
 
+  tables Table[]
+
   @@index([visibility])
+  @@index([deletedAt])
+}
+
+enum SharingMode {
+  C
+  E
+}
+
+enum YesNo {
+  S
+  N
+}
+
+model Table {
+  id        String @id @default(cuid())
+  projectId String
+
+  // SX2 fields
+  prefix   String // X2_CHAVE (3 chars, ex "ZZZ")
+  fileName String // X2_ARQUIVO (8 chars, ex "ZZZ010")
+  namePt   String // X2_NOME
+  nameEs   String? // X2_NOMESPA
+  nameEn   String? // X2_NOMEENG
+  routine  String? // X2_ROTINA
+
+  modeCompany SharingMode @default(C) // X2_MODO
+  modeUnit    SharingMode @default(C) // X2_MODOUN
+  modeBranch  SharingMode @default(C) // X2_MODOEMP
+
+  ttsEnabled YesNo   @default(S) // X2_TTS
+  uniqueKey  String? @db.VarChar(250) // X2_UNICO
+  pyme       YesNo   @default(N) // X2_PYME
+
+  modules Int @default(0) // X2_MODULO (bitmap)
+
+  hasClob    YesNo @default(N) // X2_CLOB
+  autoIncRec YesNo @default(N) // X2_AUTREC
+
+  tamFil Int @default(2) // X2_TAMFIL
+  tamUn  Int @default(2) // X2_TAMUN
+  tamEmp Int @default(2) // X2_TAMEMP
+
+  notes     String?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  fields  Field[]
+
+  @@unique([projectId, prefix])
+  @@index([projectId])
+}
+
+enum FieldType {
+  C
+  N
+  D
+  M
+  L
+}
+
+enum VisualMode {
+  V
+  A
+  R
+}
+
+enum ContextMode {
+  R
+  V
+}
+
+enum OwnerType {
+  U
+  S
+}
+
+model Field {
+  id      String @id @default(cuid())
+  tableId String
+
+  // Identificacao
+  name  String // X3_CAMPO (ex "ZZZ_CODIGO")
+  order String // X3_ORDEM (ex "01")
+
+  // Tipo e tamanho
+  type     FieldType // X3_TIPO
+  size     Int // X3_TAMANHO
+  decimals Int       @default(0) // X3_DECIMAL
+
+  // Trilingue - titulos
+  titlePt String // X3_TITULO
+  titleEs String? // X3_TITSPA
+  titleEn String? // X3_TITENG
+
+  // Trilingue - descricoes
+  descPt String // X3_DESCRIC
+  descEs String? // X3_DESCSPA
+  descEn String? // X3_DESCENG
+
+  // Comportamento
+  picture        String? // X3_PICTURE
+  pictureVar     String? // X3_PICTVAR
+  pictureBrowse  String? // X3_PICBRV
+  validation     String? // X3_VALID
+  userValidation String? // X3_VLDUSER
+  defaultRel     String? // X3_RELACAO
+  whenExpr       String? // X3_WHEN
+  initBrowse     String? // X3_INIBRW
+
+  // Combobox (campos do tipo enum)
+  comboPt String? // X3_CBOX
+  comboEs String? // X3_CBOXSPA
+  comboEn String? // X3_CBOXENG
+
+  // Consulta padrao
+  searchKey String? // X3_F3
+
+  // Flags de comportamento
+  visualMode    VisualMode  @default(A) // X3_VISUAL
+  contextMode   ContextMode @default(R) // X3_CONTEXT
+  owner         OwnerType   @default(U) // X3_PROPRI
+  required      String? // X3_OBRIGAT
+  showBrowse    YesNo       @default(S) // X3_BROWSE
+  hasCheck      YesNo       @default(N) // X3_CHECK
+  hasTrigger    YesNo       @default(N) // X3_TRIGGER
+  level         Int         @default(0) // X3_NIVEL
+  pyme          YesNo       @default(N) // X3_PYME
+  serverIndex   YesNo       @default(N) // X3_IDXSRV
+  fieldIndex    YesNo       @default(N) // X3_IDXFLD
+  spelling      YesNo       @default(N) // X3_ORTOGRA
+  modal         YesNo       @default(N) // X3_MODAL
+  positionLogix YesNo       @default(N) // X3_POSLGT
+
+  // Bitmaps amigaveis (frontend converte de/para X3_USADO)
+  usadoFlags   Json @default("{}")
+  modulesFlags Json @default("{}")
+
+  // SQL
+  sqlCondition String? @db.VarChar(250) // X3_CONDSQL
+  sqlCheck     String? @db.VarChar(250) // X3_CHKSQL
+
+  // Outros
+  groupSxg String? // X3_GRPSXG
+  folder   String? // X3_FOLDER
+  screen   String? // X3_TELA
+  grouping String? // X3_AGRUP
+  reserved String? // X3_RESERV
+
+  // Metadata
+  notes     String?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+
+  table Table @relation(fields: [tableId], references: [id], onDelete: Cascade)
+
+  @@unique([tableId, name])
+  @@unique([tableId, order])
+  @@index([tableId])
   @@index([deletedAt])
 }

@@ -20,11 +20,7 @@
 
     <po-tabs>
       <po-tab p-label="Tabelas" [p-active]="true">
-        <div class="sxg-detail__empty-tab">
-          <span class="an an-table an-2x"></span>
-          <h3>Nenhuma tabela cadastrada</h3>
-          <p>As tabelas (SX2) deste projeto aparecerão aqui. Em breve disponível.</p>
-        </div>
+        <sxg-tables-list [projectId]="p.id" [projectDeleted]="!!p.deletedAt"></sxg-tables-list>
       </po-tab>
 
       <po-tab p-label="Migrations">

@@ -1,0 +1,119 @@
+.sxg-table-form {
+  display: grid;
+  gap: 24px;
+  max-width: 760px;
+}
+
+.sxg-table-form__section {
+  display: grid;
+  gap: 16px;
+}
+
+.sxg-table-form__section-title {
+  margin: 0 0 4px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #d9e1e8;
+  color: #1d242b;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.sxg-table-form__prefix-row {
+  display: grid;
+  grid-template-columns: 160px 1fr;
+  gap: 16px;
+  align-items: start;
+}
+
+.sxg-table-form__prefix-field {
+  display: grid;
+  gap: 4px;
+}
+
+.sxg-table-form__filename-preview {
+  display: grid;
+  gap: 4px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  background: #f3f7f9;
+  border: 1px solid #e4eaf0;
+  align-content: start;
+}
+
+.sxg-table-form__filename-label {
+  color: #6b7a89;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.sxg-table-form__filename-value {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: #0c5f79;
+}
+
+.sxg-table-form__filename-hint {
+  color: #9aabb8;
+  font-size: 0.75rem;
+}
+
+.sxg-table-form__row-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.sxg-table-form__row-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.sxg-table-form__hint {
+  font-size: 0.8125rem;
+
+  &--warn {
+    color: #7a5700;
+  }
+}
+
+.sxg-table-form__footer {
+  display: flex;
+  gap: 12px;
+  padding-top: 8px;
+}
+
+.sxg-table-form__state {
+  display: grid;
+  min-height: 200px;
+  place-items: center;
+  align-content: center;
+  gap: 12px;
+  color: #53616f;
+}
+
+.sxg-table-form__spinner {
+  width: 28px;
+  height: 28px;
+  border: 3px solid #d9e1e8;
+  border-top-color: #0c5f79;
+  border-radius: 50%;
+  animation: sxg-spin 0.8s linear infinite;
+}
+
+@keyframes sxg-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 600px) {
+  .sxg-table-form__prefix-row,
+  .sxg-table-form__row-2,
+  .sxg-table-form__row-3 {
+    grid-template-columns: 1fr;
+  }
+}

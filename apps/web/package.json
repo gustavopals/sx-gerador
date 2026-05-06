@@ -25,6 +25,7 @@
     "@po-ui/ng-components": "21.13.1",
     "@po-ui/ng-templates": "^21.13.1",
     "@po-ui/style": "21.13.1",
+    "@sxgerador/dictionary-validator": "workspace:*",
     "@sxgerador/shared-types": "workspace:*",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",

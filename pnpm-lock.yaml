@@ -171,6 +171,9 @@ importers:
       '@po-ui/style':
         specifier: 21.13.1
         version: 21.13.1
+      '@sxgerador/dictionary-validator':
+        specifier: workspace:*
+        version: link:../../packages/dictionary-validator
       '@sxgerador/shared-types':
         specifier: workspace:*
         version: link:../../packages/shared-types
@@ -198,6 +201,21 @@ importers:
         version: 5.9.3
 
   packages/advpl-builder:
+    devDependencies:
+      '@vitest/coverage-v8':
+        specifier: ^3.2.4
+        version: 3.2.4(vitest@3.2.4(@types/node@25.6.0)(jiti@2.6.1)(sass@1.97.3)(yaml@2.8.4))
+      tsup:
+        specifier: ^8.5.0
+        version: 8.5.1(jiti@2.6.1)(postcss@8.5.14)(typescript@5.9.3)(yaml@2.8.4)
+      typescript:
+        specifier: ^5.8.3
+        version: 5.9.3
+      vitest:
+        specifier: ^3.2.4
+        version: 3.2.4(@types/node@25.6.0)(jiti@2.6.1)(sass@1.97.3)(yaml@2.8.4)
+
+  packages/dictionary-validator:
     devDependencies:
       '@vitest/coverage-v8':
         specifier: ^3.2.4

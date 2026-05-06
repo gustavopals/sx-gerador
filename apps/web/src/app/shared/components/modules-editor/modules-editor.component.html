@@ -1,0 +1,17 @@
+<div class="sxg-modules-editor">
+  <po-checkbox-group
+    p-label="Módulos TOTVS"
+    [p-options]="moduleOptions"
+    [p-columns]="2"
+    [p-disabled]="isDisabled"
+    [ngModel]="selectedCodes"
+    (ngModelChange)="onSelectionChange($event)"
+  ></po-checkbox-group>
+
+  @if (bitmapValue > 0) {
+    <p class="sxg-modules-editor__bitmap">
+      <span class="sxg-modules-editor__bitmap-label">X2_MODULO:</span>
+      <code>{{ bitmapValue }}</code>
+    </p>
+  }
+</div>

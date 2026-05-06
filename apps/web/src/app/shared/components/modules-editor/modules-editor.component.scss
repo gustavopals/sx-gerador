@@ -1,0 +1,23 @@
+.sxg-modules-editor {
+  display: grid;
+  gap: 8px;
+}
+
+.sxg-modules-editor__bitmap {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: #6b7a89;
+
+  code {
+    margin-left: 4px;
+    padding: 1px 6px;
+    border-radius: 4px;
+    background: #f3f7f9;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    color: #0c5f79;
+  }
+}
+
+.sxg-modules-editor__bitmap-label {
+  font-weight: 600;
+}

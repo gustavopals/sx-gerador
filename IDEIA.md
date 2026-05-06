@@ -1987,39 +1987,39 @@ sxgerador/
 **Objetivo:** CRUD de tabelas dentro de um projeto, com todas as validações de domínio.
 
 #### Task F3.1 — Schema Prisma para Table (M)
-- [ ] Adicionar modelo `Table` completo (todos os campos SX2 da seção 11.2)
-- [ ] Migration
+- [x] Adicionar modelo `Table` completo (todos os campos SX2 da seção 11.2)
+- [x] Migration
 
 #### Task F3.2 — Validador de prefixo (S)
-- [ ] Em `packages/dictionary-validator`: função `validatePrefix(prefix: string)`
-- [ ] Regras: 3 chars, A-Z 0-9, warning se não começar com `Z`
-- [ ] Testes
+- [x] Em `packages/dictionary-validator`: função `validatePrefix(prefix: string)`
+- [x] Regras: 3 chars, A-Z 0-9, warning se não começar com `Z`
+- [x] Testes
 
 #### Task F3.3 — Schemas Zod de Table (S)
-- [ ] `CreateTableSchema`, `UpdateTableSchema`
-- [ ] Auto-gerar `fileName` se não fornecido (`<PREFIX>010`)
+- [x] `CreateTableSchema`, `UpdateTableSchema`
+- [x] Auto-gerar `fileName` se não fornecido (`<PREFIX>010`)
 
 #### Task F3.4 — Service e Controller (M)
-- [ ] CRUD com validações de domínio
-- [ ] Verificação de prefixo único por projeto
-- [ ] Testes
+- [x] CRUD com validações de domínio
+- [x] Verificação de prefixo único por projeto
+- [x] Testes
 
 #### Task F3.5 — Lista de tabelas (M)
-- [ ] `TablesListPage` com `po-table` (colunas: prefixo, nome, modo, qtd campos, qtd índices, ações)
-- [ ] Search por prefixo ou nome
-- [ ] Filtros por módulo
-- [ ] Ações inline: editar, excluir, duplicar
+- [x] `TablesListPage` com `po-table` (colunas: prefixo, nome, modo, qtd campos, qtd índices, ações)
+- [x] Search por prefixo ou nome
+- [x] Filtros por módulo
+- [x] Ações inline: editar, excluir, duplicar
 
 #### Task F3.6 — Form de tabela (M)
-- [ ] `TableFormPage` com seções: Identificação / Compartilhamento / Configurações Avançadas
-- [ ] `TableFormPage` reutilizado para criar e editar
-- [ ] Editor visual de `X2_MODULO` (componente `<sxg-modules-editor>`)
-- [ ] Preview do `fileName` calculado em tempo real
+- [x] `TableFormPage` com seções: Identificação / Compartilhamento / Configurações Avançadas
+- [x] `TableFormPage` reutilizado para criar e editar
+- [x] Editor visual de `X2_MODULO` (componente `<sxg-modules-editor>`)
+- [x] Preview do `fileName` calculado em tempo real
 
 #### Task F3.7 — Tela de detalhe da tabela (M)
-- [ ] `TableDetailPage` com `po-tabs`: Campos / Índices / Histórico
-- [ ] Header com prefixo, nome trilíngue, modo, ações
-- [ ] Indicador de "tem campo FILIAL?" e "tem índice de ordem 1?" (com warning se não)
+- [x] `TableDetailPage` com `po-tabs`: Campos / Índices / Histórico
+- [x] Header com prefixo, nome trilíngue, modo, ações
+- [x] Indicador de "tem campo FILIAL?" e "tem índice de ordem 1?" (com warning se não)
 
 ---
 
@@ -2028,15 +2028,15 @@ sxgerador/
 **Objetivo:** CRUD de campos com a UI mais polida do produto. Esta é a feature principal.
 
 #### Task F4.1 — Schema Prisma para Field (L)
-- [ ] Adicionar modelo `Field` completo (50+ campos)
-- [ ] Migration
-- [ ] Seeds com tabela exemplo (ZZZ + 5 campos)
+- [x] Adicionar modelo `Field` completo (50+ campos)
+- [x] Migration
+- [x] Seeds com tabela exemplo (ZZZ + 5 campos)
 
 #### Task F4.2 — Encoders de bitmap em `advpl-builder` (L) **CRÍTICO**
-- [ ] `encodeX3Usado` / `decodeX3Usado` com TDD rigoroso
-- [ ] `encodeX2Modulo` / `decodeX2Modulo`
-- [ ] Testes com casos reais extraídos de SX3 de produção
-- [ ] Cobertura ≥ 95%
+- [x] `encodeX3Usado` / `decodeX3Usado` com TDD rigoroso
+- [x] `encodeX2Modulo` / `decodeX2Modulo`
+- [x] Testes com casos reais extraídos de SX3 de produção
+- [x] Cobertura ≥ 95%
 
 #### Task F4.3 — Validador de nomenclatura de campo (S)
 - [ ] `validateFieldName(name, tablePrefix)`: deve ser `<PREFIX>_*` com max 10 chars

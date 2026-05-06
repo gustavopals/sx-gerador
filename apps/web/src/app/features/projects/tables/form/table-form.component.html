@@ -1,0 +1,184 @@
+<po-page-default
+  [p-title]="pageTitle"
+  [p-subtitle]="pageSubtitle"
+  [p-breadcrumb]="breadcrumb"
+  [p-actions]="pageActions"
+>
+  @if (isLoading()) {
+    <div class="sxg-table-form__state">
+      <span class="sxg-table-form__spinner"></span>
+      <p>Carregando tabela...</p>
+    </div>
+  } @else {
+    <form class="sxg-table-form" [formGroup]="form" (ngSubmit)="save()" novalidate>
+      <!-- ── Identificação ─────────────────────────────────── -->
+      <section class="sxg-table-form__section">
+        <h3 class="sxg-table-form__section-title">Identificação</h3>
+
+        <div class="sxg-table-form__prefix-row">
+          <div class="sxg-table-form__prefix-field">
+            <po-input
+              p-label="Prefixo (X2_CHAVE)"
+              p-placeholder="Ex: ZZZ"
+              [p-maxlength]="3"
+              p-required="true"
+              formControlName="prefix"
+              [p-error-pattern]="prefixError"
+              (p-change)="onPrefixInput()"
+            ></po-input>
+            @if (prefixWarning) {
+              <span class="sxg-table-form__hint sxg-table-form__hint--warn">
+                <span class="an an-warning"></span> {{ prefixWarning }}
+              </span>
+            }
+          </div>
+
+          <div class="sxg-table-form__filename-preview">
+            <span class="sxg-table-form__filename-label">Nome físico (X2_ARQUIVO)</span>
+            <code class="sxg-table-form__filename-value">
+              {{ fileNamePreview || '———' }}
+            </code>
+            <span class="sxg-table-form__filename-hint">Calculado automaticamente</span>
+          </div>
+        </div>
+
+        <po-input
+          p-label="Nome PT (X2_NOME)"
+          p-placeholder="Ex: Cadastro de Contratos"
+          p-required="true"
+          formControlName="namePt"
+          [p-error-pattern]="namePtError"
+        ></po-input>
+
+        <po-input
+          p-label="Nome ES (X2_NOMESPA)"
+          p-placeholder="Ex: Registro de Contratos"
+          formControlName="nameEs"
+        ></po-input>
+
+        <po-input
+          p-label="Nome EN (X2_NOMEENG)"
+          p-placeholder="Ex: Contracts"
+          formControlName="nameEn"
+        ></po-input>
+
+        <po-input
+          p-label="Rotina principal (X2_ROTINA)"
+          p-placeholder="Ex: MATA010"
+          formControlName="routine"
+        ></po-input>
+      </section>
+
+      <!-- ── Compartilhamento ───────────────────────────────── -->
+      <section class="sxg-table-form__section">
+        <h3 class="sxg-table-form__section-title">Compartilhamento</h3>
+
+        <div class="sxg-table-form__row-3">
+          <po-select
+            p-label="Modo empresa (X2_MODO)"
+            [p-options]="sharingModeOptions"
+            formControlName="modeCompany"
+          ></po-select>
+
+          <po-select
+            p-label="Modo unidade (X2_MODOUN)"
+            [p-options]="sharingModeOptions"
+            formControlName="modeUnit"
+          ></po-select>
+
+          <po-select
+            p-label="Modo filial (X2_MODOEMP)"
+            [p-options]="sharingModeOptions"
+            formControlName="modeBranch"
+          ></po-select>
+        </div>
+
+        <div class="sxg-table-form__row-2">
+          <po-select
+            p-label="Suporta transação (X2_TTS)"
+            [p-options]="yesNoOptions"
+            formControlName="ttsEnabled"
+          ></po-select>
+
+          <po-select
+            p-label="Disponível no PYME (X2_PYME)"
+            [p-options]="yesNoOptions"
+            formControlName="pyme"
+          ></po-select>
+        </div>
+
+        <sxg-modules-editor formControlName="modules"></sxg-modules-editor>
+      </section>
+
+      <!-- ── Configurações Avançadas ──────────────────────── -->
+      <section class="sxg-table-form__section">
+        <h3 class="sxg-table-form__section-title">Configurações Avançadas</h3>
+
+        <po-textarea
+          p-label="Chave única (X2_UNICO)"
+          p-placeholder="Ex: ZZZ_FILIAL+ZZZ_CODIGO"
+          formControlName="uniqueKey"
+          [p-rows]="2"
+        ></po-textarea>
+
+        <div class="sxg-table-form__row-3">
+          <po-select
+            p-label="Tamanho FILIAL (X2_TAMFIL)"
+            [p-options]="tamOptions"
+            formControlName="tamFil"
+          ></po-select>
+
+          <po-select
+            p-label="Tamanho UN (X2_TAMUN)"
+            [p-options]="tamOptions"
+            formControlName="tamUn"
+          ></po-select>
+
+          <po-select
+            p-label="Tamanho empresa (X2_TAMEMP)"
+            [p-options]="tamOptions"
+            formControlName="tamEmp"
+          ></po-select>
+        </div>
+
+        <div class="sxg-table-form__row-2">
+          <po-select
+            p-label="Contém CLOB (X2_CLOB)"
+            [p-options]="yesNoOptions"
+            formControlName="hasClob"
+          ></po-select>
+
+          <po-select
+            p-label="Auto incremento (X2_AUTREC)"
+            [p-options]="yesNoOptions"
+            formControlName="autoIncRec"
+          ></po-select>
+        </div>
+
+        <po-textarea
+          p-label="Observações"
+          p-placeholder="Notas internas sobre esta tabela"
+          formControlName="notes"
+          [p-rows]="3"
+        ></po-textarea>
+      </section>
+
+      <footer class="sxg-table-form__footer">
+        <po-button
+          [p-label]="isEditMode() ? 'Salvar alterações' : 'Criar tabela'"
+          [p-loading]="isSaving()"
+          [p-disabled]="form.invalid || isSaving()"
+          [p-type]="submitType"
+          p-kind="primary"
+          p-icon="an an-floppy-disk"
+        ></po-button>
+        <po-button
+          p-label="Cancelar"
+          p-kind="secondary"
+          [p-disabled]="isSaving()"
+          (p-click)="cancel()"
+        ></po-button>
+      </footer>
+    </form>
+  }
+</po-page-default>

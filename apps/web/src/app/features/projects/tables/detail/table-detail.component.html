@@ -1,0 +1,153 @@
+<po-page-default
+  [p-title]="table()?.prefix ?? 'Carregando...'"
+  [p-subtitle]="table()?.namePt ?? ''"
+  [p-breadcrumb]="breadcrumb"
+  [p-actions]="pageActions"
+>
+  @if (isLoading()) {
+    <div class="sxg-td__state">
+      <span class="sxg-td__spinner"></span>
+      <p>Carregando tabela...</p>
+    </div>
+  } @else if (table(); as t) {
+    @if (t.deletedAt) {
+      <div class="sxg-td__archived-banner">
+        <span class="an an-archive"></span>
+        Tabela arquivada em {{ t.deletedAt | date: 'dd/MM/yyyy' }}. Restaure para retomar o
+        trabalho.
+      </div>
+    }
+
+    <!-- Indicadores de saúde -->
+    @if (!t.deletedAt) {
+      <div class="sxg-td__health">
+        <div class="sxg-td__health-item" [class.sxg-td__health-item--warn]="!hasFilialField()">
+          <span
+            class="an"
+            [class.an-check-circle]="hasFilialField()"
+            [class.an-warning]="!hasFilialField()"
+          ></span>
+          @if (hasFilialField()) {
+            Campo {{ t.prefix }}_FILIAL presente
+          } @else {
+            Campo {{ t.prefix }}_FILIAL ausente — obrigatório em toda tabela Protheus
+          }
+        </div>
+        <div class="sxg-td__health-item" [class.sxg-td__health-item--warn]="!hasPrimaryIndex()">
+          <span
+            class="an"
+            [class.an-check-circle]="hasPrimaryIndex()"
+            [class.an-warning]="!hasPrimaryIndex()"
+          ></span>
+          @if (hasPrimaryIndex()) {
+            Índice de ordem 1 (único) presente
+          } @else {
+            Índice de ordem 1 ausente — toda tabela precisa de um índice único principal
+          }
+        </div>
+      </div>
+    }
+
+    <po-tabs>
+      <po-tab p-label="Campos" [p-active]="true">
+        <div class="sxg-td__empty-tab">
+          <span class="an an-columns an-2x"></span>
+          <h3>Nenhum campo cadastrado</h3>
+          <p>Os campos (SX3) desta tabela aparecerão aqui. Em breve disponível.</p>
+        </div>
+      </po-tab>
+
+      <po-tab p-label="Índices">
+        <div class="sxg-td__empty-tab">
+          <span class="an an-list-magnifying-glass an-2x"></span>
+          <h3>Nenhum índice cadastrado</h3>
+          <p>Os índices (SIX) desta tabela aparecerão aqui. Em breve disponível.</p>
+        </div>
+      </po-tab>
+
+      <po-tab p-label="Configurações">
+        <section class="sxg-td__settings">
+          <dl class="sxg-td__settings-grid">
+            <div class="sxg-td__setting-item">
+              <dt>Prefixo (X2_CHAVE)</dt>
+              <dd class="sxg-td__mono">{{ t.prefix }}</dd>
+            </div>
+            <div class="sxg-td__setting-item">
+              <dt>Nome físico (X2_ARQUIVO)</dt>
+              <dd class="sxg-td__mono">{{ t.fileName }}</dd>
+            </div>
+            <div class="sxg-td__setting-item">
+              <dt>Nome PT</dt>
+              <dd>{{ t.namePt }}</dd>
+            </div>
+            @if (t.nameEs) {
+              <div class="sxg-td__setting-item">
+                <dt>Nome ES</dt>
+                <dd>{{ t.nameEs }}</dd>
+              </div>
+            }
+            @if (t.nameEn) {
+              <div class="sxg-td__setting-item">
+                <dt>Nome EN</dt>
+                <dd>{{ t.nameEn }}</dd>
+              </div>
+            }
+            @if (t.routine) {
+              <div class="sxg-td__setting-item">
+                <dt>Rotina (X2_ROTINA)</dt>
+                <dd class="sxg-td__mono">{{ t.routine }}</dd>
+              </div>
+            }
+            <div class="sxg-td__setting-item">
+              <dt>Modo empresa (X2_MODO)</dt>
+              <dd>
+                <po-tag [p-value]="modeLabel" [p-type]="tagType.Info"></po-tag>
+              </dd>
+            </div>
+            <div class="sxg-td__setting-item">
+              <dt>Suporta transação (X2_TTS)</dt>
+              <dd>{{ t.ttsEnabled === 'S' ? 'Sim' : 'Não' }}</dd>
+            </div>
+            <div class="sxg-td__setting-item">
+              <dt>Disponível no PYME</dt>
+              <dd>{{ t.pyme === 'S' ? 'Sim' : 'Não' }}</dd>
+            </div>
+            <div class="sxg-td__setting-item">
+              <dt>Módulos (X2_MODULO)</dt>
+              <dd class="sxg-td__mono">{{ t.modules }}</dd>
+            </div>
+            <div class="sxg-td__setting-item">
+              <dt>Tamanho FILIAL</dt>
+              <dd>{{ t.tamFil }}</dd>
+            </div>
+            <div class="sxg-td__setting-item">
+              <dt>Criado em</dt>
+              <dd>{{ t.createdAt | date: 'dd/MM/yyyy HH:mm' }}</dd>
+            </div>
+            <div class="sxg-td__setting-item">
+              <dt>Última atualização</dt>
+              <dd>{{ t.updatedAt | date: 'dd/MM/yyyy HH:mm' }}</dd>
+            </div>
+          </dl>
+
+          @if (!t.deletedAt) {
+            <po-button
+              p-label="Editar configurações"
+              p-icon="an an-pencil"
+              p-kind="secondary"
+              (p-click)="navigateToEdit()"
+            ></po-button>
+          }
+        </section>
+      </po-tab>
+
+      <po-tab p-label="Histórico">
+        <div class="sxg-td__empty-tab">
+          <span class="an an-clock-counter-clockwise an-2x"></span>
+          <h3>Sem registros de histórico</h3>
+          <p>Alterações e eventos desta tabela aparecerão aqui.</p>
+        </div>
+      </po-tab>
+    </po-tabs>
+  }
+</po-page-default>

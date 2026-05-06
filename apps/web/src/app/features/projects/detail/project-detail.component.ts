@@ -16,10 +16,11 @@ import {
   ProjectsService,
   type ProjectSummary,
 } from '../../../core/services/projects.service';
+import { TablesListComponent } from './tables-list/tables-list.component';
 
 @Component({
   selector: 'sxg-project-detail',
-  imports: [DatePipe, PoButtonModule, PoPageModule, PoTabsModule, PoTagModule],
+  imports: [DatePipe, PoButtonModule, PoPageModule, PoTabsModule, PoTagModule, TablesListComponent],
   templateUrl: './project-detail.component.html',
   styleUrl: './project-detail.component.scss',
 })

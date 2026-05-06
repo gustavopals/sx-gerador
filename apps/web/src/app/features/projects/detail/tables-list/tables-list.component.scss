@@ -1,0 +1,42 @@
+.sxg-tables {
+  display: grid;
+  gap: 16px;
+  padding: 4px 0;
+}
+
+.sxg-tables__toolbar {
+  display: flex;
+  align-items: flex-end;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.sxg-tables__filters {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  flex: 1;
+  flex-wrap: wrap;
+}
+
+.sxg-tables__filter-actions {
+  display: flex;
+  gap: 8px;
+  padding-bottom: 4px;
+}
+
+.sxg-tables__pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding-top: 8px;
+  color: #53616f;
+  font-size: 0.875rem;
+
+  > div {
+    display: flex;
+    gap: 8px;
+  }
+}

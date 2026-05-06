@@ -1,0 +1,69 @@
+<div class="sxg-tables">
+  <div class="sxg-tables__toolbar">
+    <form class="sxg-tables__filters" [formGroup]="filterForm" (ngSubmit)="applyFilters()">
+      <po-input
+        p-label="Buscar"
+        p-placeholder="Prefixo ou nome"
+        p-icon="an an-magnifying-glass"
+        formControlName="search"
+      ></po-input>
+
+      <po-select
+        p-label="Situação"
+        [p-options]="filterOptions"
+        formControlName="archived"
+      ></po-select>
+
+      <div class="sxg-tables__filter-actions">
+        <po-button p-label="Filtrar" p-icon="an an-funnel" [p-type]="submitType"></po-button>
+        <po-button
+          p-label="Limpar"
+          p-icon="an an-x"
+          p-kind="secondary"
+          (p-click)="clearFilters()"
+        ></po-button>
+      </div>
+    </form>
+
+    @if (!projectDeleted) {
+      <po-button
+        p-label="Nova tabela"
+        p-icon="an an-plus"
+        p-kind="primary"
+        (p-click)="navigateToNew()"
+      ></po-button>
+    }
+  </div>
+
+  <po-table
+    [p-columns]="columns"
+    [p-items]="tables()"
+    [p-loading]="isLoading()"
+    [p-actions]="actions"
+    [p-striped]="true"
+    p-sort="true"
+    [p-literals]="tableLiterals"
+  ></po-table>
+
+  @if (total() > pageSize) {
+    <nav class="sxg-tables__pagination" aria-label="Paginação de tabelas">
+      <span>{{ total() }} tabela(s) · página {{ page() }} de {{ totalPages() || 1 }}</span>
+      <div>
+        <po-button
+          p-label="Anterior"
+          p-icon="an an-caret-left"
+          p-kind="secondary"
+          [p-disabled]="!hasPreviousPage"
+          (p-click)="previousPage()"
+        ></po-button>
+        <po-button
+          p-label="Próxima"
+          p-icon="an an-caret-right"
+          p-kind="secondary"
+          [p-disabled]="!hasNextPage"
+          (p-click)="nextPage()"
+        ></po-button>
+      </div>
+    </nav>
+  }
+</div>
