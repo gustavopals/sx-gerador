@@ -42,6 +42,53 @@ async function listJsFiles(dir) {
   return files;
 }
 
+async function readStatsInitialOutputs(statsPath) {
+  const stats = JSON.parse(await fs.readFile(statsPath, 'utf8'));
+  if (!stats.outputs) return null;
+
+  const outputs = stats.outputs;
+  const initial = new Set();
+
+  function collectStatic(outputPath) {
+    const output = outputs[outputPath];
+    if (!output || initial.has(outputPath)) return;
+
+    initial.add(outputPath);
+    for (const item of output.imports ?? []) {
+      if (item.kind !== 'dynamic-import') collectStatic(item.path);
+    }
+  }
+
+  for (const [outputPath, output] of Object.entries(outputs)) {
+    if (output.entryPoint === 'src/main.ts' || output.entryPoint === 'src/polyfills.ts') {
+      collectStatic(outputPath);
+    }
+    if (output.entryPoint === 'angular:styles/global:styles') {
+      initial.add(outputPath);
+    }
+  }
+
+  const initialFiles = [...initial].sort();
+  const initialBytes = initialFiles.reduce((sum, file) => sum + (outputs[file]?.bytes ?? 0), 0);
+  const monacoInitialFiles = initialFiles.filter((file) =>
+    outputMentions(outputs[file], file, 'monaco'),
+  );
+  const monacoOutputFiles = Object.entries(outputs)
+    .filter(([file, output]) => outputMentions(output, file, 'monaco'))
+    .map(([file]) => file)
+    .sort();
+
+  return { initialFiles, initialBytes, monacoInitialFiles, monacoOutputFiles };
+}
+
+function outputMentions(output, file, needle) {
+  const normalizedNeedle = needle.toLowerCase();
+  if (file.toLowerCase().includes(normalizedNeedle)) return true;
+  return Object.keys(output?.inputs ?? {}).some((input) =>
+    input.toLowerCase().includes(normalizedNeedle),
+  );
+}
+
 async function main() {
   await fs.mkdir(REPORT_DIR, { recursive: true });
   console.log('▶ Build web production com stats...');
@@ -71,25 +118,36 @@ async function main() {
   ]);
 
   const jsFiles = await listJsFiles(path.join(DIST_DIR, 'browser'));
-  const initialFiles = jsFiles.filter((file) =>
-    /(^|\/)(main|polyfills|styles)([-.].*)?\.js$/.test(file),
-  );
-  const initialBytes = (
-    await Promise.all(initialFiles.map(async (file) => (await fs.stat(file)).size))
-  ).reduce((sum, size) => sum + size, 0);
-  const monacoFiles = jsFiles.filter((file) =>
-    path.basename(file).toLowerCase().includes('monaco'),
-  );
+  const statsInitial = await readStatsInitialOutputs(statsPath);
+  const initialFiles =
+    statsInitial?.initialFiles ??
+    jsFiles.filter((file) => /(^|\/)(main|polyfills|styles)([-.].*)?\.js$/.test(file));
+  const initialBytes =
+    statsInitial?.initialBytes ??
+    (await Promise.all(initialFiles.map(async (file) => (await fs.stat(file)).size))).reduce(
+      (sum, size) => sum + size,
+      0,
+    );
+  const monacoFiles =
+    statsInitial?.monacoOutputFiles ??
+    jsFiles.filter((file) => path.basename(file).toLowerCase().includes('monaco'));
+  const monacoInitialFiles =
+    statsInitial?.monacoInitialFiles ??
+    initialFiles.filter((file) => path.basename(file).toLowerCase().includes('monaco'));
 
   const summary = {
     analyzedAt: new Date().toISOString(),
     statsPath: path.relative(ROOT, statsPath),
     reportPath: path.relative(ROOT, reportPath),
+    initialFiles,
     initialBytes,
     initialLimitBytes: INITIAL_BUNDLE_LIMIT_BYTES,
     initialWithinLimit: initialBytes <= INITIAL_BUNDLE_LIMIT_BYTES,
-    monacoInInitialBundle: monacoFiles.length > 0,
-    treeShakingValidated: initialBytes <= INITIAL_BUNDLE_LIMIT_BYTES && monacoFiles.length === 0,
+    monacoOutputFiles: monacoFiles,
+    monacoInitialFiles,
+    monacoInInitialBundle: monacoInitialFiles.length > 0,
+    treeShakingValidated:
+      initialBytes <= INITIAL_BUNDLE_LIMIT_BYTES && monacoInitialFiles.length === 0,
   };
 
   await fs.writeFile(

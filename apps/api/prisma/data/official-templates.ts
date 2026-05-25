@@ -1,4 +1,9 @@
-import type { TemplateContentInput } from '@sxgerador/shared-types';
+type TemplateContentInput = {
+  formatVersion: 1;
+  table: Record<string, unknown>;
+  fields: Array<Record<string, unknown>>;
+  indexes: Array<Record<string, unknown>>;
+};
 
 const filialField = (prefix: string, tamFil: number) => ({
   name: `${prefix}_FILIAL`,

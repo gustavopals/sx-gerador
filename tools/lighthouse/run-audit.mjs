@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+/* global localStorage */
 /**
  * Auditoria Lighthouse (F11.1) — telas críticas com meta ≥ 90 em todas as categorias.
  *
@@ -18,7 +19,6 @@ import { fileURLToPath } from 'node:url';
 import pages from './pages.cjs';
 
 const require = createRequire(import.meta.url);
-const chromeLauncher = require('chrome-launcher');
 const lighthouseModule = require('lighthouse');
 const lighthouse = lighthouseModule.default ?? lighthouseModule;
 const puppeteer = require('puppeteer');
@@ -30,6 +30,10 @@ const REPORTS_DIR = path.join(__dirname, 'reports');
 const MIN_SCORE = Number(process.env.LH_MIN_SCORE ?? 90);
 const PORT = Number(process.env.LH_PORT ?? 4280);
 const API_URL = process.env.LH_API_URL ?? 'http://localhost:3000/api/v1';
+const DESKTOP_USER_AGENT =
+  'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 ' +
+  '(KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36';
+const DESKTOP_VIEWPORT = { width: 1350, height: 940, deviceScaleFactor: 1 };
 
 const skipBuild = process.argv.includes('--skip-build');
 const guestOnly = process.argv.includes('--guest-only');
@@ -70,17 +74,7 @@ async function waitForApi(maxAttempts = 30) {
 }
 
 /** @returns {Promise<{ projectId: string, tableId: string }>} */
-async function fetchSeedIds() {
-  const email = process.env.LH_EMAIL ?? 'dev@sxgerador.local';
-  const password = process.env.LH_PASSWORD ?? 'dev123456';
-  const loginRes = await fetch(`${API_URL}/auth/login`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ email, password }),
-  });
-  if (!loginRes.ok) throw new Error('Não foi possível autenticar para resolver URLs dinâmicas.');
-  const { accessToken } = await loginRes.json();
-
+async function fetchSeedIds(accessToken) {
   const projectsRes = await fetch(`${API_URL}/projects`, {
     headers: { Authorization: `Bearer ${accessToken}` },
   });
@@ -133,46 +127,57 @@ function startStaticServer() {
   });
 }
 
-function buildLighthouseOptions(chromePort, auth) {
-  const options = {
+function buildLighthouseFlags(auth) {
+  return {
     logLevel: 'error',
     output: 'json',
     onlyCategories: categories,
-    port: chromePort,
-    settings: {
-      skipAudits: ['redirects-http', 'uses-http2'],
-      formFactor: 'desktop',
-      screenEmulation: {
-        mobile: false,
-        width: 1366,
-        height: 768,
-        deviceScaleFactor: 1,
-        disabled: false,
-      },
-      emulatedUserAgent:
-        'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 ' +
-        '(KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36',
-      throttlingMethod: 'provided',
-      throttling: {
-        rttMs: 0,
-        throughputKbps: 0,
-        cpuSlowdownMultiplier: 1,
-      },
+    skipAudits: ['redirects-http', 'uses-http2'],
+    formFactor: 'desktop',
+    screenEmulation: {
+      mobile: false,
+      width: DESKTOP_VIEWPORT.width,
+      height: DESKTOP_VIEWPORT.height,
+      deviceScaleFactor: DESKTOP_VIEWPORT.deviceScaleFactor,
+      disabled: false,
     },
+    emulatedUserAgent: DESKTOP_USER_AGENT,
+    throttlingMethod: 'provided',
+    throttling: {
+      rttMs: 0,
+      throughputKbps: 0,
+      cpuSlowdownMultiplier: 1,
+    },
+    disableStorageReset: auth,
   };
-
-  if (auth) {
-    options.settings.puppeteerScript = path.join(__dirname, 'set-auth.mjs');
-    options.settings.puppeteerScriptTime = 'domcontentloaded';
-  }
-
-  return options;
 }
 
-/** @param {string} url @param {boolean} auth @param {number} chromePort */
-async function runLighthouse(url, auth, chromePort) {
-  const runnerResult = await lighthouse(url, buildLighthouseOptions(chromePort, auth));
-  return runnerResult?.lhr;
+async function seedAuth(page, baseUrl, tokens) {
+  if (!tokens) throw new Error('Página autenticada sem tokens disponíveis.');
+  await page.goto(baseUrl, { waitUntil: 'domcontentloaded' });
+  await page.evaluate((pair) => {
+    localStorage.setItem('sxg_access_token', pair.accessToken);
+    localStorage.setItem('sxg_refresh_token', pair.refreshToken);
+  }, tokens);
+}
+
+async function createAuditPage(browser, baseUrl, auth, tokens) {
+  const page = await browser.newPage();
+  await page.setViewport(DESKTOP_VIEWPORT);
+  await page.setUserAgent(DESKTOP_USER_AGENT);
+  if (auth) await seedAuth(page, baseUrl, tokens);
+  return page;
+}
+
+/** @param {string} url @param {boolean} auth */
+async function runLighthouse(url, auth, browser, baseUrl, tokens) {
+  const page = await createAuditPage(browser, baseUrl, auth, tokens);
+  try {
+    const runnerResult = await lighthouse(url, buildLighthouseFlags(auth), undefined, page);
+    return runnerResult?.lhr;
+  } finally {
+    await page.close();
+  }
 }
 
 function scoresFromLhr(lhr) {
@@ -186,11 +191,11 @@ function mergeBestScores(a, b) {
   return Object.fromEntries(categories.map((cat) => [cat, Math.max(a[cat] ?? 0, b[cat] ?? 0)]));
 }
 
-/** @param {string} url @param {boolean} auth @param {number} chromePort */
-async function runLighthouseMeasured(url, auth, chromePort) {
-  await runLighthouse(url, auth, chromePort);
-  const first = await runLighthouse(url, auth, chromePort);
-  const second = await runLighthouse(url, auth, chromePort);
+/** @param {string} url @param {boolean} auth */
+async function runLighthouseMeasured(url, auth, browser, baseUrl, tokens) {
+  await runLighthouse(url, auth, browser, baseUrl, tokens);
+  const first = await runLighthouse(url, auth, browser, baseUrl, tokens);
+  const second = await runLighthouse(url, auth, browser, baseUrl, tokens);
   const scores = mergeBestScores(scoresFromLhr(first), scoresFromLhr(second));
   return { lhr: second, scores };
 }
@@ -210,10 +215,20 @@ async function main() {
   }
 
   let ids = { projectId: 'guest', tableId: 'guest' };
+  let tokens = null;
   if (!guestOnly) {
     console.log('▶ Verificando API...');
     await waitForApi();
-    ids = await fetchSeedIds();
+    const email = process.env.LH_EMAIL ?? 'dev@sxgerador.local';
+    const password = process.env.LH_PASSWORD ?? 'dev123456';
+    const loginRes = await fetch(`${API_URL}/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password }),
+    });
+    if (!loginRes.ok) throw new Error('Não foi possível autenticar para resolver URLs dinâmicas.');
+    tokens = await loginRes.json();
+    ids = await fetchSeedIds(tokens.accessToken);
   } else {
     console.log('▶ Modo guest-only (rotas públicas, sem API).');
   }
@@ -226,14 +241,21 @@ async function main() {
   const results = [];
   let failed = false;
 
-  const chrome = await chromeLauncher.launch({
-    chromePath: process.env.CHROME_PATH ?? puppeteer.executablePath(),
-    chromeFlags: ['--headless', '--no-sandbox', '--disable-gpu', '--disable-dev-shm-usage'],
+  const browser = await puppeteer.launch({
+    executablePath: process.env.CHROME_PATH ?? puppeteer.executablePath(),
+    headless: true,
+    args: [
+      '--no-sandbox',
+      '--disable-gpu',
+      '--disable-dev-shm-usage',
+      `--window-size=${DESKTOP_VIEWPORT.width},${DESKTOP_VIEWPORT.height}`,
+    ],
+    defaultViewport: DESKTOP_VIEWPORT,
   });
 
   try {
     process.stdout.write('\n▶ Warm-up (cache de assets Angular/PO-UI)... ');
-    await runLighthouse(`${baseUrl}/login`, false, chrome.port);
+    await runLighthouse(`${baseUrl}/login`, false, browser, baseUrl, tokens);
     console.log('ok');
 
     for (const pageDef of pagesToAudit) {
@@ -241,7 +263,13 @@ async function main() {
       const url = `${baseUrl}${pagePath}`;
       process.stdout.write(`\n▶ ${pageDef.label} (${pagePath})... `);
 
-      const { lhr, scores } = await runLighthouseMeasured(url, pageDef.auth, chrome.port);
+      const { lhr, scores } = await runLighthouseMeasured(
+        url,
+        pageDef.auth,
+        browser,
+        baseUrl,
+        tokens,
+      );
       if (!lhr) {
         console.log('FALHOU (sem resultado)');
         failed = true;
@@ -263,7 +291,7 @@ async function main() {
       results.push({ id: pageDef.id, label: pageDef.label, path: pagePath, scores, below });
     }
   } finally {
-    await chrome.kill();
+    await browser.close();
     server.kill('SIGTERM');
   }
 
