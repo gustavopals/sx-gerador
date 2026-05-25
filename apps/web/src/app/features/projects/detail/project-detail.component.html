@@ -5,10 +5,7 @@
   [p-actions]="pageActions"
 >
   @if (isLoading()) {
-    <div class="sxg-detail__state">
-      <span class="sxg-detail__spinner"></span>
-      <p>Carregando projeto...</p>
-    </div>
+    <sxg-loading-skeleton variant="detail" [rows]="3" />
   } @else if (project(); as p) {
     @if (p.deletedAt) {
       <div class="sxg-detail__archived-banner">
@@ -82,6 +79,39 @@
           </dl>
 
           @if (!p.deletedAt) {
+            <div class="sxg-detail__import-settings">
+              <h4 class="sxg-detail__import-title">Importar / exportar CSV (Protheus)</h4>
+              <p class="sxg-detail__import-hint">
+                Exporte SX2, SX3 e SIX no formato SIGACFG ou importe CSVs exportados do Protheus.
+              </p>
+              <div class="sxg-detail__csv-export-actions">
+                <po-button
+                  p-label="CSV SX2"
+                  p-kind="secondary"
+                  p-icon="an an-download-simple"
+                  (p-click)="downloadCsvExport('sx2')"
+                ></po-button>
+                <po-button
+                  p-label="CSV SX3"
+                  p-kind="secondary"
+                  p-icon="an an-download-simple"
+                  (p-click)="downloadCsvExport('sx3')"
+                ></po-button>
+                <po-button
+                  p-label="CSV SIX"
+                  p-kind="secondary"
+                  p-icon="an an-download-simple"
+                  (p-click)="downloadCsvExport('six')"
+                ></po-button>
+                <po-button
+                  p-label="Importar…"
+                  p-icon="an an-upload"
+                  p-kind="secondary"
+                  (p-click)="openImportModal()"
+                ></po-button>
+              </div>
+            </div>
+
             <po-button
               p-label="Editar configurações"
               p-icon="an an-pencil"
@@ -93,12 +123,209 @@
       </po-tab>
 
       <po-tab p-label="Histórico">
-        <div class="sxg-detail__empty-tab">
-          <span class="an an-clock-counter-clockwise an-2x"></span>
-          <h3>Sem registros de histórico</h3>
-          <p>Alterações e eventos do projeto aparecerão aqui.</p>
-        </div>
+        @if (project(); as p) {
+          <sxg-history-timeline [projectId]="p.id" />
+        }
       </po-tab>
     </po-tabs>
   }
 </po-page-default>
+
+<po-modal
+  #importModal
+  p-title="Importar dicionário"
+  p-icon="an an-upload"
+  [p-secondary-action]="importModalCloseAction"
+  [p-hide-close]="isImportApplying()"
+>
+  <div class="sxg-detail__import-modal">
+    <div class="sxg-detail__import-mode">
+      <po-button
+        p-label="JSON (SXGerador)"
+        [p-kind]="importMode() === 'json' ? 'primary' : 'secondary'"
+        [p-disabled]="isImportApplying()"
+        (p-click)="setImportMode('json')"
+      ></po-button>
+      <po-button
+        p-label="CSV (Protheus)"
+        [p-kind]="importMode() === 'csv' ? 'primary' : 'secondary'"
+        [p-disabled]="isImportApplying()"
+        (p-click)="setImportMode('csv')"
+      ></po-button>
+    </div>
+
+    @if (importMode() === 'json') {
+      <input
+        #importFileInput
+        type="file"
+        accept="application/json,.json"
+        class="sxg-detail__import-file-input"
+        (change)="onImportFileSelected($event)"
+      />
+      <div class="sxg-detail__import-toolbar">
+        <po-button
+          p-label="Selecionar JSON…"
+          p-kind="secondary"
+          p-icon="an an-file"
+          [p-disabled]="isImportApplying()"
+          (p-click)="triggerImportFilePicker(importFileInput)"
+        ></po-button>
+        @if (importFileName(); as name) {
+          <span class="sxg-detail__import-filename">{{ name }}</span>
+        }
+      </div>
+    } @else {
+      <p class="sxg-detail__import-hint">
+        Selecione um ou mais CSVs exportados do SIGACFG (SX2, SX3, SIX).
+      </p>
+      <div class="sxg-detail__csv-slots">
+        <div class="sxg-detail__csv-slot">
+          <input
+            #csvSx2Input
+            type="file"
+            accept=".csv,text/csv"
+            class="sxg-detail__import-file-input"
+            (change)="onCsvFileSelected('sx2', $event)"
+          />
+          <po-button
+            p-label="SX2 — tabelas"
+            p-kind="secondary"
+            p-icon="an an-file"
+            [p-disabled]="isImportApplying()"
+            (p-click)="triggerCsvFilePicker(csvSx2Input)"
+          ></po-button>
+          @if (importCsvSx2Name(); as n) {
+            <span class="sxg-detail__import-filename">{{ n }}</span>
+          }
+        </div>
+        <div class="sxg-detail__csv-slot">
+          <input
+            #csvSx3Input
+            type="file"
+            accept=".csv,text/csv"
+            class="sxg-detail__import-file-input"
+            (change)="onCsvFileSelected('sx3', $event)"
+          />
+          <po-button
+            p-label="SX3 — campos"
+            p-kind="secondary"
+            p-icon="an an-file"
+            [p-disabled]="isImportApplying()"
+            (p-click)="triggerCsvFilePicker(csvSx3Input)"
+          ></po-button>
+          @if (importCsvSx3Name(); as n) {
+            <span class="sxg-detail__import-filename">{{ n }}</span>
+          }
+        </div>
+        <div class="sxg-detail__csv-slot">
+          <input
+            #csvSixInput
+            type="file"
+            accept=".csv,text/csv"
+            class="sxg-detail__import-file-input"
+            (change)="onCsvFileSelected('six', $event)"
+          />
+          <po-button
+            p-label="SIX — índices"
+            p-kind="secondary"
+            p-icon="an an-file"
+            [p-disabled]="isImportApplying()"
+            (p-click)="triggerCsvFilePicker(csvSixInput)"
+          ></po-button>
+          @if (importCsvSixName(); as n) {
+            <span class="sxg-detail__import-filename">{{ n }}</span>
+          }
+        </div>
+      </div>
+    }
+
+    <po-button
+      class="sxg-detail__import-preview-btn"
+      p-label="Pré-visualizar"
+      p-icon="an an-eye"
+      [p-loading]="isImportPreviewing()"
+      [p-disabled]="
+        isImportPreviewing() ||
+        isImportApplying() ||
+        (importMode() === 'json' ? importDocument() === null : !hasCsvSelection())
+      "
+      (p-click)="runImportPreview()"
+    ></po-button>
+
+    @if (importPreview(); as pv) {
+      @if (!pv.valid) {
+        <div class="sxg-detail__import-errors" role="alert">
+          <strong>Validação</strong>
+          <ul>
+            @for (msg of pv.errors; track msg) {
+              <li>{{ msg }}</li>
+            }
+          </ul>
+        </div>
+      } @else {
+        @if (pv.csvWarnings?.length) {
+          <div class="sxg-detail__import-warnings">
+            <strong>Avisos do CSV</strong>
+            <ul>
+              @for (w of pv.csvWarnings; track w) {
+                <li>{{ w }}</li>
+              }
+            </ul>
+          </div>
+        }
+        @if (pv.summary; as s) {
+          <div class="sxg-detail__import-summary">
+            <strong>Resumo do plano</strong>
+            <ul class="sxg-detail__import-summary-list">
+              <li>
+                Tabelas: +{{ s.tablesCreated }} / ~{{ s.tablesUpdated }} / −{{ s.tablesDeleted }}
+              </li>
+              <li>
+                Campos: +{{ s.fieldsCreated }} / ~{{ s.fieldsUpdated }} / −{{ s.fieldsDeleted }}
+              </li>
+              <li>
+                Índices: +{{ s.indexesCreated }} / ~{{ s.indexesUpdated }} / −{{ s.indexesDeleted }}
+              </li>
+            </ul>
+          </div>
+        }
+        @if (pv.tables?.length) {
+          <details class="sxg-detail__import-details">
+            <summary>Por tabela</summary>
+            <ul class="sxg-detail__import-tables">
+              @for (t of pv.tables; track t.prefix) {
+                <li>
+                  <span class="sxg-detail__import-table-prefix">{{ t.prefix }}</span>
+                  <span class="sxg-detail__import-table-action">{{
+                    t.action === 'create' ? 'nova' : 'atualizar'
+                  }}</span>
+                </li>
+              }
+            </ul>
+          </details>
+        }
+
+        <label class="sxg-detail__import-sync">
+          <input
+            type="checkbox"
+            [checked]="importSyncDeletions()"
+            [disabled]="isImportApplying()"
+            (change)="onImportSyncCheckboxChange($event)"
+          />
+          <span>
+            Remover do projeto tabelas, campos e índices que não existirem no arquivo (soft delete).
+          </span>
+        </label>
+
+        <po-button
+          p-label="Aplicar importação"
+          p-kind="primary"
+          p-icon="an an-check"
+          [p-loading]="isImportApplying()"
+          [p-disabled]="isImportApplying()"
+          (p-click)="runImportApply()"
+        ></po-button>
+      }
+    }
+  </div>
+</po-modal>

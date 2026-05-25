@@ -1,9 +1,6 @@
 <po-page-default [p-title]="pageTitle" [p-subtitle]="pageSubtitle" [p-actions]="pageActions">
   @if (isLoading()) {
-    <div class="sxg-project-form__state">
-      <span class="sxg-project-form__spinner"></span>
-      <p>Carregando projeto...</p>
-    </div>
+    <sxg-loading-skeleton variant="detail" [rows]="3" />
   } @else {
     <form class="sxg-project-form" [formGroup]="form" (ngSubmit)="save()" novalidate>
       <section class="sxg-project-form__section">

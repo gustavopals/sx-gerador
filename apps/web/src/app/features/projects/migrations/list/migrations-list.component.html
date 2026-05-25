@@ -5,21 +5,25 @@
   [p-actions]="pageActions"
 >
   @if (isLoading()) {
-    <div class="sxg-ml__state">
-      <span class="sxg-ml__spinner"></span>
-      <p>Carregando migrations...</p>
-    </div>
+    <sxg-loading-skeleton variant="table" [rows]="4" />
   } @else if (migrations().length === 0) {
-    <div class="sxg-ml__empty">
-      <span class="an an-file-arrow-up an-2x"></span>
-      <h3>Nenhuma migration gerada</h3>
-      <p>Quando você gerar uma migration, ela aparecerá aqui para consulta e download.</p>
-    </div>
+    <sxg-empty-state
+      icon="an an-file-arrow-up"
+      title="Nenhuma migration gerada"
+      description="Quando você gerar uma migration, ela aparecerá aqui para consulta e download."
+      actionLabel="Gerar migration"
+      actionIcon="an an-file-arrow-up"
+      (action)="navigateToGenerate()"
+    />
   } @else {
+    <p class="sxg-ml__compare-hint">
+      Marque duas migrations para comparar o dicionário e os itens lado a lado.
+    </p>
     <div class="sxg-ml__table-wrap">
       <table class="sxg-ml__table">
         <thead>
           <tr>
+            <th title="Comparar">⇄</th>
             <th></th>
             <th>Nº</th>
             <th>Data</th>
@@ -32,6 +36,14 @@
         <tbody>
           @for (migration of migrations(); track trackMigration($index, migration)) {
             <tr>
+              <td>
+                <input
+                  type="checkbox"
+                  [checked]="isSelectedForCompare(migration.id)"
+                  (change)="toggleCompareSelection(migration.id)"
+                  [attr.aria-label]="'Comparar migration ' + migration.sequence"
+                />
+              </td>
               <td>
                 <button class="sxg-ml__expand-btn" (click)="toggleExpanded(migration.id)">
                   <span
@@ -58,7 +70,7 @@
             </tr>
             @if (isExpanded(migration.id)) {
               <tr class="sxg-ml__detail-row">
-                <td colspan="7">
+                <td colspan="8">
                   <div class="sxg-ml__detail">
                     <h4>Itens da migration</h4>
                     <ul>
@@ -82,3 +94,54 @@
     </div>
   }
 </po-page-default>
+
+<po-modal
+  #compareModal
+  p-title="Comparar migrations"
+  p-size="lg"
+  [p-secondary-action]="compareModalCloseAction"
+>
+  @if (compareResult(); as data) {
+    <section class="sxg-ml__compare-modal">
+      <h4>Dicionário acumulado</h4>
+      <p class="sxg-ml__compare-sub">
+        {{ compareLabelA() }} <span class="an an-arrow-right"></span> {{ compareLabelB() }}
+      </p>
+      <sxg-diff-viewer
+        [diff]="data.dictionaryDiff"
+        [labelA]="compareLabelA()"
+        [labelB]="compareLabelB()"
+      />
+
+      @if (
+        data.itemsDiff.onlyInA.length > 0 ||
+        data.itemsDiff.onlyInB.length > 0 ||
+        data.itemsDiff.changed.length > 0
+      ) {
+        <h4 class="sxg-ml__compare-items-title">Itens das migrations</h4>
+        <div class="sxg-ml__items-diff">
+          @if (data.itemsDiff.onlyInA.length > 0) {
+            <div class="sxg-ml__items-col sxg-ml__items-col--a">
+              <h5>Só em A</h5>
+              <ul>
+                @for (item of data.itemsDiff.onlyInA; track item.id) {
+                  <li>{{ item.operation }} · {{ item.targetName }}</li>
+                }
+              </ul>
+            </div>
+          }
+          @if (data.itemsDiff.onlyInB.length > 0) {
+            <div class="sxg-ml__items-col sxg-ml__items-col--b">
+              <h5>Só em B</h5>
+              <ul>
+                @for (item of data.itemsDiff.onlyInB; track item.id) {
+                  <li>{{ item.operation }} · {{ item.targetName }}</li>
+                }
+              </ul>
+            </div>
+          }
+        </div>
+      }
+    </section>
+  }
+</po-modal>

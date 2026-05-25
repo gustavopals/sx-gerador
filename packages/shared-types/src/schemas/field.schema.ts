@@ -12,7 +12,7 @@ const FieldNameSchema = z
   .regex(/^[A-Z0-9]{3}_[A-Z0-9_]+$/, 'Nome deve seguir o padrão PREFIXO_NOME')
   .max(10, 'Máximo de 10 caracteres');
 
-const FieldOrderSchema = z
+export const FieldOrderSchema = z
   .string()
   .trim()
   .regex(/^\d{2}$/, 'Ordem deve conter 2 dígitos (ex: 01)');

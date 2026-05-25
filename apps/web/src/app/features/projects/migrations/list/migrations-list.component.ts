@@ -1,37 +1,62 @@
 import { DatePipe } from '@angular/common';
-import { Component, inject, signal, type OnInit } from '@angular/core';
+import { Component, inject, signal, ViewChild, type OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
   PoButtonModule,
+  PoModalModule,
   PoNotificationService,
   PoPageModule,
   type PoBreadcrumb,
+  type PoModalAction,
+  type PoModalComponent,
   type PoPageAction,
 } from '@po-ui/ng-components';
+import {
+  DiffService,
+  mapDiffError,
+  type CompareMigrationsResponse,
+} from '../../../../core/services/diff.service';
 import {
   mapMigrationsError,
   MigrationsService,
   type DraftMigrationItem,
   type GeneratedMigrationListItem,
 } from '../../../../core/services/migrations.service';
+import { DiffViewerComponent } from '../../../../shared/components/diff-viewer/diff-viewer.component';
+import { EmptyStateComponent } from '../../../../shared/components/empty-state/empty-state.component';
+import { LoadingSkeletonComponent } from '../../../../shared/components/loading-skeleton/loading-skeleton.component';
 
 @Component({
   selector: 'sxg-migrations-list',
-  imports: [DatePipe, PoButtonModule, PoPageModule],
+  imports: [
+    DatePipe,
+    PoButtonModule,
+    PoModalModule,
+    PoPageModule,
+    DiffViewerComponent,
+    EmptyStateComponent,
+    LoadingSkeletonComponent,
+  ],
   templateUrl: './migrations-list.component.html',
   styleUrl: './migrations-list.component.scss',
 })
 export class MigrationsListComponent implements OnInit {
+  @ViewChild('compareModal') private readonly compareModal?: PoModalComponent;
+
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
   private readonly service = inject(MigrationsService);
+  private readonly diffService = inject(DiffService);
   private readonly notification = inject(PoNotificationService);
 
   readonly projectId = signal('');
   readonly isLoading = signal(false);
   readonly isDownloading = signal<string | null>(null);
+  readonly isComparing = signal(false);
   readonly migrations = signal<GeneratedMigrationListItem[]>([]);
   readonly expandedIds = signal<Set<string>>(new Set());
+  readonly selectedForCompare = signal<string[]>([]);
+  readonly compareResult = signal<CompareMigrationsResponse | null>(null);
 
   get breadcrumb(): PoBreadcrumb {
     return {
@@ -43,8 +68,15 @@ export class MigrationsListComponent implements OnInit {
     };
   }
 
+  get compareModalCloseAction(): PoModalAction {
+    return {
+      label: 'Fechar',
+      action: () => this.compareModal?.close(),
+    };
+  }
+
   get pageActions(): PoPageAction[] {
-    return [
+    const actions: PoPageAction[] = [
       {
         label: 'Gerar migration',
         icon: 'an an-file-arrow-up',
@@ -52,12 +84,24 @@ export class MigrationsListComponent implements OnInit {
         action: () =>
           void this.router.navigate(['/projects', this.projectId(), 'migrations', 'generate']),
       },
-      {
-        label: 'Voltar',
-        icon: 'an an-arrow-left',
-        action: () => void this.router.navigate(['/projects', this.projectId()]),
-      },
     ];
+
+    if (this.selectedForCompare().length === 2) {
+      actions.unshift({
+        label: 'Comparar selecionadas',
+        icon: 'an an-arrows-left-right',
+        kind: 'secondary',
+        action: () => void this.runCompare(),
+      });
+    }
+
+    actions.push({
+      label: 'Voltar',
+      icon: 'an an-arrow-left',
+      action: () => void this.router.navigate(['/projects', this.projectId()]),
+    });
+
+    return actions;
   }
 
   ngOnInit(): void {
@@ -70,6 +114,10 @@ export class MigrationsListComponent implements OnInit {
     void this.loadMigrations();
   }
 
+  navigateToGenerate(): void {
+    void this.router.navigate(['/projects', this.projectId(), 'migrations', 'generate']);
+  }
+
   isExpanded(migrationId: string): boolean {
     return this.expandedIds().has(migrationId);
   }
@@ -79,6 +127,58 @@ export class MigrationsListComponent implements OnInit {
     if (next.has(migrationId)) next.delete(migrationId);
     else next.add(migrationId);
     this.expandedIds.set(next);
+  }
+
+  isSelectedForCompare(migrationId: string): boolean {
+    return this.selectedForCompare().includes(migrationId);
+  }
+
+  toggleCompareSelection(migrationId: string): void {
+    const current = this.selectedForCompare();
+    if (current.includes(migrationId)) {
+      this.selectedForCompare.set(current.filter((id) => id !== migrationId));
+      return;
+    }
+    if (current.length >= 2) {
+      this.notification.warning('Selecione no máximo duas migrations para comparar.');
+      return;
+    }
+    this.selectedForCompare.set([...current, migrationId]);
+  }
+
+  migrationLabel(migration: GeneratedMigrationListItem): string {
+    return `#${migration.sequence} — ${migration.name}`;
+  }
+
+  compareLabelA(): string {
+    const result = this.compareResult();
+    return result ? `#${result.migrationA.sequence} ${result.migrationA.name}` : 'Migration A';
+  }
+
+  compareLabelB(): string {
+    const result = this.compareResult();
+    return result ? `#${result.migrationB.sequence} ${result.migrationB.name}` : 'Migration B';
+  }
+
+  private async runCompare(): Promise<void> {
+    const [migrationIdA, migrationIdB] = this.selectedForCompare();
+    if (!migrationIdA || !migrationIdB) return;
+
+    this.isComparing.set(true);
+    this.compareResult.set(null);
+    try {
+      const result = await this.diffService.compareMigrations({
+        projectId: this.projectId(),
+        migrationIdA,
+        migrationIdB,
+      });
+      this.compareResult.set(result);
+      this.compareModal?.open();
+    } catch (err) {
+      this.notification.error(mapDiffError(err));
+    } finally {
+      this.isComparing.set(false);
+    }
   }
 
   async downloadAgain(migration: GeneratedMigrationListItem): Promise<void> {

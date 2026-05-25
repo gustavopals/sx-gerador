@@ -1,16 +1,24 @@
 import { DatePipe } from '@angular/common';
-import { Component, computed, inject, signal, type OnInit } from '@angular/core';
+import { Component, computed, inject, signal, ViewChild, type OnInit } from '@angular/core';
+import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import {
   PoButtonModule,
+  PoButtonType,
+  PoFieldModule,
+  PoModalModule,
   PoNotificationService,
   PoPageModule,
   PoTabsModule,
   PoTagModule,
   PoTagType,
   type PoBreadcrumb,
+  type PoModalAction,
+  type PoModalComponent,
   type PoPageAction,
+  type PoSelectOption,
 } from '@po-ui/ng-components';
+import { TEMPLATE_CATEGORIES, type TemplateCategory } from '@sxgerador/shared-types';
 import { FieldsService, type FieldSummary } from '../../../../core/services/fields.service';
 import { IndexesService, type IndexSummary } from '../../../../core/services/indexes.service';
 import {
@@ -18,6 +26,10 @@ import {
   TablesService,
   type TableSummary,
 } from '../../../../core/services/tables.service';
+import { mapTemplatesError, TemplatesService } from '../../../../core/services/templates.service';
+import { EmptyStateComponent } from '../../../../shared/components/empty-state/empty-state.component';
+import { HistoryTimelineComponent } from '../../../../shared/components/history-timeline/history-timeline.component';
+import { LoadingSkeletonComponent } from '../../../../shared/components/loading-skeleton/loading-skeleton.component';
 import { FieldsListComponent } from '../../fields/list/fields-list.component';
 import { IndexesListComponent } from '../../indexes/list/indexes-list.component';
 
@@ -25,23 +37,47 @@ import { IndexesListComponent } from '../../indexes/list/indexes-list.component'
   selector: 'sxg-table-detail',
   imports: [
     DatePipe,
+    ReactiveFormsModule,
     PoButtonModule,
+    PoFieldModule,
+    PoModalModule,
     PoPageModule,
     PoTabsModule,
     PoTagModule,
     FieldsListComponent,
     IndexesListComponent,
+    HistoryTimelineComponent,
+    EmptyStateComponent,
+    LoadingSkeletonComponent,
   ],
   templateUrl: './table-detail.component.html',
   styleUrl: './table-detail.component.scss',
 })
 export class TableDetailComponent implements OnInit {
+  @ViewChild('publishModal') private readonly publishModal?: PoModalComponent;
+
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
   private readonly tablesService = inject(TablesService);
   private readonly fieldsService = inject(FieldsService);
   private readonly indexesService = inject(IndexesService);
+  private readonly templatesService = inject(TemplatesService);
   private readonly notification = inject(PoNotificationService);
+  private readonly fb = inject(FormBuilder);
+
+  readonly submitType = PoButtonType.Submit;
+  readonly isPublishing = signal(false);
+
+  readonly categoryOptions: PoSelectOption[] = TEMPLATE_CATEGORIES.map((c) => ({
+    label: c,
+    value: c,
+  }));
+
+  readonly publishForm = this.fb.group({
+    name: [''],
+    description: [''],
+    category: ['Genéricos' as TemplateCategory],
+  });
 
   readonly table = signal<TableSummary | null>(null);
   readonly projectId = signal<string>('');
@@ -93,11 +129,72 @@ export class TableDetailComponent implements OnInit {
           void this.router.navigate(['/projects', this.projectId(), 'tables', t.id, 'edit']),
       },
       {
+        label: 'Publicar template',
+        icon: 'an an-share-network',
+        action: () => void this.openPublishModal(),
+      },
+      {
         label: 'Arquivar',
         icon: 'an an-archive',
         action: () => void this.archiveTable(),
       },
     ];
+  }
+
+  get publishModalCloseAction(): PoModalAction {
+    return {
+      label: 'Cancelar',
+      disabled: this.isPublishing(),
+      action: () => this.publishModal?.close(),
+    };
+  }
+
+  get publishPrimaryAction(): PoModalAction {
+    return {
+      label: 'Publicar',
+      loading: this.isPublishing(),
+      disabled: this.publishForm.invalid || this.isPublishing(),
+      action: () => void this.submitPublish(),
+    };
+  }
+
+  openPublishModal(): void {
+    const t = this.table();
+    if (!t) return;
+    this.publishForm.reset({
+      name: `${t.namePt} (${t.prefix})`,
+      description: t.notes ?? '',
+      category: 'Genéricos',
+    });
+    this.publishModal?.open();
+  }
+
+  async submitPublish(): Promise<void> {
+    const t = this.table();
+    if (!t || this.publishForm.invalid) return;
+
+    const { name, description, category } = this.publishForm.getRawValue();
+    if (!name?.trim() || !category) {
+      this.notification.warning('Informe nome e categoria.');
+      return;
+    }
+
+    this.isPublishing.set(true);
+    try {
+      const created = await this.templatesService.publishFromTable({
+        name: name.trim(),
+        description: description?.trim() || null,
+        category,
+        projectId: this.projectId(),
+        tableId: t.id,
+      });
+      this.notification.success(`Template "${created.name}" publicado na vitrine.`);
+      this.publishModal?.close();
+    } catch (err) {
+      this.notification.error(mapTemplatesError(err));
+    } finally {
+      this.isPublishing.set(false);
+    }
   }
 
   get modeLabel(): string {

@@ -14,6 +14,8 @@ import {
   type PoPageAction,
 } from '@po-ui/ng-components';
 import { mapTeamsError, type TeamSummary } from '../../../core/services/teams.service';
+import { EmptyStateComponent } from '../../../shared/components/empty-state/empty-state.component';
+import { LoadingSkeletonComponent } from '../../../shared/components/loading-skeleton/loading-skeleton.component';
 import { TeamsStore } from '../../../stores/teams.store';
 
 const SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
@@ -28,6 +30,8 @@ const SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
     PoFieldModule,
     PoModalModule,
     PoPageModule,
+    EmptyStateComponent,
+    LoadingSkeletonComponent,
   ],
   templateUrl: './teams-list.component.html',
   styleUrl: './teams-list.component.scss',

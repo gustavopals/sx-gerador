@@ -14,11 +14,23 @@
     ></po-button>
   </div>
 
-  <po-table
-    [p-columns]="columns"
-    [p-items]="rows"
-    [p-loading]="isLoading()"
-    [p-actions]="actions"
-    [p-striped]="true"
-  ></po-table>
+  @if (isLoading()) {
+    <sxg-loading-skeleton variant="table" [rows]="3" />
+  } @else if (rows.length === 0) {
+    <sxg-empty-state
+      icon="an an-list-magnifying-glass"
+      title="Nenhum índice cadastrado"
+      description="Cadastre os índices SIX para definir as chaves de navegação da tabela."
+      [actionLabel]="isDisabled() ? null : 'Novo índice'"
+      actionIcon="an an-plus"
+      (action)="goToNew()"
+    />
+  } @else {
+    <po-table
+      [p-columns]="columns"
+      [p-items]="rows"
+      [p-actions]="actions"
+      [p-striped]="true"
+    ></po-table>
+  }
 </section>

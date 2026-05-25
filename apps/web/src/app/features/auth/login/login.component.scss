@@ -3,12 +3,65 @@
   height: 100vh;
 }
 
-// Highlight panel — painel lateral do po-page-login
-::ng-deep .po-page-login-highlight-image {
+.sxg-login {
+  padding: 0 8px;
+
+  &__title {
+    margin: 0 0 4px;
+    color: #1d2a35;
+  }
+
+  &__sub {
+    margin: 0 0 24px;
+    color: #4a5864;
+  }
+
+  &__link {
+    color: #0a5f8a;
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  &__row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin: 8px 0 20px;
+    flex-wrap: wrap;
+  }
+
+  &__remember {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    color: #1d2a35;
+
+    input[type='checkbox'] {
+      width: 16px;
+      height: 16px;
+      accent-color: #0c9abe;
+    }
+  }
+
+  &__submit {
+    display: block;
+    width: 100%;
+
+    ::ng-deep .po-button {
+      width: 100%;
+    }
+  }
+}
+
+::ng-deep .po-page-background-highlight {
   background: linear-gradient(135deg, #1a2332 0%, #0c3547 50%, #1a5276 100%) !important;
 }
 
-::ng-deep .po-page-login-highlight-title,
-::ng-deep .po-page-login-highlight-info {
+::ng-deep .po-page-background-highlight-title,
+::ng-deep .po-page-background-highlight-info {
   color: #ffffff !important;
 }

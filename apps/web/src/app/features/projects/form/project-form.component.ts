@@ -24,6 +24,7 @@ import {
   TeamsService,
   type TeamSummary,
 } from '../../../core/services/teams.service';
+import { LoadingSkeletonComponent } from '../../../shared/components/loading-skeleton/loading-skeleton.component';
 
 const SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 const PERSONAL_OWNER = 'personal';
@@ -31,7 +32,13 @@ const TEAM_OWNER_PREFIX = 'team:';
 
 @Component({
   selector: 'sxg-project-form',
-  imports: [ReactiveFormsModule, PoButtonModule, PoFieldModule, PoPageModule],
+  imports: [
+    ReactiveFormsModule,
+    PoButtonModule,
+    PoFieldModule,
+    PoPageModule,
+    LoadingSkeletonComponent,
+  ],
   templateUrl: './project-form.component.html',
   styleUrl: './project-form.component.scss',
 })

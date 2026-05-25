@@ -3,6 +3,8 @@ import { sign as jwtSign } from 'jsonwebtoken';
 import request from 'supertest';
 import { describe, expect, it, vi } from 'vitest';
 import { errorHandler } from '../../middleware/error.middleware';
+import type { ProjectCsvService } from './project-csv.service';
+import type { ProjectImportService } from './project-import.service';
 import { createProjectsRouter } from './projects.routes';
 import type { ProjectsService } from './projects.service';
 
@@ -27,10 +29,21 @@ const PROJECT = {
 };
 const TEAM_ID = 'clwteam000000000000000001';
 
-function buildApp(service: Partial<ProjectsService>) {
+function buildApp(
+  service: Partial<ProjectsService>,
+  importSvc: Partial<ProjectImportService> = {},
+  csvSvc: Partial<ProjectCsvService> = {},
+) {
   const app = express();
   app.use(json({ limit: '2mb' }));
-  app.use('/api/v1', createProjectsRouter(service as ProjectsService));
+  app.use(
+    '/api/v1',
+    createProjectsRouter(
+      service as ProjectsService,
+      importSvc as ProjectImportService,
+      csvSvc as ProjectCsvService,
+    ),
+  );
   app.use(errorHandler);
   return app;
 }
@@ -150,6 +163,28 @@ describe('projects routes', () => {
     expect(service.get).toHaveBeenCalledWith(PROJECT.id, 'user-1');
   });
 
+  it('exports project JSON as attachment', async () => {
+    const exportDoc = {
+      format: 'sxgerador-project' as const,
+      formatVersion: 1 as const,
+      exportedAt: '2026-05-12T12:00:00.000Z',
+      project: PROJECT,
+      tables: [],
+    };
+    const service = { exportJson: vi.fn().mockResolvedValue(exportDoc) };
+
+    const res = await request(buildApp(service))
+      .get(`/api/v1/projects/${PROJECT.id}/export`)
+      .set('Authorization', AUTH);
+
+    expect(res.status).toBe(200);
+    expect(service.exportJson).toHaveBeenCalledWith(PROJECT.id, 'user-1');
+    expect(res.headers['content-type']).toMatch(/application\/json/);
+    expect(res.headers['content-disposition']).toContain('attachment');
+    expect(res.headers['content-disposition']).toContain('.json');
+    expect(res.text).toContain('"format": "sxgerador-project"');
+  });
+
   it('updates a project', async () => {
     const service = { update: vi.fn().mockResolvedValue({ ...PROJECT, name: 'Novo' }) };
 
@@ -195,5 +230,96 @@ describe('projects routes', () => {
 
     expect(res.status).toBe(201);
     expect(service.duplicate).toHaveBeenCalledWith(PROJECT.id, 'user-1');
+  });
+
+  it('previews import JSON', async () => {
+    const preview = vi.fn().mockResolvedValue({
+      valid: true,
+      errors: [],
+      summary: {
+        tablesCreated: 0,
+        tablesUpdated: 0,
+        tablesDeleted: 0,
+        fieldsCreated: 0,
+        fieldsUpdated: 0,
+        fieldsDeleted: 0,
+        indexesCreated: 0,
+        indexesUpdated: 0,
+        indexesDeleted: 0,
+      },
+      tables: [],
+    });
+
+    const res = await request(buildApp({}, { preview }))
+      .post(`/api/v1/projects/${PROJECT.id}/import/preview`)
+      .set('Authorization', AUTH)
+      .send({ document: { format: 'sxgerador-project' } });
+
+    expect(res.status).toBe(200);
+    expect(preview).toHaveBeenCalledWith(PROJECT.id, { format: 'sxgerador-project' }, 'user-1');
+  });
+
+  it('applies import JSON', async () => {
+    const apply = vi.fn().mockResolvedValue({
+      success: true,
+      errors: [],
+      summary: {
+        tablesCreated: 0,
+        tablesUpdated: 0,
+        tablesDeleted: 0,
+        fieldsCreated: 0,
+        fieldsUpdated: 0,
+        fieldsDeleted: 0,
+        indexesCreated: 0,
+        indexesUpdated: 0,
+        indexesDeleted: 0,
+      },
+    });
+
+    const res = await request(buildApp({}, { apply }))
+      .post(`/api/v1/projects/${PROJECT.id}/import`)
+      .set('Authorization', AUTH)
+      .send({ document: { format: 'sxgerador-project' } });
+
+    expect(res.status).toBe(200);
+    expect(apply).toHaveBeenCalledWith(
+      PROJECT.id,
+      { format: 'sxgerador-project' },
+      'user-1',
+      undefined,
+    );
+  });
+
+  it('exports CSV SX2', async () => {
+    const exportCsv = vi.fn().mockResolvedValue({
+      content: 'X2_CHAVE;X2_ARQUIVO\nZZZ;ZZZ010\n',
+      fileName: 'sxgerador-financeiro-sx2-20260101.csv',
+    });
+
+    const res = await request(buildApp({}, {}, { exportCsv }))
+      .get(`/api/v1/projects/${PROJECT.id}/export/csv/sx2`)
+      .set('Authorization', AUTH);
+
+    expect(res.status).toBe(200);
+    expect(res.headers['content-type']).toContain('text/csv');
+    expect(exportCsv).toHaveBeenCalledWith(PROJECT.id, 'sx2', 'user-1');
+  });
+
+  it('previews CSV import', async () => {
+    const importPreview = vi.fn().mockResolvedValue({
+      valid: true,
+      errors: [],
+      summary: null,
+      tables: null,
+      csvWarnings: [],
+    });
+
+    const res = await request(buildApp({}, {}, { importPreview }))
+      .post(`/api/v1/projects/${PROJECT.id}/import/csv/preview`)
+      .set('Authorization', AUTH)
+      .send({ sx2: 'X2_CHAVE;X2_ARQUIVO\nZZZ;ZZZ010\n' });
+
+    expect(res.status).toBe(200);
+    expect(importPreview).toHaveBeenCalled();
   });
 });

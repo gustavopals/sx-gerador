@@ -23,6 +23,8 @@ import {
 import type { TeamRole } from '@sxgerador/shared-types';
 import { ProjectsService, type ProjectSummary } from '../../../core/services/projects.service';
 import { mapTeamsError, type TeamMemberSummary } from '../../../core/services/teams.service';
+import { EmptyStateComponent } from '../../../shared/components/empty-state/empty-state.component';
+import { LoadingSkeletonComponent } from '../../../shared/components/loading-skeleton/loading-skeleton.component';
 import { TeamsStore } from '../../../stores/teams.store';
 
 const SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
@@ -39,6 +41,8 @@ const SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
     PoTableModule,
     PoTabsModule,
     PoTagModule,
+    EmptyStateComponent,
+    LoadingSkeletonComponent,
   ],
   templateUrl: './team-detail.component.html',
   styleUrl: './team-detail.component.scss',

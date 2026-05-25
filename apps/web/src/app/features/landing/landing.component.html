@@ -1,0 +1,307 @@
+<div class="lp">
+  <div class="lp__bg" aria-hidden="true">
+    <div class="lp__bg-orb lp__bg-orb--violet"></div>
+    <div class="lp__bg-orb lp__bg-orb--cyan"></div>
+    <div class="lp__bg-grid"></div>
+  </div>
+
+  <header class="lp__nav">
+    <a routerLink="/" class="lp__brand">
+      <span class="lp__brand-mark">SX</span>
+      <span class="lp__brand-name">Gerador</span>
+    </a>
+    <nav class="lp__nav-links">
+      <a href="#features">Recursos</a>
+      <a href="#how">Como funciona</a>
+      <a href="https://docs.sxgerador.com.br" target="_blank" rel="noreferrer noopener">Docs</a>
+      <a href="https://github.com/sxgerador/sxgerador" target="_blank" rel="noreferrer noopener">
+        GitHub
+      </a>
+    </nav>
+    <div class="lp__nav-cta">
+      @if (isAuthenticated()) {
+        <a routerLink="/projects" class="lp__btn lp__btn--primary">
+          Abrir app
+          <span aria-hidden="true">→</span>
+        </a>
+      } @else {
+        <a routerLink="/login" class="lp__nav-link">Entrar</a>
+        <button type="button" class="lp__btn lp__btn--primary" (click)="goToApp()">
+          Começar grátis
+          <span aria-hidden="true">→</span>
+        </button>
+      }
+    </div>
+  </header>
+
+  <section class="lp__hero">
+    <div class="lp__hero-copy">
+      <a
+        class="lp__badge"
+        href="https://github.com/sxgerador/sxgerador"
+        target="_blank"
+        rel="noreferrer noopener"
+      >
+        <span class="lp__badge-dot"></span>
+        Open source · MIT · v1.0
+        <span aria-hidden="true">→</span>
+      </a>
+      <h1 class="lp__title">
+        Dicionário de dados Protheus,
+        <span class="lp__title-accent">do jeito que sempre deveria ter sido.</span>
+      </h1>
+      <p class="lp__subtitle">
+        Crie, versione e gere migrations AdvPL de SX2, SX3 e SIX em uma interface moderna. Sem
+        planilhas, sem SIGACFG, sem perder horas com <code>X3_USADO</code>.
+      </p>
+      <div class="lp__hero-cta">
+        <button type="button" class="lp__btn lp__btn--primary lp__btn--lg" (click)="goToApp()">
+          <span aria-hidden="true" class="lp__btn-icon">🚀</span>
+          Começar grátis
+        </button>
+        <a
+          class="lp__btn lp__btn--ghost lp__btn--lg"
+          href="https://github.com/sxgerador/sxgerador"
+          target="_blank"
+          rel="noreferrer noopener"
+        >
+          <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" fill="currentColor">
+            <path
+              d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.39 7.86 10.91.58.1.79-.25.79-.56 0-.27-.01-1-.02-1.96-3.2.7-3.87-1.54-3.87-1.54-.52-1.33-1.27-1.68-1.27-1.68-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.18 1.76 1.18 1.02 1.75 2.68 1.25 3.34.95.1-.74.4-1.25.73-1.54-2.55-.29-5.24-1.28-5.24-5.7 0-1.26.45-2.29 1.18-3.1-.12-.29-.51-1.46.11-3.04 0 0 .97-.31 3.18 1.18.92-.26 1.91-.39 2.9-.39s1.98.13 2.9.39c2.21-1.49 3.18-1.18 3.18-1.18.62 1.58.23 2.75.11 3.04.74.81 1.18 1.84 1.18 3.1 0 4.43-2.7 5.4-5.27 5.69.41.36.78 1.06.78 2.14 0 1.55-.01 2.79-.01 3.17 0 .31.21.67.8.55C20.21 21.39 23.5 17.08 23.5 12 23.5 5.65 18.35.5 12 .5z"
+            />
+          </svg>
+          Ver no GitHub
+        </a>
+      </div>
+
+      <div class="lp__trust">
+        <div class="lp__trust-item">
+          <strong>~3 min</strong>
+          <span>do signup à primeira migration</span>
+        </div>
+        <div class="lp__trust-item">
+          <strong>100%</strong>
+          <span>open source · sem lock-in</span>
+        </div>
+        <div class="lp__trust-item">
+          <strong>50+</strong>
+          <span>campos SX3 cobertos</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="lp__hero-mock" aria-hidden="true">
+      <div class="lp__mock">
+        <div class="lp__mock-bar">
+          <span class="lp__mock-dot lp__mock-dot--red"></span>
+          <span class="lp__mock-dot lp__mock-dot--yellow"></span>
+          <span class="lp__mock-dot lp__mock-dot--green"></span>
+          <span class="lp__mock-file">001_cria_zge_contratos.prw</span>
+        </div>
+        <div class="lp__mock-body">
+          <pre><code><span class="cm">// SX2 — Tabela ZGE010 (Cadastro de Contratos)</span>
+<span class="kw">User Function</span> <span class="fn">SXG001CriaZGE</span>()
+    <span class="kw">Local</span> aCampos := &#123;&#125;
+
+    aAdd(aCampos, &#123;;
+        <span class="st">"ZGE_FILIAL"</span>, <span class="st">"01"</span>, <span class="st">"C"</span>, <span class="nb">02</span>, <span class="nb">0</span>,;
+        <span class="st">"Filial"</span>, <span class="st">"Sucursal"</span>, <span class="st">"Branch"</span>,;
+        <span class="st">"@!"</span>, <span class="st">"xFilial('ZGE')"</span>;
+    &#125;)
+
+    aAdd(aCampos, &#123;;
+        <span class="st">"ZGE_CODIGO"</span>, <span class="st">"02"</span>, <span class="st">"C"</span>, <span class="nb">10</span>, <span class="nb">0</span>,;
+        <span class="st">"Código"</span>, <span class="st">"Código"</span>, <span class="st">"Code"</span>,;
+        <span class="st">"@!"</span>, <span class="st">""</span>;
+    &#125;)
+
+    <span class="kw">For</span> nI := <span class="nb">1</span> <span class="kw">To</span> Len(aCampos)
+        <span class="fn">U_SXGCriaSX3</span>(aCampos[nI])
+    <span class="kw">Next</span> nI
+<span class="kw">Return</span> Nil</code></pre>
+        </div>
+        <div class="lp__mock-status">
+          <span class="lp__mock-status-dot"></span>
+          Migration AdvPL gerada — 2.4 kb
+          <span class="lp__mock-status-time">há 1 segundo</span>
+        </div>
+      </div>
+
+      <div class="lp__mock-badge lp__mock-badge--top">
+        <strong>12</strong> campos · <strong>2</strong> índices
+      </div>
+      <div class="lp__mock-badge lp__mock-badge--bottom">
+        <span class="lp__mock-check">✓</span>
+        validado
+      </div>
+    </div>
+  </section>
+
+  <section class="lp__logos">
+    <p class="lp__logos-label">Feito para o ecossistema</p>
+    <div class="lp__logos-list">
+      <span>Protheus 12.1.x+</span>
+      <span class="lp__logos-sep">·</span>
+      <span>AdvPL</span>
+      <span class="lp__logos-sep">·</span>
+      <span>SX2 · SX3 · SIX</span>
+      <span class="lp__logos-sep">·</span>
+      <span>PT · ES · EN</span>
+    </div>
+  </section>
+
+  <section id="features" class="lp__section">
+    <header class="lp__section-head">
+      <span class="lp__eyebrow">Recursos</span>
+      <h2 class="lp__section-title">Tudo que faltava para dicionários Protheus</h2>
+      <p class="lp__section-sub">
+        Pensado pelo dia a dia de quem mantém ERP TOTVS em produção — não por quem nunca abriu o
+        SIGACFG.
+      </p>
+    </header>
+    <div class="lp__features">
+      @for (f of features; track f.title; let i = $index) {
+        <article class="lp__feature" [class.lp__feature--featured]="i === 0">
+          <div class="lp__feature-icon" aria-hidden="true">
+            <i [class]="f.icon"></i>
+          </div>
+          <h3>{{ f.title }}</h3>
+          <p>{{ f.description }}</p>
+        </article>
+      }
+    </div>
+  </section>
+
+  <section id="how" class="lp__section lp__section--how">
+    <header class="lp__section-head">
+      <span class="lp__eyebrow">Como funciona</span>
+      <h2 class="lp__section-title">Sua primeira migration em 5 minutos</h2>
+      <p class="lp__section-sub">
+        Três passos. Sem instalar nada. O <code>.PRW</code> sai pronto para compilar.
+      </p>
+    </header>
+    <ol class="lp__steps">
+      <li class="lp__step">
+        <span class="lp__step-num">01</span>
+        <h3>Crie um projeto</h3>
+        <p>Defina prefixo (ex. ZGE), TAMFIL e módulos. Pessoal ou compartilhado com a equipe.</p>
+      </li>
+      <li class="lp__step">
+        <span class="lp__step-num">02</span>
+        <h3>Modele tabelas, campos e índices</h3>
+        <p>
+          Validação automática de prefixo Z*, nome até 10 chars e exatamente 1 índice principal.
+        </p>
+      </li>
+      <li class="lp__step">
+        <span class="lp__step-num">03</span>
+        <h3>Gere e baixe o <code>.PRW</code></h3>
+        <p>
+          Script AdvPL pronto, com <code>CriaSX3()</code> e <code>CriaSIX()</code>. Compila e roda
+          no Protheus.
+        </p>
+      </li>
+    </ol>
+  </section>
+
+  @if (testimonials.length > 0) {
+    <section class="lp__section">
+      <header class="lp__section-head">
+        <span class="lp__eyebrow">Quem usa</span>
+        <h2 class="lp__section-title">Da comunidade Protheus para a comunidade Protheus</h2>
+      </header>
+      <div class="lp__quotes">
+        @for (t of testimonials; track t.author) {
+          <figure class="lp__quote">
+            <svg
+              class="lp__quote-mark"
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+              width="32"
+              height="32"
+            >
+              <path
+                d="M9.5 6C5.91 6 3 8.91 3 12.5V18h6v-5.5H6.5C6.5 10.57 8.07 9 10 9V6h-.5zm11 0C16.91 6 14 8.91 14 12.5V18h6v-5.5h-2.5c0-1.93 1.57-3.5 3.5-3.5V6h-.5z"
+                fill="currentColor"
+              />
+            </svg>
+            <blockquote>{{ t.quote }}</blockquote>
+            <figcaption>
+              <strong>{{ t.author }}</strong>
+              <span>{{ t.role }}</span>
+            </figcaption>
+          </figure>
+        }
+      </div>
+    </section>
+  }
+
+  <section class="lp__cta">
+    <div class="lp__cta-card">
+      <div class="lp__cta-glow" aria-hidden="true"></div>
+      <h2>Pare de versionar dicionário Protheus por screenshot.</h2>
+      <p>Crie sua conta grátis e gere sua primeira migration em minutos.</p>
+      <div class="lp__cta-actions">
+        <button type="button" class="lp__btn lp__btn--primary lp__btn--lg" (click)="goToApp()">
+          Começar grátis
+          <span aria-hidden="true">→</span>
+        </button>
+        <a
+          class="lp__btn lp__btn--ghost lp__btn--lg"
+          href="https://docs.sxgerador.com.br"
+          target="_blank"
+          rel="noreferrer noopener"
+        >
+          Ler a documentação
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <footer class="lp__footer">
+    <div class="lp__footer-grid">
+      <div class="lp__footer-brand">
+        <span class="lp__brand">
+          <span class="lp__brand-mark">SX</span>
+          <span class="lp__brand-name">Gerador</span>
+        </span>
+        <p>Plataforma open source de migrations AdvPL para Protheus.</p>
+      </div>
+      <div>
+        <h4>Produto</h4>
+        <a href="#features">Recursos</a>
+        <a href="#how">Como funciona</a>
+        <a href="https://docs.sxgerador.com.br" target="_blank" rel="noreferrer noopener">
+          Documentação
+        </a>
+      </div>
+      <div>
+        <h4>Comunidade</h4>
+        <a href="https://github.com/sxgerador/sxgerador" target="_blank" rel="noreferrer noopener">
+          GitHub
+        </a>
+        <a
+          href="https://github.com/sxgerador/sxgerador/issues"
+          target="_blank"
+          rel="noreferrer noopener"
+        >
+          Issues
+        </a>
+        <a href="mailto:hello@sxgerador.com.br">hello&#64;sxgerador.com.br</a>
+      </div>
+      <div>
+        <h4>Legal</h4>
+        <a
+          href="https://github.com/sxgerador/sxgerador/blob/main/LICENSE"
+          target="_blank"
+          rel="noreferrer noopener"
+        >
+          Licença MIT
+        </a>
+      </div>
+    </div>
+    <div class="lp__footer-bottom">
+      <p>© {{ currentYear }} SXGerador · Open source · Não é um produto oficial TOTVS.</p>
+    </div>
+  </footer>
+</div>

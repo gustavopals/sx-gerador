@@ -1,4 +1,8 @@
-<po-page-background p-product-name="SXGerador" p-environment="beta">
+<main class="sxg-auth-shell">
+  <aside class="sxg-auth-shell__brand" aria-label="SXGerador beta">
+    <strong>SXGerador</strong>
+    <span>beta</span>
+  </aside>
   <div class="sxg-signup">
     <h2 class="po-font-title sxg-signup__title">Criar conta</h2>
     <p class="po-font-text-small sxg-signup__sub">
@@ -40,10 +44,16 @@
       ></po-password>
 
       <div class="sxg-signup__terms">
-        <po-checkbox
-          p-label="Li e aceito os Termos de Uso e a Política de Privacidade (LGPD)"
-          formControlName="acceptedTerms"
-        ></po-checkbox>
+        <label class="sxg-signup__terms-label">
+          <input type="checkbox" formControlName="acceptedTerms" />
+          <span>
+            Li e aceito os
+            <a href="/termos" class="sxg-signup__inline-link">Termos de Uso</a>
+            e a
+            <a href="/privacidade" class="sxg-signup__inline-link">Política de Privacidade</a>
+            (LGPD)
+          </span>
+        </label>
         @if (form.controls.acceptedTerms.touched && form.controls.acceptedTerms.invalid) {
           <span class="sxg-signup__terms-error">Você deve aceitar os termos para continuar</span>
         }
@@ -59,4 +69,4 @@
       ></po-button>
     </form>
   </div>
-</po-page-background>
+</main>

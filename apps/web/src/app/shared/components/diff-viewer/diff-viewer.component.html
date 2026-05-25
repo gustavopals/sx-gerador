@@ -1,0 +1,128 @@
+@if (diff().tables.length === 0) {
+  <div class="sxg-diff__empty">
+    <span class="an an-check-circle an-2x"></span>
+    <p>Nenhuma diferença encontrada entre {{ labelA() }} e {{ labelB() }}.</p>
+  </div>
+} @else {
+  <div class="sxg-diff__summary">
+    <div class="sxg-diff__pill sxg-diff__pill--added">
+      +{{ diff().summary.tablesAdded }} tabelas
+    </div>
+    <div class="sxg-diff__pill sxg-diff__pill--removed">
+      −{{ diff().summary.tablesRemoved }} tabelas
+    </div>
+    <div class="sxg-diff__pill sxg-diff__pill--changed">
+      ~{{ diff().summary.tablesChanged }} tabelas
+    </div>
+    <div class="sxg-diff__pill sxg-diff__pill--added">+{{ diff().summary.fieldsAdded }} campos</div>
+    <div class="sxg-diff__pill sxg-diff__pill--removed">
+      −{{ diff().summary.fieldsRemoved }} campos
+    </div>
+    <div class="sxg-diff__pill sxg-diff__pill--changed">
+      ~{{ diff().summary.fieldsChanged }} campos
+    </div>
+  </div>
+
+  <div class="sxg-diff__legend">
+    <span
+      ><strong>{{ labelA() }}</strong> → antes</span
+    >
+    <span
+      ><strong>{{ labelB() }}</strong> → depois</span
+    >
+  </div>
+
+  <div class="sxg-diff__tables">
+    @for (table of diff().tables; track trackTable($index, table)) {
+      <article class="sxg-diff__table-card" [class]="'sxg-diff__table-card--' + table.kind">
+        <header class="sxg-diff__table-header">
+          <button type="button" class="sxg-diff__expand" (click)="togglePrefix(table.prefix)">
+            <span
+              class="an"
+              [class.an-caret-right]="!isExpanded(table.prefix)"
+              [class.an-caret-down]="isExpanded(table.prefix)"
+            ></span>
+          </button>
+          <h4>{{ table.prefix }}</h4>
+          <span class="sxg-diff__badge">{{ kindLabel(table.kind) }}</span>
+        </header>
+
+        @if (isExpanded(table.prefix)) {
+          <div class="sxg-diff__table-body">
+            @if (table.tableChanges.length > 0) {
+              <section>
+                <h5>Tabela (SX2)</h5>
+                <ul class="sxg-diff__changes">
+                  @for (change of table.tableChanges; track change.path) {
+                    <li>
+                      <code>{{ change.path }}</code>
+                      <span class="sxg-diff__before">{{ formatValue(change.before) }}</span>
+                      <span class="an an-arrow-right"></span>
+                      <span class="sxg-diff__after">{{ formatValue(change.after) }}</span>
+                    </li>
+                  }
+                </ul>
+              </section>
+            }
+
+            @if (table.fields.length > 0) {
+              <section>
+                <h5>Campos (SX3)</h5>
+                <ul class="sxg-diff__entities">
+                  @for (field of table.fields; track field.key) {
+                    <li [class]="'sxg-diff__entity--' + field.kind">
+                      <span class="sxg-diff__entity-key">{{ field.key }}</span>
+                      <span class="sxg-diff__badge sxg-diff__badge--sm">{{
+                        kindLabel(field.kind)
+                      }}</span>
+                      @if (field.changes.length > 0) {
+                        <ul class="sxg-diff__changes">
+                          @for (change of field.changes; track change.path) {
+                            <li>
+                              <code>{{ change.path }}</code>
+                              <span class="sxg-diff__before">{{ formatValue(change.before) }}</span>
+                              <span class="an an-arrow-right"></span>
+                              <span class="sxg-diff__after">{{ formatValue(change.after) }}</span>
+                            </li>
+                          }
+                        </ul>
+                      }
+                    </li>
+                  }
+                </ul>
+              </section>
+            }
+
+            @if (table.indexes.length > 0) {
+              <section>
+                <h5>Índices (SIX)</h5>
+                <ul class="sxg-diff__entities">
+                  @for (index of table.indexes; track index.key) {
+                    <li [class]="'sxg-diff__entity--' + index.kind">
+                      <span class="sxg-diff__entity-key">Ordem {{ index.key }}</span>
+                      <span class="sxg-diff__badge sxg-diff__badge--sm">{{
+                        kindLabel(index.kind)
+                      }}</span>
+                      @if (index.changes.length > 0) {
+                        <ul class="sxg-diff__changes">
+                          @for (change of index.changes; track change.path) {
+                            <li>
+                              <code>{{ change.path }}</code>
+                              <span class="sxg-diff__before">{{ formatValue(change.before) }}</span>
+                              <span class="an an-arrow-right"></span>
+                              <span class="sxg-diff__after">{{ formatValue(change.after) }}</span>
+                            </li>
+                          }
+                        </ul>
+                      }
+                    </li>
+                  }
+                </ul>
+              </section>
+            }
+          </div>
+        }
+      </article>
+    }
+  </div>
+}

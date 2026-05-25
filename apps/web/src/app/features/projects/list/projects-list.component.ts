@@ -18,6 +18,8 @@ import {
   ProjectsService,
   type ProjectSummary,
 } from '../../../core/services/projects.service';
+import { EmptyStateComponent } from '../../../shared/components/empty-state/empty-state.component';
+import { LoadingSkeletonComponent } from '../../../shared/components/loading-skeleton/loading-skeleton.component';
 
 @Component({
   selector: 'sxg-projects-list',
@@ -29,6 +31,8 @@ import {
     PoFieldModule,
     PoPageModule,
     PoTagModule,
+    EmptyStateComponent,
+    LoadingSkeletonComponent,
   ],
   templateUrl: './projects-list.component.html',
   styleUrl: './projects-list.component.scss',
@@ -56,6 +60,11 @@ export class ProjectsListComponent implements OnInit {
       icon: 'an an-plus',
       kind: 'primary',
       action: () => void this.router.navigate(['/projects/new']),
+    },
+    {
+      label: 'Comparar projetos',
+      icon: 'an an-arrows-left-right',
+      action: () => void this.router.navigate(['/diff/projects']),
     },
     {
       label: 'Atualizar',

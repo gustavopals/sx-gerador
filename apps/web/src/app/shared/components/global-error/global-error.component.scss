@@ -1,0 +1,30 @@
+:host {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  z-index: 9000;
+  max-width: min(520px, calc(100vw - 32px));
+}
+
+.sxg-global-error {
+  display: grid;
+  gap: 14px;
+  padding: 16px;
+  border: 1px solid var(--sxg-error-border, #f0b8bd);
+  border-radius: 8px;
+  background: var(--sxg-error-bg, #fff4f4);
+  color: var(--sxg-text, #1d2a35);
+  box-shadow: 0 14px 40px rgb(29 42 53 / 18%);
+
+  p {
+    margin: 4px 0 0;
+    color: var(--sxg-text-muted, #4a5864);
+  }
+}
+
+.sxg-global-error__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  flex-wrap: wrap;
+}

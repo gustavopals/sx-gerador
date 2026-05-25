@@ -1,6 +1,7 @@
 import 'dotenv/config';
 import { hash as bcryptHash } from 'bcrypt';
 import { PrismaClient } from '../src/generated/prisma';
+import { seedOfficialTemplates } from './seed-templates';
 
 const prisma = new PrismaClient();
 
@@ -10,7 +11,7 @@ const BCRYPT_ROUNDS = 12;
 async function main(): Promise<void> {
   const passwordHash = await bcryptHash(DEV_PASSWORD, BCRYPT_ROUNDS);
 
-  await prisma.user.upsert({
+  const user = await prisma.user.upsert({
     where: {
       email: 'dev@sxgerador.local',
     },
@@ -30,13 +31,16 @@ async function main(): Promise<void> {
   });
 
   const project = await prisma.project.upsert({
-    where: { slug: 'projeto-seed' },
+    where: {
+      slug: 'projeto-seed',
+    },
     update: {
       name: 'Projeto Seed',
       description: 'Projeto base para desenvolvimento local',
       visibility: 'PRIVATE',
       defaultTamFil: 2,
       defaultLang: 'pt-BR',
+      ownerUserId: user.id,
     },
     create: {
       name: 'Projeto Seed',
@@ -45,6 +49,7 @@ async function main(): Promise<void> {
       visibility: 'PRIVATE',
       defaultTamFil: 2,
       defaultLang: 'pt-BR',
+      ownerUserId: user.id,
     },
   });
 
@@ -180,6 +185,11 @@ async function main(): Promise<void> {
       },
     });
   }
+
+  await seedOfficialTemplates(prisma);
+
+  const templateCount = await prisma.template.count({ where: { isOfficial: true } });
+  console.log(`Templates oficiais: ${templateCount}`);
 
   console.log('Seed concluido.');
   console.log('Usuario: dev@sxgerador.local | Senha: dev123456');

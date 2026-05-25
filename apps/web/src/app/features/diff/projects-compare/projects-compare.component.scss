@@ -1,0 +1,16 @@
+.sxg-pc__form {
+  display: grid;
+  gap: 16px;
+  max-width: 480px;
+  margin-bottom: 32px;
+}
+
+.sxg-pc__result {
+  h3 {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 0 0 20px;
+    font-size: 1.125rem;
+  }
+}

@@ -1,0 +1,61 @@
+<section class="sxg-history">
+  @if (!tablePrefix()) {
+    <form class="sxg-history__filters" [formGroup]="filtersForm" (ngSubmit)="applyFilters()">
+      <po-select
+        p-label="Operação"
+        [p-options]="operationOptions"
+        formControlName="operation"
+      ></po-select>
+      <po-button p-label="Filtrar" p-icon="an an-funnel" type="submit"></po-button>
+    </form>
+  }
+
+  @if (isLoading()) {
+    <sxg-loading-skeleton variant="detail" [rows]="3" />
+  } @else if (entries().length === 0) {
+    <sxg-empty-state
+      icon="an an-clock-counter-clockwise"
+      title="Sem registros"
+      description="Nenhuma alteração registrada em migrations geradas."
+    />
+  } @else {
+    <ol class="sxg-history__timeline">
+      @for (entry of entries(); track trackEntry($index, entry)) {
+        <li class="sxg-history__item">
+          <div class="sxg-history__dot"></div>
+          <div class="sxg-history__card">
+            <header>
+              <span class="sxg-history__op">{{ entry.operation }}</span>
+              <time>{{ entry.createdAt | date: 'dd/MM/yyyy HH:mm' }}</time>
+            </header>
+            <p class="sxg-history__target">
+              <strong>{{ entry.targetType }}</strong> · {{ entry.targetName }}
+            </p>
+            <footer>
+              <span>Migration #{{ entry.migrationSequence }} — {{ entry.migrationName }}</span>
+              <span>{{ authorLabel(entry) }}</span>
+            </footer>
+          </div>
+        </li>
+      }
+    </ol>
+
+    @if (totalPages() > 1) {
+      <div class="sxg-history__pager">
+        <po-button
+          p-label="Anterior"
+          p-kind="secondary"
+          [p-disabled]="!hasPreviousPage"
+          (p-click)="previousPage()"
+        ></po-button>
+        <span>Página {{ page() }} de {{ totalPages() }} ({{ total() }} itens)</span>
+        <po-button
+          p-label="Próxima"
+          p-kind="secondary"
+          [p-disabled]="!hasNextPage"
+          (p-click)="nextPage()"
+        ></po-button>
+      </div>
+    }
+  }
+</section>

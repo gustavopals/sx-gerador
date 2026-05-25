@@ -28,6 +28,12 @@ module.exports = {
       },
     },
     {
+      files: ['apps/docs/astro.config.mjs'],
+      rules: {
+        'import/no-unresolved': 'off',
+      },
+    },
+    {
       files: ['*.ts'],
       env: {
         browser: true,

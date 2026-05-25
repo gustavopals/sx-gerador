@@ -26,6 +26,7 @@ import { mapFieldsError } from '../../../../core/services/fields.service';
 import { TablesService } from '../../../../core/services/tables.service';
 import { CodeEditorComponent } from '../../../../shared/components/code-editor/code-editor.component';
 import { ComboboxEditorComponent } from '../../../../shared/components/combobox-editor/combobox-editor.component';
+import { LoadingSkeletonComponent } from '../../../../shared/components/loading-skeleton/loading-skeleton.component';
 import { ModulesEditorComponent } from '../../../../shared/components/modules-editor/modules-editor.component';
 import { UsadoEditorComponent } from '../../../../shared/components/usado-editor/usado-editor.component';
 import { FieldsStore } from '../../../../stores/fields.store';
@@ -67,6 +68,7 @@ const PICTURE_SUGGESTIONS: PoSelectOption[] = [
     PoTabsModule,
     ComboboxEditorComponent,
     CodeEditorComponent,
+    LoadingSkeletonComponent,
     ModulesEditorComponent,
     UsadoEditorComponent,
   ],

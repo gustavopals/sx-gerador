@@ -1,0 +1,39 @@
+<po-page-default
+  p-title="Comparar projetos"
+  p-subtitle="Veja o que muda entre dois dicionários antes de migrar customizações"
+  [p-breadcrumb]="breadcrumb"
+>
+  <form class="sxg-pc__form" [formGroup]="form" (ngSubmit)="compare()">
+    <po-select
+      p-label="Projeto A (origem)"
+      p-placeholder="Selecione o projeto"
+      [p-options]="projectOptions()"
+      [p-disabled]="isLoadingProjects()"
+      formControlName="projectIdA"
+      p-required="true"
+    ></po-select>
+    <po-select
+      p-label="Projeto B (destino)"
+      p-placeholder="Selecione o projeto"
+      [p-options]="projectOptions()"
+      [p-disabled]="isLoadingProjects()"
+      formControlName="projectIdB"
+      p-required="true"
+    ></po-select>
+    <po-button
+      p-label="Comparar"
+      p-icon="an an-arrows-left-right"
+      [p-loading]="isComparing()"
+      type="submit"
+    ></po-button>
+  </form>
+
+  @if (result(); as data) {
+    <section class="sxg-pc__result">
+      <h3>
+        {{ data.projectA.name }} <span class="an an-arrow-right"></span> {{ data.projectB.name }}
+      </h3>
+      <sxg-diff-viewer [diff]="data.diff" [labelA]="labelA()" [labelB]="labelB()" />
+    </section>
+  }
+</po-page-default>

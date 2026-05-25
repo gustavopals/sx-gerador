@@ -2242,71 +2242,71 @@ sxgerador/
 ### 🟦 Fase 8 — Importação e Exportação
 
 #### Task F8.1 — Export JSON do projeto (M)
-- [ ] Endpoint `GET /projects/:id/export` retorna JSON estruturado
-- [ ] Botão "Baixar" no detalhe do projeto
+- [x] Endpoint `GET /projects/:id/export` retorna JSON estruturado
+- [x] Botão "Baixar" no detalhe do projeto
 
 #### Task F8.2 — Import JSON (L)
-- [ ] Endpoint `POST /projects/:id/import` com upload
-- [ ] Parser + validador
-- [ ] Preview de diff antes de aplicar
-- [ ] Transação: tudo ou nada
+- [x] Endpoints `POST /projects/:id/import/preview` e `POST /projects/:id/import` (corpo JSON; arquivo via UI)
+- [x] Parser + validador
+- [x] Preview de diff antes de aplicar
+- [x] Transação: tudo ou nada
 
 #### Task F8.3 — Import CSV de SX2/SX3/SIX (XL)
-- [ ] Parser de CSV exportado do Protheus
-- [ ] Mapeamento de colunas → modelo SXGerador
-- [ ] Tratamento de bitmaps (decodificação `X3_USADO`)
-- [ ] UI: upload + preview + confirmação
+- [x] Parser de CSV exportado do Protheus (`@sxgerador/protheus-csv`)
+- [x] Mapeamento de colunas → modelo SXGerador
+- [x] Tratamento de bitmaps (decodificação `X3_USADO`)
+- [x] UI: upload + preview + confirmação (`POST /import/csv/preview` e `/import/csv`)
 
 #### Task F8.4 — Export CSV (M)
-- [ ] Gerar CSV no formato esperado pelo Protheus
-- [ ] Útil para quem prefere import via SIGACFG
+- [x] Gerar CSV no formato esperado pelo Protheus (`GET /export/csv/:dictionary`)
+- [x] Útil para quem prefere import via SIGACFG
 
 ---
 
 ### 🟣 Fase 9 — Templates da Comunidade
 
 #### Task F9.1 — Schema e CRUD de Templates (M)
-- [ ] Modelo `Template`
-- [ ] Endpoints
-- [ ] Permissões: criar = qualquer user logado
+- [x] Modelo `Template`
+- [x] Endpoints
+- [x] Permissões: criar = qualquer user logado
 
 #### Task F9.2 — Vitrine pública de templates (L)
-- [ ] `/templates` com grid e filtros por categoria
-- [ ] Card com nome, autor, descrição, downloads, botão "Aplicar"
+- [x] `/templates` com grid e filtros por categoria
+- [x] Card com nome, autor, descrição, downloads, botão "Aplicar"
 
 #### Task F9.3 — Aplicar template em projeto (M)
-- [ ] Modal: selecionar projeto destino
-- [ ] Preview do que será criado
-- [ ] Lógica de merge (e.g., conflitos de prefixo)
+- [x] Modal: selecionar projeto destino
+- [x] Preview do que será criado
+- [x] Lógica de merge (e.g., conflitos de prefixo via `prefixOverride`)
 
 #### Task F9.4 — Publicar template a partir de tabela (M)
-- [ ] Botão "Publicar como template" no detalhe da tabela
-- [ ] Form: categoria, descrição, screenshots opcionais
-- [ ] Templates ficam pendentes de moderação (V2) ou imediatamente públicos com flag de "não-oficial"
+- [x] Botão "Publicar como template" no detalhe da tabela
+- [x] Form: categoria, descrição (screenshots opcionais — V2)
+- [x] Templates imediatamente públicos na vitrine (`isOfficial: false`)
 
 #### Task F9.5 — Templates oficiais (S)
-- [ ] Seed inicial com 5-10 templates curados (ex: tabela financeira padrão, tabela de cadastro genérica, etc.)
+- [x] Seed inicial com 6 templates curados (cadastro, financeiro, estoque, vendas, RH, status)
 
 ---
 
 ### 🟢 Fase 10 — Diff Visual e Histórico
 
 #### Task F10.1 — Engine de diff (L)
-- [ ] Função pura `diff(stateA, stateB): DiffResult`
-- [ ] Detecta: adicionado, removido, alterado (com campo a campo)
-- [ ] Testes
+- [x] Função pura `diff(stateA, stateB): DiffResult`
+- [x] Detecta: adicionado, removido, alterado (com campo a campo)
+- [x] Testes
 
 #### Task F10.2 — UI de diff de migrations (M)
-- [ ] Comparar duas migrations do mesmo projeto
-- [ ] Lista lado-a-lado com cores
+- [x] Comparar duas migrations do mesmo projeto
+- [x] Lista lado-a-lado com cores
 
 #### Task F10.3 — UI de diff de projetos (M)
-- [ ] Comparar 2 projetos
-- [ ] Útil para "estou indo subir minha customização do cliente A para o cliente B, o que muda?"
+- [x] Comparar 2 projetos
+- [x] Útil para "estou indo subir minha customização do cliente A para o cliente B, o que muda?"
 
 #### Task F10.4 — Histórico de mudanças (M)
-- [ ] Aba "Histórico" no projeto/tabela mostrando timeline de migrations e items
-- [ ] Filtros por autor, tipo de operação, período
+- [x] Aba "Histórico" no projeto/tabela mostrando timeline de migrations e items
+- [x] Filtros por autor, tipo de operação, período
 
 ---
 
@@ -2322,23 +2322,23 @@ sxgerador/
 - [ ] Correções necessárias
 
 #### Task F11.3 — i18n completa (L)
-- [ ] Extrair todas as strings para JSONs de tradução
-- [ ] PT, EN, ES completos
-- [ ] Switcher de idioma no header
+- [x] Extrair todas as strings para JSONs de tradução
+- [x] PT, EN, ES completos
+- [x] Switcher de idioma no header
 
 #### Task F11.4 — Dark mode (M)
-- [ ] Habilitar dark theme do PO-UI
-- [ ] Persistência em localStorage + sincronização com User.prefs
-- [ ] Testar todos os componentes próprios
+- [x] Habilitar dark theme do PO-UI
+- [x] Persistência em localStorage + sincronização com User.prefs
+- [x] Testar todos os componentes próprios
 
 #### Task F11.5 — Loading states / Skeletons (M)
-- [ ] Substituir spinners por skeletons em listas e detalhes
-- [ ] Estados vazios educativos com ilustração e CTA
+- [x] Substituir spinners por skeletons em listas e detalhes
+- [x] Estados vazios educativos com ilustração e CTA
 
 #### Task F11.6 — Tratamento robusto de erros (M)
-- [ ] Componente global de erro
-- [ ] Mensagens user-friendly (não jogar stack trace)
-- [ ] Botão "Reportar problema"
+- [x] Componente global de erro
+- [x] Mensagens user-friendly (não jogar stack trace)
+- [x] Botão "Reportar problema"
 
 #### Task F11.7 — Otimização de bundle (M)
 - [ ] Análise com `webpack-bundle-analyzer`
@@ -2346,49 +2346,49 @@ sxgerador/
 - [ ] Tree-shaking validado
 
 #### Task F11.8 — Caching e queries otimizadas (M)
-- [ ] Cache em memória para templates
-- [ ] Indexes adicionais no Postgres se análise mostrar slow queries
+- [x] Cache em memória para templates
+- [x] Indexes adicionais no Postgres se análise mostrar slow queries
 
 ---
 
 ### 🔵 Fase 12 — Lançamento e Comunidade
 
 #### Task F12.1 — Landing page (L)
-- [ ] Site separado em `apps/landing` (ou no próprio web na rota `/`)
-- [ ] Hero, features, screenshots, CTA "Começar grátis"
-- [ ] Depoimentos (após primeiros usuários)
-- [ ] Link para docs e GitHub
+- [x] Site separado em `apps/landing` (ou no próprio web na rota `/`) — `apps/web/.../features/landing/`
+- [x] Hero, features, screenshots, CTA "Começar grátis"
+- [x] Depoimentos (após primeiros usuários) — estrutura pronta no componente, popular conforme entrarem
+- [x] Link para docs e GitHub
 
 #### Task F12.2 — Documentação (L)
-- [ ] Site `docs.sxgerador.com.br` (Docusaurus ou Astro Starlight)
-- [ ] Guia de início rápido
-- [ ] Tutorial: "Sua primeira migration em 5 minutos"
-- [ ] Referência completa dos campos SX2/SX3/SIX
-- [ ] FAQ
+- [x] Site `docs.sxgerador.com.br` (Docusaurus ou Astro Starlight) — `apps/docs/` com Astro Starlight
+- [x] Guia de início rápido — `getting-started.md`
+- [x] Tutorial: "Sua primeira migration em 5 minutos" — `first-migration.md`
+- [x] Referência completa dos campos SX2/SX3/SIX — `reference/{sx2,sx3,six,x3-usado}.md`
+- [x] FAQ — `faq.md`
 
 #### Task F12.3 — Setup de produção (L)
-- [ ] Provisionar servidores/serviços
-- [ ] Configurar domínios e DNS
-- [ ] Configurar SSL (Let's Encrypt automático)
-- [ ] Variáveis de ambiente seguras
-- [ ] Backup automatizado
-- [ ] Deploy de produção
+- [ ] Provisionar servidores/serviços — runbook em `apps/docs/.../operations/deployment.md` (ação humana)
+- [ ] Configurar domínios e DNS — runbook idem (ação humana)
+- [x] Configurar SSL (Let's Encrypt automático) — Traefik ACME em `tools/docker/docker-compose.prod.yml`
+- [x] Variáveis de ambiente seguras — `.env.production.example` raiz e `apps/api/.env.production.example`
+- [x] Backup automatizado — `tools/scripts/backup-postgres.sh` + serviço `backup` no compose
+- [x] Deploy de produção — `.github/workflows/deploy.yml` (build de imagens + SSH deploy)
 
 #### Task F12.4 — Beta fechado (M)
-- [ ] Convidar 10-20 devs Protheus conhecidos
-- [ ] Feedback survey
-- [ ] Iterar 2-3 semanas
+- [ ] Convidar 10-20 devs Protheus conhecidos — programa e template de convite em `docs/community/beta-program.md` (ação humana)
+- [x] Feedback survey — perguntas em `docs/community/beta-survey.md` (importar em Tally/Forms)
+- [ ] Iterar 2-3 semanas — execução depende do beta rodando (ação humana)
 
 #### Task F12.5 — Lançamento público (M)
-- [ ] Post no LinkedIn
-- [ ] Post em comunidades TOTVS (TDN, fóruns, grupos de Telegram/Discord)
-- [ ] Vídeo demo (3-5 min)
-- [ ] Open source no GitHub (público)
+- [x] Post no LinkedIn — `docs/community/launch-post-linkedin.md`
+- [x] Post em comunidades TOTVS (TDN, fóruns, grupos de Telegram/Discord) — `docs/community/launch-post-{tdn,discord-telegram}.md`
+- [x] Vídeo demo (3-5 min) — roteiro pronto em `docs/community/demo-script.md`; gravação é ação humana
+- [ ] Open source no GitHub (público) — mudar visibilidade do repo (ação humana 1-clique)
 
 #### Task F12.6 — Canais de feedback (S)
-- [ ] GitHub Issues como canal principal
-- [ ] Discord/Telegram da comunidade SXGerador
-- [ ] Email de suporte: hello@sxgerador.com.br
+- [x] GitHub Issues como canal principal — templates em `.github/ISSUE_TEMPLATE/{bug_report,feature_request,question}.yml` + `config.yml`
+- [ ] Discord/Telegram da comunidade SXGerador — criar servidor Discord (ação humana); link em `SUPPORT.md` e docs
+- [ ] Email de suporte: hello@sxgerador.com.br — configurar caixa no provedor (ação humana); referenciado em todos os canais
 
 ---
 

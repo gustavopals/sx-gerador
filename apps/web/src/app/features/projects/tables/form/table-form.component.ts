@@ -13,6 +13,7 @@ import {
 } from '@po-ui/ng-components';
 import { validatePrefix } from '@sxgerador/dictionary-validator';
 import { mapTablesError, TablesService } from '../../../../core/services/tables.service';
+import { LoadingSkeletonComponent } from '../../../../shared/components/loading-skeleton/loading-skeleton.component';
 import { ModulesEditorComponent } from '../../../../shared/components/modules-editor/modules-editor.component';
 
 const PREFIX_PATTERN = /^[A-Z0-9]{3}$/;
@@ -41,6 +42,7 @@ const TAM_OPTIONS: PoSelectOption[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((n) =>
     PoFieldModule,
     PoPageModule,
     ModulesEditorComponent,
+    LoadingSkeletonComponent,
   ],
   templateUrl: './table-form.component.html',
   styleUrl: './table-form.component.scss',

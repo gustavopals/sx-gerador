@@ -22,6 +22,17 @@ pnpm-debug.log*
 !.env.example
 !.env.*.example
 
+# Local Docker overrides (may contain secrets / local ports)
+docker-compose.override.yml
+
+# SSL/TLS certificates and private keys
+*.pem
+*.key
+*.p12
+*.pfx
+*.crt
+*.cert
+
 # Local databases and Docker volumes
 tools/docker/data/
 *.sqlite
@@ -34,9 +45,16 @@ Thumbs.db
 .vscode/*
 !.vscode/extensions.json
 !.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/mcp.json
 
 # Runtime and caches
 .cache/
 tmp/
-temp/
 
+# Lighthouse audit artifacts (HTML reports are generated locally)
+tools/lighthouse/reports/
+tools/lighthouse/.tmp/
+temp/
+C:\\Users\\*\\AppData\\Local\\lighthouse.*/

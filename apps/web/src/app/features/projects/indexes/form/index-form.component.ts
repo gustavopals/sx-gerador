@@ -16,6 +16,7 @@ import { FieldsService } from '../../../../core/services/fields.service';
 import { mapIndexesError } from '../../../../core/services/indexes.service';
 import { TablesService } from '../../../../core/services/tables.service';
 import { KeyBuilderComponent } from '../../../../shared/components/key-builder/key-builder.component';
+import { LoadingSkeletonComponent } from '../../../../shared/components/loading-skeleton/loading-skeleton.component';
 import { IndexesStore } from '../../../../stores/indexes.store';
 
 const YES_NO_OPTIONS: PoSelectOption[] = [
@@ -30,7 +31,14 @@ const OWNER_OPTIONS: PoSelectOption[] = [
 
 @Component({
   selector: 'sxg-index-form',
-  imports: [ReactiveFormsModule, PoButtonModule, PoFieldModule, PoPageModule, KeyBuilderComponent],
+  imports: [
+    ReactiveFormsModule,
+    PoButtonModule,
+    PoFieldModule,
+    PoPageModule,
+    KeyBuilderComponent,
+    LoadingSkeletonComponent,
+  ],
   templateUrl: './index-form.component.html',
   styleUrl: './index-form.component.scss',
 })

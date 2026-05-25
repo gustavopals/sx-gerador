@@ -7,12 +7,11 @@ import {
   PoFieldModule,
   PoNotificationService,
 } from '@po-ui/ng-components';
-import { PoPageBackgroundModule } from '@po-ui/ng-templates';
 import { AuthService, mapAuthError } from '../../../core/services/auth.service';
 
 @Component({
   selector: 'sxg-forgot-password',
-  imports: [ReactiveFormsModule, RouterLink, PoPageBackgroundModule, PoButtonModule, PoFieldModule],
+  imports: [ReactiveFormsModule, RouterLink, PoButtonModule, PoFieldModule],
   templateUrl: './forgot-password.component.html',
   styleUrl: './forgot-password.component.scss',
 })

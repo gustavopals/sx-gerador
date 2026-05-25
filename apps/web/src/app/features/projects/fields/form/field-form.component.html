@@ -5,10 +5,7 @@
   [p-actions]="pageActions"
 >
   @if (isLoading()) {
-    <div class="sxg-field-form__state">
-      <span class="sxg-field-form__spinner"></span>
-      <p>Carregando contexto da tabela...</p>
-    </div>
+    <sxg-loading-skeleton variant="detail" [rows]="4" />
   } @else {
     <form
       class="sxg-field-form"

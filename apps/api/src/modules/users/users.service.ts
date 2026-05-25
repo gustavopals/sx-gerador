@@ -1,6 +1,6 @@
 import { compare as bcryptCompare, hash as bcryptHash } from 'bcrypt';
 import { logger } from '../../config/logger';
-import type { PrismaClient, User } from '../../generated/prisma';
+import type { Prisma, PrismaClient, User } from '../../generated/prisma';
 import { logAudit } from '../audit';
 import { AuthError } from '../auth/auth.errors';
 import type { EmailService } from '../email';
@@ -10,7 +10,15 @@ const HARD_DELETE_DELAY_MS = 30 * 24 * 60 * 60 * 1000;
 
 export type PublicUser = Pick<
   User,
-  'id' | 'email' | 'name' | 'avatarUrl' | 'emailVerified' | 'locale' | 'createdAt' | 'updatedAt'
+  | 'id'
+  | 'email'
+  | 'name'
+  | 'avatarUrl'
+  | 'emailVerified'
+  | 'locale'
+  | 'prefs'
+  | 'createdAt'
+  | 'updatedAt'
 >;
 
 export class UsersService {
@@ -25,7 +33,10 @@ export class UsersService {
     return toPublicUser(user);
   }
 
-  async updateMe(userId: string, input: { name?: string; locale?: string }): Promise<PublicUser> {
+  async updateMe(
+    userId: string,
+    input: { name?: string; locale?: string; prefs?: Prisma.InputJsonValue },
+  ): Promise<PublicUser> {
     const activeUser = await this.findActiveUser(userId);
     if (!activeUser) throw new AuthError('Usuário não encontrado', 404);
 
@@ -34,6 +45,7 @@ export class UsersService {
       data: {
         ...(input.name ? { name: input.name } : {}),
         ...(input.locale ? { locale: input.locale } : {}),
+        ...(input.prefs ? { prefs: input.prefs } : {}),
       },
     });
     return toPublicUser(user);
@@ -118,6 +130,7 @@ function toPublicUser(user: User): PublicUser {
     avatarUrl: user.avatarUrl,
     emailVerified: user.emailVerified,
     locale: user.locale,
+    prefs: user.prefs,
     createdAt: user.createdAt,
     updatedAt: user.updatedAt,
   };

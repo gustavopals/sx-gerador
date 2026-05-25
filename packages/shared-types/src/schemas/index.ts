@@ -4,4 +4,8 @@ export * from './project.schema';
 export * from './table.schema';
 export * from './field.schema';
 export * from './index.schema';
+export * from './project-import.schema';
+export * from './project-csv.schema';
+export * from './template.schema';
+export * from './diff.schema';
 export * from './team.schema';

@@ -1,0 +1,28 @@
+name: 🤔 Pergunta
+description: Dúvida de uso, integração ou conceito.
+title: '[?] '
+labels: ['question', 'triage']
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Antes de abrir, dê uma olhada na [documentação](https://docs.sxgerador.com.br) e no [FAQ](https://docs.sxgerador.com.br/faq/).
+
+  - type: textarea
+    id: question
+    attributes:
+      label: Sua dúvida
+      placeholder: 'Como faço para...?'
+    validations:
+      required: true
+
+  - type: textarea
+    id: tried
+    attributes:
+      label: O que você já tentou?
+      description: Conte o que você procurou ou testou antes de perguntar.
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Contexto adicional

@@ -9,12 +9,13 @@ import { PermissionsError } from '../modules/permissions';
 import { ProjectsError } from '../modules/projects/projects.errors';
 import { TablesError } from '../modules/tables/tables.errors';
 import { TeamsError } from '../modules/teams/teams.errors';
+import { TemplatesError } from '../modules/templates/templates.errors';
 
-export const notFoundHandler: RequestHandler = (req, res) => {
+export const notFoundHandler: RequestHandler = (_req, res) => {
   res.status(404).json({
     error: {
       code: 'NOT_FOUND',
-      message: `Route ${req.method} ${req.originalUrl} not found`,
+      message: 'Recurso não encontrado.',
     },
   });
 };
@@ -62,6 +63,11 @@ export const errorHandler: ErrorRequestHandler = (err, _req, res, next) => {
     return;
   }
 
+  if (err instanceof TemplatesError) {
+    res.status(err.statusCode).json({ error: { code: 'TEMPLATES_ERROR', message: err.message } });
+    return;
+  }
+
   if (err instanceof ZodError) {
     res.status(422).json({
       error: {
@@ -77,7 +83,7 @@ export const errorHandler: ErrorRequestHandler = (err, _req, res, next) => {
   res.status(500).json({
     error: {
       code: 'INTERNAL_SERVER_ERROR',
-      message: 'Unexpected server error',
+      message: 'Não foi possível concluir a operação. Tente novamente em instantes.',
     },
   });
 };

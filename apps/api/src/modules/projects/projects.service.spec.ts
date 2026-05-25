@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import type { PrismaClient, Project } from '../../generated/prisma';
-import { ProjectsService } from './projects.service';
+import type { Field, Index, PrismaClient, Project, Table } from '../../generated/prisma';
+import { ProjectsService, type ProjectExportSnapshot } from './projects.service';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type AnyFn = (...args: any[]) => any;
@@ -54,7 +54,118 @@ const PROJECT: Project = {
   updatedAt: new Date('2026-01-01T00:00:00.000Z'),
   deletedAt: null,
 };
+
 const TEAM_ID = 'clwteam000000000000000001';
+const TABLE_ID = 'clwtable00000000000000001';
+const FIELD_ID = 'clwfield00000000000000001';
+const INDEX_ID = 'clwindex00000000000000001';
+
+const EXPORT_TABLE: Table = {
+  id: TABLE_ID,
+  projectId: PROJECT.id,
+  prefix: 'ZZZ',
+  fileName: 'ZZZ010',
+  namePt: 'Contratos',
+  nameEs: null,
+  nameEn: null,
+  routine: null,
+  modeCompany: 'C',
+  modeUnit: 'C',
+  modeBranch: 'C',
+  ttsEnabled: 'S',
+  uniqueKey: null,
+  pyme: 'N',
+  modules: 0,
+  hasClob: 'N',
+  autoIncRec: 'N',
+  tamFil: 2,
+  tamUn: 2,
+  tamEmp: 2,
+  notes: null,
+  createdAt: new Date('2026-01-01T00:00:00.000Z'),
+  updatedAt: new Date('2026-01-01T00:00:00.000Z'),
+  deletedAt: null,
+};
+
+const EXPORT_FIELD: Field = {
+  id: FIELD_ID,
+  tableId: TABLE_ID,
+  name: 'ZZZ_CODIGO',
+  order: '01',
+  type: 'C',
+  size: 10,
+  decimals: 0,
+  titlePt: 'Codigo',
+  titleEs: null,
+  titleEn: null,
+  descPt: 'Codigo',
+  descEs: null,
+  descEn: null,
+  picture: null,
+  pictureVar: null,
+  pictureBrowse: null,
+  validation: null,
+  userValidation: null,
+  defaultRel: null,
+  whenExpr: null,
+  initBrowse: null,
+  comboPt: null,
+  comboEs: null,
+  comboEn: null,
+  searchKey: null,
+  visualMode: 'A',
+  contextMode: 'R',
+  owner: 'U',
+  required: null,
+  showBrowse: 'S',
+  hasCheck: 'N',
+  hasTrigger: 'N',
+  level: 0,
+  pyme: 'N',
+  serverIndex: 'N',
+  fieldIndex: 'N',
+  spelling: 'N',
+  modal: 'N',
+  positionLogix: 'N',
+  usadoFlags: {},
+  modulesFlags: {},
+  sqlCondition: null,
+  sqlCheck: null,
+  groupSxg: null,
+  folder: null,
+  screen: null,
+  grouping: null,
+  reserved: null,
+  notes: null,
+  createdAt: new Date('2026-01-01T00:00:00.000Z'),
+  updatedAt: new Date('2026-01-01T00:00:00.000Z'),
+  deletedAt: null,
+};
+
+const EXPORT_INDEX: Index = {
+  id: INDEX_ID,
+  tableId: TABLE_ID,
+  order: '1',
+  key: 'ZZZ_FILIAL+ZZZ_CODIGO',
+  descPt: 'Principal',
+  descEs: null,
+  descEn: null,
+  owner: 'U',
+  searchExpr: null,
+  nickname: null,
+  showSearch: 'S',
+  isVirtual: 'N',
+  virtualCustomizable: 'N',
+  notes: null,
+  createdAt: new Date('2026-01-01T00:00:00.000Z'),
+  updatedAt: new Date('2026-01-01T00:00:00.000Z'),
+  deletedAt: null,
+};
+
+const EXPORT_SNAPSHOT = {
+  ...PROJECT,
+  tables: [{ ...EXPORT_TABLE, fields: [EXPORT_FIELD], indexes: [EXPORT_INDEX] }],
+} as unknown as ProjectExportSnapshot;
 
 describe('ProjectsService', () => {
   let db: MockedPrisma;
@@ -233,5 +344,27 @@ describe('ProjectsService', () => {
         defaultLang: 'pt-BR',
       },
     });
+  });
+
+  it('exports project JSON with tables, fields and indexes', async () => {
+    db.project.findFirst
+      .mockResolvedValueOnce(PROJECT)
+      .mockResolvedValueOnce(PROJECT)
+      .mockResolvedValueOnce(EXPORT_SNAPSHOT);
+
+    const doc = await service.exportJson(PROJECT.id, 'user-1');
+
+    expect(doc.format).toBe('sxgerador-project');
+    expect(doc.formatVersion).toBe(1);
+    expect(doc.project.id).toBe(PROJECT.id);
+    expect(doc.tables).toHaveLength(1);
+    expect(doc.tables[0].prefix).toBe('ZZZ');
+    expect(doc.tables[0].fields).toHaveLength(1);
+    expect(doc.tables[0].indexes).toHaveLength(1);
+    expect(db.auditLog.create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({ action: 'projects.export', userId: 'user-1' }),
+      }),
+    );
   });
 });

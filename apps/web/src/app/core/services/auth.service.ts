@@ -10,6 +10,11 @@ export interface CurrentUser {
   avatarUrl: string | null;
   emailVerified: boolean;
   locale: string;
+  prefs: {
+    theme?: 'light' | 'dark' | 'system';
+    language?: 'pt-BR' | 'en-US' | 'es-ES';
+    [key: string]: unknown;
+  } | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -59,7 +64,11 @@ export class AuthService {
     return response.user;
   }
 
-  async updateProfile(input: { name?: string; locale?: string }): Promise<CurrentUser> {
+  async updateProfile(input: {
+    name?: string;
+    locale?: string;
+    prefs?: Record<string, unknown>;
+  }): Promise<CurrentUser> {
     const response = await firstValueFrom(
       this.http.patch<{ user: CurrentUser }>(`${environment.apiUrl}/users/me`, input),
     );

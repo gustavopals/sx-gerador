@@ -1,0 +1,145 @@
+<po-page-default
+  p-title="Templates"
+  p-subtitle="Pacotes reutilizáveis de tabelas, campos e índices para o Protheus"
+  [p-actions]="pageActions"
+>
+  <section class="sxg-templates">
+    <form class="sxg-templates__filters" [formGroup]="filtersForm" (ngSubmit)="applyFilters()">
+      <po-input
+        p-label="Buscar"
+        p-placeholder="Nome ou prefixo"
+        p-icon="an an-magnifying-glass"
+        formControlName="search"
+      ></po-input>
+      <po-select
+        p-label="Categoria"
+        [p-options]="categoryOptions"
+        formControlName="category"
+      ></po-select>
+      <po-checkbox p-label="Somente oficiais" formControlName="officialOnly"></po-checkbox>
+      <div class="sxg-templates__filter-actions">
+        <po-button p-label="Filtrar" p-icon="an an-funnel" [p-type]="submitType"></po-button>
+        <po-button p-label="Limpar" p-kind="secondary" (p-click)="clearFilters()"></po-button>
+      </div>
+    </form>
+
+    @if (isLoading()) {
+      <sxg-loading-skeleton variant="cards" [rows]="6" />
+    } @else if (templates().length === 0) {
+      <sxg-empty-state
+        icon="an an-copy"
+        title="Nenhum template encontrado"
+        description="Publique uma tabela como template ou aguarde novos pacotes oficiais."
+      />
+    } @else {
+      <div class="sxg-templates__grid">
+        @for (t of templates(); track t.id) {
+          <article class="sxg-template-card">
+            <header class="sxg-template-card__header">
+              <h3 class="sxg-template-card__title">{{ t.name }}</h3>
+              @if (t.isOfficial) {
+                <po-tag p-value="Oficial" [p-type]="tagType.Success"></po-tag>
+              } @else {
+                <po-tag p-value="Comunidade" [p-type]="tagType.Info"></po-tag>
+              }
+            </header>
+            <p class="sxg-template-card__category">{{ t.category }}</p>
+            @if (t.description) {
+              <p class="sxg-template-card__desc">{{ t.description }}</p>
+            }
+            <dl class="sxg-template-card__meta">
+              @if (t.sourceTablePrefix) {
+                <div>
+                  <dt>Prefixo</dt>
+                  <dd>{{ t.sourceTablePrefix }}</dd>
+                </div>
+              }
+              <div>
+                <dt>Downloads</dt>
+                <dd>{{ t.downloads }}</dd>
+              </div>
+              @if (t.authorName) {
+                <div>
+                  <dt>Autor</dt>
+                  <dd>{{ t.authorName }}</dd>
+                </div>
+              }
+            </dl>
+            <footer class="sxg-template-card__footer">
+              <po-button
+                p-label="Aplicar"
+                p-icon="an an-plus-circle"
+                p-kind="primary"
+                (p-click)="openApply(t, applyModal)"
+              ></po-button>
+            </footer>
+          </article>
+        }
+      </div>
+    }
+  </section>
+</po-page-default>
+
+<po-modal
+  #applyModal
+  p-title="Aplicar template"
+  p-icon="an an-copy"
+  [p-secondary-action]="applyModalCloseAction"
+  [p-hide-close]="isApplying()"
+>
+  @if (applyTemplate(); as tpl) {
+    <div class="sxg-templates-apply">
+      <p>
+        <strong>{{ tpl.name }}</strong> — {{ tpl.category }}
+      </p>
+
+      <form [formGroup]="applyForm" class="sxg-templates-apply__form">
+        <po-select
+          p-label="Projeto destino"
+          [p-options]="projectOptions()"
+          formControlName="projectId"
+          p-required="true"
+        ></po-select>
+        <po-input
+          p-label="Prefixo (opcional)"
+          p-placeholder="Ex: ZGE"
+          [p-maxlength]="3"
+          formControlName="prefixOverride"
+          p-help="Use outro prefixo de 3 letras se já existir tabela com o mesmo prefixo."
+        ></po-input>
+      </form>
+
+      <po-button
+        p-label="Pré-visualizar"
+        p-icon="an an-eye"
+        [p-loading]="isApplyPreviewing()"
+        (p-click)="runApplyPreview()"
+      ></po-button>
+
+      @if (applyPreview(); as pv) {
+        @if (!pv.valid) {
+          <ul class="sxg-templates-apply__errors">
+            @for (e of pv.errors; track e) {
+              <li>{{ e }}</li>
+            }
+          </ul>
+        } @else if (pv.summary) {
+          <div class="sxg-templates-apply__summary">
+            <p>
+              Será criada a tabela <strong>{{ pv.summary.tableName }}</strong> (prefixo
+              {{ pv.targetPrefix }}).
+            </p>
+            <p>{{ pv.summary.fieldsCount }} campos · {{ pv.summary.indexesCount }} índices</p>
+          </div>
+          <po-button
+            p-label="Aplicar no projeto"
+            p-kind="primary"
+            p-icon="an an-check"
+            [p-loading]="isApplying()"
+            (p-click)="runApply()"
+          ></po-button>
+        }
+      }
+    </div>
+  }
+</po-modal>

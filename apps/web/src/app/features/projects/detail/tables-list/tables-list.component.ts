@@ -18,12 +18,21 @@ import {
   TablesService,
   type TableSummary,
 } from '../../../../core/services/tables.service';
+import { EmptyStateComponent } from '../../../../shared/components/empty-state/empty-state.component';
+import { LoadingSkeletonComponent } from '../../../../shared/components/loading-skeleton/loading-skeleton.component';
 
 type TableRow = TableSummary & { status: string; fieldCount: number; indexCount: number };
 
 @Component({
   selector: 'sxg-tables-list',
-  imports: [ReactiveFormsModule, PoButtonModule, PoFieldModule, PoTableModule],
+  imports: [
+    ReactiveFormsModule,
+    PoButtonModule,
+    PoFieldModule,
+    PoTableModule,
+    EmptyStateComponent,
+    LoadingSkeletonComponent,
+  ],
   templateUrl: './tables-list.component.html',
   styleUrl: './tables-list.component.scss',
 })
@@ -117,6 +126,11 @@ export class TablesListComponent implements OnInit {
   ];
 
   ngOnInit(): void {
+    void this.load();
+  }
+
+  /** Recarrega a lista (ex.: após importação JSON). */
+  reload(): void {
     void this.load();
   }
 

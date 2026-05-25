@@ -1,0 +1,175 @@
+.sxg-diff__empty {
+  display: grid;
+  min-height: 160px;
+  place-items: center;
+  gap: 8px;
+  color: #53616f;
+  text-align: center;
+}
+
+.sxg-diff__summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.sxg-diff__pill {
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+
+  &--added {
+    background: #e8f7ee;
+    color: #1b6b3a;
+  }
+
+  &--removed {
+    background: #fdecec;
+    color: #9b1c1c;
+  }
+
+  &--changed {
+    background: #fff6e5;
+    color: #8a5a00;
+  }
+}
+
+.sxg-diff__legend {
+  display: flex;
+  gap: 24px;
+  margin-bottom: 16px;
+  font-size: 0.875rem;
+  color: #53616f;
+}
+
+.sxg-diff__tables {
+  display: grid;
+  gap: 12px;
+}
+
+.sxg-diff__table-card {
+  border: 1px solid #d9e1e8;
+  border-radius: 8px;
+  overflow: hidden;
+
+  &--added {
+    border-left: 4px solid #2e9b57;
+  }
+
+  &--removed {
+    border-left: 4px solid #d64545;
+  }
+
+  &--changed {
+    border-left: 4px solid #d9a227;
+  }
+}
+
+.sxg-diff__table-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background: #f7f9fb;
+
+  h4 {
+    margin: 0;
+    flex: 1;
+    font-size: 1rem;
+  }
+}
+
+.sxg-diff__expand {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  padding: 4px;
+}
+
+.sxg-diff__badge {
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  background: #e8edf2;
+  color: #3d4f5f;
+
+  &--sm {
+    font-size: 0.6875rem;
+  }
+}
+
+.sxg-diff__table-body {
+  padding: 12px 16px 16px;
+
+  section + section {
+    margin-top: 16px;
+  }
+
+  h5 {
+    margin: 0 0 8px;
+    font-size: 0.875rem;
+    color: #53616f;
+  }
+}
+
+.sxg-diff__entities {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+
+.sxg-diff__entity--added {
+  border-left: 3px solid #2e9b57;
+  padding-left: 8px;
+}
+
+.sxg-diff__entity--removed {
+  border-left: 3px solid #d64545;
+  padding-left: 8px;
+}
+
+.sxg-diff__entity--changed {
+  border-left: 3px solid #d9a227;
+  padding-left: 8px;
+}
+
+.sxg-diff__entity-key {
+  font-weight: 600;
+  margin-right: 8px;
+}
+
+.sxg-diff__changes {
+  list-style: none;
+  margin: 8px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 6px;
+  font-size: 0.8125rem;
+
+  li {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+  }
+
+  code {
+    font-size: 0.75rem;
+    color: #53616f;
+  }
+}
+
+.sxg-diff__before {
+  color: #9b1c1c;
+  text-decoration: line-through;
+}
+
+.sxg-diff__after {
+  color: #1b6b3a;
+  font-weight: 600;
+}

@@ -8,7 +8,6 @@ import {
   PoFieldModule,
   PoNotificationService,
 } from '@po-ui/ng-components';
-import { PoPageBackgroundModule } from '@po-ui/ng-templates';
 import { AuthService, mapAuthError } from '../../../core/services/auth.service';
 
 function passwordMatchValidator(control: AbstractControl): { mismatch: true } | null {
@@ -25,14 +24,7 @@ function strongPasswordValidator(control: AbstractControl): { weak: true } | nul
 
 @Component({
   selector: 'sxg-signup',
-  imports: [
-    ReactiveFormsModule,
-    RouterLink,
-    PoPageBackgroundModule,
-    PoButtonModule,
-    PoCheckboxModule,
-    PoFieldModule,
-  ],
+  imports: [ReactiveFormsModule, RouterLink, PoButtonModule, PoCheckboxModule, PoFieldModule],
   templateUrl: './signup.component.html',
   styleUrl: './signup.component.scss',
 })

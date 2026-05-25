@@ -85,42 +85,54 @@
     ></po-button>
   </div>
 
-  <po-table
-    [p-columns]="columns"
-    [p-items]="filteredRows"
-    [p-loading]="isLoading()"
-    [p-selectable]="true"
-    [p-actions]="actions"
-    (p-selected)="onRowSelected($event)"
-    (p-unselected)="onRowUnselected($event)"
-    (p-all-selected)="onAllSelected($event)"
-    (p-all-unselected)="onAllUnselected()"
-    [p-height]="420"
-    [p-virtual-scroll]="true"
-    [p-striped]="true"
-  >
-    <ng-template p-table-cell-template let-row="row" p-property="titlePt">
-      @if (row._editing) {
-        <po-input
-          [ngModel]="row._editTitlePt ?? row.titlePt"
-          (ngModelChange)="row._editTitlePt = $event"
-        ></po-input>
-      } @else {
-        {{ row.titlePt }}
-      }
-    </ng-template>
+  @if (isLoading()) {
+    <sxg-loading-skeleton variant="table" [rows]="5" />
+  } @else if (filteredRows.length === 0) {
+    <sxg-empty-state
+      icon="an an-columns"
+      title="Nenhum campo cadastrado"
+      description="Cadastre campos SX3 ou ajuste os filtros para encontrar itens existentes."
+      [actionLabel]="isDisabled() ? null : 'Novo campo'"
+      actionIcon="an an-plus"
+      (action)="goToNewField()"
+    />
+  } @else {
+    <po-table
+      [p-columns]="columns"
+      [p-items]="filteredRows"
+      [p-selectable]="true"
+      [p-actions]="actions"
+      (p-selected)="onRowSelected($event)"
+      (p-unselected)="onRowUnselected($event)"
+      (p-all-selected)="onAllSelected($event)"
+      (p-all-unselected)="onAllUnselected()"
+      [p-height]="420"
+      [p-virtual-scroll]="true"
+      [p-striped]="true"
+    >
+      <ng-template p-table-cell-template let-row="row" p-property="titlePt">
+        @if (row._editing) {
+          <po-input
+            [ngModel]="row._editTitlePt ?? row.titlePt"
+            (ngModelChange)="row._editTitlePt = $event"
+          ></po-input>
+        } @else {
+          {{ row.titlePt }}
+        }
+      </ng-template>
 
-    <ng-template p-table-cell-template let-row="row" p-property="descPt">
-      @if (row._editing) {
-        <po-input
-          [ngModel]="row._editDescPt ?? row.descPt"
-          (ngModelChange)="row._editDescPt = $event"
-        ></po-input>
-      } @else {
-        {{ row.descPt }}
-      }
-    </ng-template>
-  </po-table>
+      <ng-template p-table-cell-template let-row="row" p-property="descPt">
+        @if (row._editing) {
+          <po-input
+            [ngModel]="row._editDescPt ?? row.descPt"
+            (ngModelChange)="row._editDescPt = $event"
+          ></po-input>
+        } @else {
+          {{ row.descPt }}
+        }
+      </ng-template>
+    </po-table>
+  }
 
   @if (showShortcuts()) {
     <div

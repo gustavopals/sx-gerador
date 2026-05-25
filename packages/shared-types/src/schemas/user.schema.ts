@@ -8,6 +8,14 @@ export const UserSchema = z.object({
   email: z.string().email('E-mail inválido'),
   role: UserRoleSchema.default('MEMBER'),
   locale: z.enum(['pt-BR', 'en-US', 'es-ES']).default('pt-BR'),
+  prefs: z
+    .object({
+      theme: z.enum(['light', 'dark', 'system']).optional(),
+      language: z.enum(['pt-BR', 'en-US', 'es-ES']).optional(),
+    })
+    .passthrough()
+    .nullable()
+    .optional(),
   emailVerified: z.boolean().default(false),
   createdAt: z.coerce.date(),
   updatedAt: z.coerce.date(),
@@ -30,6 +38,13 @@ export const CreateUserSchema = z.object({
 export const UpdateUserSchema = z.object({
   name: z.string().min(2).max(100).optional(),
   locale: z.enum(['pt-BR', 'en-US', 'es-ES']).optional(),
+  prefs: z
+    .object({
+      theme: z.enum(['light', 'dark', 'system']).optional(),
+      language: z.enum(['pt-BR', 'en-US', 'es-ES']).optional(),
+    })
+    .passthrough()
+    .optional(),
 });
 
 export const AvatarUploadSchema = z.object({

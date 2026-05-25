@@ -1,18 +1,18 @@
 import { Component, inject, signal } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { PoNotificationService } from '@po-ui/ng-components';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import {
-  PoPageLoginAuthenticationType,
-  PoPageLoginModule,
-  type PoPageLogin,
-  type PoPageLoginLiterals,
-} from '@po-ui/ng-templates';
+  PoButtonModule,
+  PoButtonType,
+  PoFieldModule,
+  PoNotificationService,
+} from '@po-ui/ng-components';
 import { mapAuthError } from '../../../core/services/auth.service';
 import { AuthStore } from '../../../stores/auth.store';
 
 @Component({
   selector: 'sxg-login',
-  imports: [PoPageLoginModule],
+  imports: [ReactiveFormsModule, RouterLink, PoFieldModule, PoButtonModule],
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss',
 })
@@ -21,29 +21,29 @@ export class LoginComponent {
   private readonly route = inject(ActivatedRoute);
   private readonly notification = inject(PoNotificationService);
   private readonly router = inject(Router);
+  private readonly fb = inject(FormBuilder);
 
   readonly loading = signal(false);
-  readonly authType = PoPageLoginAuthenticationType.Basic;
+  readonly submitType = PoButtonType.Submit;
+  readonly emailError = 'Informe um e-mail válido';
+  readonly passwordError = 'Senha obrigatória';
 
-  readonly literals: PoPageLoginLiterals = {
-    loginPlaceholder: 'Seu e-mail',
-    passwordPlaceholder: 'Sua senha',
-    submitLabel: 'Entrar',
-    forgotPassword: 'Esqueci minha senha',
-    registerUrl: 'Criar conta grátis',
-    loginErrorPattern: 'E-mail inválido',
-    passwordErrorPattern: 'Senha obrigatória',
-    highlightInfo: 'Gere migrations Protheus com velocidade e rastreabilidade.',
-    welcome: 'Bem-vindo ao SXGerador',
-  };
+  readonly form = this.fb.nonNullable.group({
+    email: ['', [Validators.required, Validators.email]],
+    password: ['', Validators.required],
+    rememberUser: [false],
+  });
 
-  readonly recovery = '/forgot-password';
-  readonly registerUrl = '/signup';
+  async onSubmit(): Promise<void> {
+    if (this.form.invalid) {
+      this.form.markAllAsTouched();
+      return;
+    }
 
-  async onLoginSubmit(event: PoPageLogin): Promise<void> {
+    const { email, password, rememberUser } = this.form.getRawValue();
     this.loading.set(true);
     try {
-      await this.authStore.login(event.login, event.password, event.rememberUser ?? false);
+      await this.authStore.login(email, password, rememberUser);
       await this.router.navigateByUrl(this.returnUrl);
     } catch (err) {
       this.notification.error(mapAuthError(err));

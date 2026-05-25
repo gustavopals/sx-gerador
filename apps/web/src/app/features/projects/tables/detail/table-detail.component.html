@@ -5,10 +5,7 @@
   [p-actions]="pageActions"
 >
   @if (isLoading()) {
-    <div class="sxg-td__state">
-      <span class="sxg-td__spinner"></span>
-      <p>Carregando tabela...</p>
-    </div>
+    <sxg-loading-skeleton variant="detail" [rows]="3" />
   } @else if (table(); as t) {
     @if (t.deletedAt) {
       <div class="sxg-td__archived-banner">
@@ -62,11 +59,14 @@
         </div>
 
         @if (fields().length === 0) {
-          <div class="sxg-td__empty-tab">
-            <span class="an an-columns an-2x"></span>
-            <h3>Nenhum campo cadastrado</h3>
-            <p>Cadastre o primeiro campo SX3 para esta tabela.</p>
-          </div>
+          <sxg-empty-state
+            icon="an an-columns"
+            title="Nenhum campo cadastrado"
+            description="Cadastre o primeiro campo SX3 para esta tabela."
+            [actionLabel]="t.deletedAt ? null : 'Novo campo'"
+            actionIcon="an an-plus"
+            (action)="navigateToNewField()"
+          />
         } @else {
           <sxg-fields-list
             [projectId]="projectId()"
@@ -89,11 +89,14 @@
         </div>
 
         @if (indexes().length === 0) {
-          <div class="sxg-td__empty-tab">
-            <span class="an an-list-magnifying-glass an-2x"></span>
-            <h3>Nenhum índice cadastrado</h3>
-            <p>Cadastre os índices SIX da tabela para garantir navegação e consistência.</p>
-          </div>
+          <sxg-empty-state
+            icon="an an-list-magnifying-glass"
+            title="Nenhum índice cadastrado"
+            description="Cadastre os índices SIX da tabela para garantir navegação e consistência."
+            [actionLabel]="t.deletedAt ? null : 'Novo índice'"
+            actionIcon="an an-plus"
+            (action)="navigateToNewIndex()"
+          />
         } @else {
           <sxg-indexes-list
             [projectId]="projectId()"
@@ -180,12 +183,38 @@
       </po-tab>
 
       <po-tab p-label="Histórico">
-        <div class="sxg-td__empty-tab">
-          <span class="an an-clock-counter-clockwise an-2x"></span>
-          <h3>Sem registros de histórico</h3>
-          <p>Alterações e eventos desta tabela aparecerão aqui.</p>
-        </div>
+        @if (table(); as t) {
+          <sxg-history-timeline [projectId]="projectId()" [tablePrefix]="t.prefix" />
+        }
       </po-tab>
     </po-tabs>
   }
 </po-page-default>
+
+<po-modal
+  #publishModal
+  p-title="Publicar como template"
+  p-icon="an an-share-network"
+  [p-primary-action]="publishPrimaryAction"
+  [p-secondary-action]="publishModalCloseAction"
+  [p-hide-close]="isPublishing()"
+>
+  <form class="sxg-td__publish-form" [formGroup]="publishForm" novalidate>
+    <p class="sxg-td__publish-hint">
+      O template ficará disponível na vitrine pública como pacote da comunidade (não oficial).
+    </p>
+    <po-input p-label="Nome" formControlName="name" p-required="true"></po-input>
+    <po-textarea
+      p-label="Descrição"
+      formControlName="description"
+      [p-rows]="3"
+      p-placeholder="Descreva o uso recomendado deste template"
+    ></po-textarea>
+    <po-select
+      p-label="Categoria"
+      [p-options]="categoryOptions"
+      formControlName="category"
+      p-required="true"
+    ></po-select>
+  </form>
+</po-modal>

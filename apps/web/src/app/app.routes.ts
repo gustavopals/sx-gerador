@@ -49,8 +49,14 @@ export const routes: Routes = [
     ],
   },
   {
+    path: '',
+    pathMatch: 'full',
+    loadComponent: () =>
+      import('./features/landing/landing.component').then((m) => m.LandingComponent),
+  },
+  {
     path: 'dashboard',
-    redirectTo: '',
+    redirectTo: 'projects',
     pathMatch: 'full',
   },
   {
@@ -59,7 +65,7 @@ export const routes: Routes = [
     canActivate: [authGuard, verifiedGuard],
     children: [
       {
-        path: '',
+        path: 'home',
         loadComponent: () => import('./features/home/home.component').then((m) => m.HomeComponent),
       },
       {
@@ -170,6 +176,20 @@ export const routes: Routes = [
         loadComponent: () =>
           import('./features/projects/detail/project-detail.component').then(
             (m) => m.ProjectDetailComponent,
+          ),
+      },
+      {
+        path: 'templates',
+        loadComponent: () =>
+          import('./features/templates/gallery/templates-gallery.component').then(
+            (m) => m.TemplatesGalleryComponent,
+          ),
+      },
+      {
+        path: 'diff/projects',
+        loadComponent: () =>
+          import('./features/diff/projects-compare/projects-compare.component').then(
+            (m) => m.ProjectsCompareComponent,
           ),
       },
       {

@@ -10,7 +10,7 @@ const IndexOrderSchema = z
 const IndexKeySchema = z.string().trim().min(1).max(160);
 const IndexDescriptionSchema = z.string().trim().min(1).max(70);
 
-const IndexSchemaBase = z.object({
+export const IndexSchemaBase = z.object({
   order: IndexOrderSchema,
   key: IndexKeySchema,
   descPt: IndexDescriptionSchema,

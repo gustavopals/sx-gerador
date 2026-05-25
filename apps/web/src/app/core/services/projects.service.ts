@@ -43,6 +43,48 @@ export interface ProjectsListResponse {
   meta: ProjectsListMeta;
 }
 
+export interface ImportPreviewTableDetail {
+  prefix: string;
+  action: 'create' | 'update';
+  fields: { create: string[]; update: string[]; delete: string[] };
+  indexes: { create: string[]; update: string[]; delete: string[] };
+}
+
+export interface ImportPreviewSummary {
+  tablesCreated: number;
+  tablesUpdated: number;
+  tablesDeleted: number;
+  fieldsCreated: number;
+  fieldsUpdated: number;
+  fieldsDeleted: number;
+  indexesCreated: number;
+  indexesUpdated: number;
+  indexesDeleted: number;
+}
+
+export interface ImportPreviewResponse {
+  valid: boolean;
+  errors: string[];
+  summary: ImportPreviewSummary | null;
+  tables: ImportPreviewTableDetail[] | null;
+  csvWarnings?: string[];
+}
+
+export type CsvDictionary = 'sx2' | 'sx3' | 'six';
+
+export interface ImportCsvPayload {
+  sx2?: string;
+  sx3?: string;
+  six?: string;
+  options?: { syncDeletions?: boolean };
+}
+
+export interface ImportApplyResponse {
+  success: boolean;
+  errors: string[];
+  summary?: ImportPreviewSummary;
+}
+
 @Injectable({ providedIn: 'root' })
 export class ProjectsService {
   private readonly http = inject(HttpClient);
@@ -111,12 +153,118 @@ export class ProjectsService {
     );
     return response.project;
   }
+
+  async importPreview(projectId: string, document: unknown): Promise<ImportPreviewResponse> {
+    return firstValueFrom(
+      this.http.post<ImportPreviewResponse>(`${this.baseUrl}/${projectId}/import/preview`, {
+        document,
+      }),
+    );
+  }
+
+  async importApply(
+    projectId: string,
+    document: unknown,
+    options?: { syncDeletions?: boolean },
+  ): Promise<ImportApplyResponse> {
+    return firstValueFrom(
+      this.http.post<ImportApplyResponse>(`${this.baseUrl}/${projectId}/import`, {
+        document,
+        options,
+      }),
+    );
+  }
+
+  async importCsvPreview(
+    projectId: string,
+    payload: ImportCsvPayload,
+  ): Promise<ImportPreviewResponse> {
+    return firstValueFrom(
+      this.http.post<ImportPreviewResponse>(
+        `${this.baseUrl}/${projectId}/import/csv/preview`,
+        payload,
+      ),
+    );
+  }
+
+  async importCsvApply(projectId: string, payload: ImportCsvPayload): Promise<ImportApplyResponse> {
+    return firstValueFrom(
+      this.http.post<ImportApplyResponse>(`${this.baseUrl}/${projectId}/import/csv`, payload),
+    );
+  }
+
+  async downloadProjectCsvExport(
+    id: string,
+    dictionary: CsvDictionary,
+    slug: string,
+  ): Promise<void> {
+    const response = await firstValueFrom(
+      this.http.get(`${this.baseUrl}/${id}/export/csv/${dictionary}`, {
+        responseType: 'blob',
+        observe: 'response',
+      }),
+    );
+    const blob = response.body;
+    if (!blob) throw new Error('Resposta vazia do servidor.');
+
+    const headerName = response.headers.get('Content-Disposition');
+    const fileName =
+      parseContentDispositionFilename(headerName) ?? `sxgerador-${slug}-${dictionary}.csv`;
+
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement('a');
+    anchor.href = url;
+    anchor.download = fileName;
+    anchor.click();
+    URL.revokeObjectURL(url);
+  }
+
+  async downloadProjectExport(id: string, slug: string): Promise<void> {
+    const response = await firstValueFrom(
+      this.http.get(`${this.baseUrl}/${id}/export`, {
+        responseType: 'blob',
+        observe: 'response',
+      }),
+    );
+    const blob = response.body;
+    if (!blob) throw new Error('Resposta vazia do servidor.');
+
+    const headerName = response.headers.get('Content-Disposition');
+    const fileName = parseContentDispositionFilename(headerName) ?? `sxgerador-${slug}.json`;
+
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement('a');
+    anchor.href = url;
+    anchor.download = fileName;
+    anchor.click();
+    URL.revokeObjectURL(url);
+  }
+}
+
+function parseContentDispositionFilename(header: string | null): string | null {
+  if (!header) return null;
+  const match = /filename="([^"]+)"/i.exec(header);
+  return match?.[1] ?? null;
 }
 
 export function mapProjectsError(err: unknown): string {
   if (err instanceof HttpErrorResponse) {
+    if (err.status === 403) return 'Você não tem permissão para esta ação.';
     if (err.status === 409) return 'Já existe um projeto usando esse slug.';
-    if (err.status === 422) return 'Revise os campos destacados.';
+    if (err.status === 422) {
+      const body = err.error;
+      if (body && typeof body === 'object' && 'error' in body) {
+        const apiErr = (body as { error?: { code?: string; messages?: unknown } }).error;
+        if (
+          apiErr?.code === 'IMPORT_VALIDATION_FAILED' &&
+          Array.isArray(apiErr.messages) &&
+          apiErr.messages.length > 0
+        ) {
+          return (apiErr.messages as string[]).join('\n');
+        }
+      }
+      return 'Revise os campos destacados.';
+    }
     if (err.status === 0) return 'Sem conexão com o servidor.';
   }
   return 'Não foi possível concluir a operação.';

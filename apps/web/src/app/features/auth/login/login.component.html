@@ -1,11 +1,48 @@
-<po-page-login
-  p-product-name="SXGerador"
-  p-environment="beta"
-  [p-authentication-type]="authType"
-  [p-loading]="loading()"
-  [p-literals]="literals"
-  [p-recovery]="recovery"
-  [p-register-url]="registerUrl"
-  (p-login-submit)="onLoginSubmit($event)"
->
-</po-page-login>
+<main class="sxg-auth-shell">
+  <aside class="sxg-auth-shell__brand" aria-label="SXGerador beta">
+    <strong>SXGerador</strong>
+    <span>beta</span>
+  </aside>
+  <div class="sxg-login">
+    <h2 class="po-font-title sxg-login__title">Entrar</h2>
+    <p class="po-font-text-small sxg-login__sub">
+      Novo por aqui? <a routerLink="/signup" class="sxg-login__link">Criar conta grátis</a>
+    </p>
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+      <po-input
+        p-label="E-mail"
+        p-type="email"
+        formControlName="email"
+        p-placeholder="seu@email.com"
+        [p-error-pattern]="emailError"
+        p-required="true"
+      ></po-input>
+
+      <po-password
+        p-label="Senha"
+        formControlName="password"
+        p-placeholder="Sua senha"
+        [p-error-pattern]="passwordError"
+        p-required="true"
+      ></po-password>
+
+      <div class="sxg-login__row">
+        <label class="sxg-login__remember">
+          <input type="checkbox" formControlName="rememberUser" />
+          <span>Lembrar-me</span>
+        </label>
+        <a routerLink="/forgot-password" class="sxg-login__link">Esqueci minha senha</a>
+      </div>
+
+      <po-button
+        class="sxg-login__submit"
+        p-label="Entrar"
+        [p-type]="submitType"
+        p-kind="primary"
+        [p-loading]="loading()"
+        [p-disabled]="loading()"
+      ></po-button>
+    </form>
+  </div>
+</main>

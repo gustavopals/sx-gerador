@@ -7,15 +7,6 @@
   text-align: center;
 }
 
-.sxg-team-detail__spinner {
-  width: 32px;
-  height: 32px;
-  border: 3px solid #d9e4f5;
-  border-top-color: #0c6c94;
-  border-radius: 50%;
-  animation: sxg-spin 0.8s linear infinite;
-}
-
 .sxg-team-detail__section {
   display: grid;
   gap: 16px;
@@ -64,10 +55,4 @@
   flex-wrap: wrap;
   gap: 12px;
   justify-content: space-between;
-}
-
-@keyframes sxg-spin {
-  to {
-    transform: rotate(360deg);
-  }
 }

@@ -1,0 +1,126 @@
+.sxg-templates {
+  display: grid;
+  gap: 16px;
+}
+
+.sxg-templates__filters {
+  display: grid;
+  grid-template-columns: minmax(200px, 1fr) 200px auto auto;
+  align-items: end;
+  gap: 12px;
+}
+
+.sxg-templates__filter-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.sxg-templates__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.sxg-template-card {
+  display: grid;
+  gap: 12px;
+  padding: 16px;
+  border: 1px solid #d9e1e8;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.sxg-template-card__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.sxg-template-card__title {
+  margin: 0;
+  font-size: 1.0625rem;
+  color: #1d242b;
+}
+
+.sxg-template-card__category {
+  margin: 0;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #6b7a89;
+}
+
+.sxg-template-card__desc {
+  margin: 0;
+  font-size: 0.875rem;
+  line-height: 1.45;
+  color: #53616f;
+}
+
+.sxg-template-card__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 20px;
+  margin: 0;
+  font-size: 0.8125rem;
+
+  dt {
+    color: #6b7a89;
+    font-weight: 600;
+  }
+
+  dd {
+    margin: 2px 0 0;
+    color: #1d242b;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  }
+}
+
+.sxg-template-card__footer {
+  margin-top: auto;
+}
+
+.sxg-templates__state,
+.sxg-templates__empty {
+  display: grid;
+  min-height: 200px;
+  place-items: center;
+  text-align: center;
+  color: #53616f;
+}
+
+.sxg-templates-apply {
+  display: grid;
+  gap: 16px;
+  max-width: 480px;
+}
+
+.sxg-templates-apply__form {
+  display: grid;
+  gap: 12px;
+}
+
+.sxg-templates-apply__errors {
+  margin: 0;
+  padding: 12px 14px;
+  border-radius: 6px;
+  background: #fff0f0;
+  border: 1px solid #f0b4b4;
+  color: #5c2121;
+  font-size: 0.875rem;
+}
+
+.sxg-templates-apply__summary {
+  padding: 12px 14px;
+  border-radius: 6px;
+  background: #f3f7f9;
+  border: 1px solid #e4eaf0;
+  font-size: 0.875rem;
+  line-height: 1.5;
+
+  p {
+    margin: 0 0 6px;
+  }
+}

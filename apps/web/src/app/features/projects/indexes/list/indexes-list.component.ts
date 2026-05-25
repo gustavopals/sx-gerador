@@ -10,11 +10,20 @@ import {
   type PoTableColumn,
 } from '@po-ui/ng-components';
 import { mapIndexesError, type IndexSummary } from '../../../../core/services/indexes.service';
+import { EmptyStateComponent } from '../../../../shared/components/empty-state/empty-state.component';
+import { LoadingSkeletonComponent } from '../../../../shared/components/loading-skeleton/loading-skeleton.component';
 import { IndexesStore } from '../../../../stores/indexes.store';
 
 @Component({
   selector: 'sxg-indexes-list',
-  imports: [FormsModule, PoButtonModule, PoFieldModule, PoTableModule],
+  imports: [
+    FormsModule,
+    PoButtonModule,
+    PoFieldModule,
+    PoTableModule,
+    EmptyStateComponent,
+    LoadingSkeletonComponent,
+  ],
   templateUrl: './indexes-list.component.html',
   styleUrl: './indexes-list.component.scss',
 })

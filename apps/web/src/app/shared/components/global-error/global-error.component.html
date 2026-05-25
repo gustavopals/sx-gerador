@@ -1,0 +1,22 @@
+@if (errors.error(); as error) {
+  <section class="sxg-global-error" role="alert" aria-live="assertive">
+    <div>
+      <strong>{{ error.title }}</strong>
+      <p>{{ error.message }}</p>
+    </div>
+    <div class="sxg-global-error__actions">
+      <po-button
+        p-kind="secondary"
+        p-icon="an an-bug"
+        [p-label]="reportProblemLabel()"
+        (p-click)="report()"
+      ></po-button>
+      <po-button
+        p-kind="tertiary"
+        p-icon="an an-x"
+        p-label="Fechar"
+        (p-click)="errors.clear()"
+      ></po-button>
+    </div>
+  </section>
+}

@@ -1,4 +1,3 @@
-import { DatePipe } from '@angular/common';
 import { Component, computed, inject, signal, type OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -17,10 +16,18 @@ import {
   MigrationsService,
   type DraftMigrationItem,
 } from '../../../../core/services/migrations.service';
+import { LoadingSkeletonComponent } from '../../../../shared/components/loading-skeleton/loading-skeleton.component';
 
 @Component({
   selector: 'sxg-generate-migration',
-  imports: [DatePipe, FormsModule, PoButtonModule, PoFieldModule, PoPageModule, PoTableModule],
+  imports: [
+    FormsModule,
+    PoButtonModule,
+    PoFieldModule,
+    PoPageModule,
+    PoTableModule,
+    LoadingSkeletonComponent,
+  ],
   templateUrl: './generate-migration.component.html',
   styleUrl: './generate-migration.component.scss',
 })

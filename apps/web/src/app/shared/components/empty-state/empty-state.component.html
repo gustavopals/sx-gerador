@@ -1,0 +1,24 @@
+<section class="sxg-empty" role="status">
+  <div class="sxg-empty__mark" aria-hidden="true">
+    <span [class]="icon()"></span>
+  </div>
+  <h2>{{ title() }}</h2>
+  <p>{{ description() }}</p>
+  @if (actionLabel(); as label) {
+    @if (actionLink(); as link) {
+      <po-button
+        [p-label]="label"
+        [p-icon]="actionIcon()"
+        p-kind="primary"
+        [routerLink]="link"
+      ></po-button>
+    } @else {
+      <po-button
+        [p-label]="label"
+        [p-icon]="actionIcon()"
+        p-kind="primary"
+        (p-click)="action.emit()"
+      ></po-button>
+    }
+  }
+</section>

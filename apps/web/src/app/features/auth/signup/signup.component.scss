@@ -13,20 +13,37 @@
 
   &__sub {
     margin: 0 0 24px;
-    color: var(--color-neutral-dark-50, #6c7a86);
+    color: #4a5864;
   }
 
-  &__link {
-    color: var(--color-action-default, #0070d2);
-    text-decoration: none;
-
-    &:hover {
-      text-decoration: underline;
-    }
+  &__link,
+  &__inline-link {
+    color: #0a5f8a;
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 2px;
   }
 
   &__terms {
     margin: 12px 0 20px;
+  }
+
+  &__terms-label {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    cursor: pointer;
+    font-size: 14px;
+    line-height: 1.45;
+    color: #1d2a35;
+
+    input[type='checkbox'] {
+      width: 18px;
+      height: 18px;
+      margin-top: 2px;
+      flex-shrink: 0;
+      accent-color: #0c9abe;
+    }
   }
 
   &__terms-error {

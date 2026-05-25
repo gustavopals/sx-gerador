@@ -80,6 +80,40 @@
               "optimization": false,
               "extractLicenses": false,
               "sourceMap": true
+            },
+            "lighthouse": {
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.lighthouse.ts"
+                }
+              ],
+              "styles": [
+                "node_modules/@po-ui/style/css/po-theme-default-variables.min.css",
+                "src/styles.scss",
+                "src/lighthouse-po-lite.scss"
+              ],
+              "optimization": {
+                "scripts": true,
+                "styles": {
+                  "minify": true,
+                  "inlineCritical": true
+                },
+                "fonts": false
+              },
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "3MB",
+                  "maximumError": "5MB"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "4kB",
+                  "maximumError": "8kB"
+                }
+              ],
+              "outputHashing": "all"
             }
           },
           "defaultConfiguration": "production"
@@ -89,6 +123,9 @@
           "configurations": {
             "production": {
               "buildTarget": "web:build:production"
+            },
+            "lighthouse": {
+              "buildTarget": "web:build:lighthouse"
             },
             "development": {
               "buildTarget": "web:build:development"

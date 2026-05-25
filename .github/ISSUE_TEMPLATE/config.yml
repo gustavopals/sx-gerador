@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 💬 Comunidade (Discord)
+    url: https://discord.gg/sxgerador
+    about: Conversa rápida com outros usuários e o time SXGerador.
+  - name: 📨 Email do time
+    url: mailto:hello@sxgerador.com.br
+    about: Parcerias, imprensa, assuntos sensíveis.
+  - name: 🔒 Reportar vulnerabilidade
+    url: https://github.com/sxgerador/sxgerador/security/advisories/new
+    about: Vulnerabilidades de segurança. NÃO use issues públicos.

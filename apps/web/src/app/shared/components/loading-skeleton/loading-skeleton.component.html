@@ -1,0 +1,9 @@
+<div class="sxg-skeleton" [class]="'sxg-skeleton--' + variant()" aria-hidden="true">
+  @for (_ of items(); track $index) {
+    <div class="sxg-skeleton__item">
+      <span class="sxg-skeleton__line sxg-skeleton__line--title"></span>
+      <span class="sxg-skeleton__line"></span>
+      <span class="sxg-skeleton__line sxg-skeleton__line--short"></span>
+    </div>
+  }
+</div>

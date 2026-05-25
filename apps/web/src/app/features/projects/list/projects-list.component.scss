@@ -134,15 +134,6 @@
   margin: 0;
 }
 
-.sxg-projects__spinner {
-  width: 28px;
-  height: 28px;
-  border: 3px solid #d9e1e8;
-  border-top-color: #0c5f79;
-  border-radius: 50%;
-  animation: sxg-spin 0.8s linear infinite;
-}
-
 .sxg-projects__pagination {
   align-items: center;
 }
@@ -150,12 +141,6 @@
 .sxg-projects__modal-form {
   display: grid;
   gap: 12px;
-}
-
-@keyframes sxg-spin {
-  to {
-    transform: rotate(360deg);
-  }
 }
 
 @media (max-width: 760px) {

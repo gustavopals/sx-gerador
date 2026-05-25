@@ -1,0 +1,38 @@
+:host {
+  display: block;
+}
+
+.sxg-empty {
+  display: grid;
+  justify-items: center;
+  gap: 10px;
+  padding: 40px 20px;
+  text-align: center;
+  color: var(--sxg-text, #1d2a35);
+
+  h2 {
+    margin: 4px 0 0;
+    font-size: 1.25rem;
+  }
+
+  p {
+    max-width: 520px;
+    margin: 0 0 8px;
+    color: var(--sxg-text-muted, #4a5864);
+    line-height: 1.5;
+  }
+}
+
+.sxg-empty__mark {
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  color: var(--sxg-action, #0c9abe);
+  background: var(--sxg-action-soft, #e8f4fd);
+
+  span {
+    font-size: 30px;
+  }
+}

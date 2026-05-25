@@ -5,10 +5,7 @@
   [p-actions]="pageActions"
 >
   @if (isLoading()) {
-    <div class="sxg-team-detail__state">
-      <span class="sxg-team-detail__spinner"></span>
-      <p>Carregando equipe...</p>
-    </div>
+    <sxg-loading-skeleton variant="detail" [rows]="3" />
   } @else if (team(); as currentTeam) {
     <po-tabs>
       <po-tab p-label="Membros" [p-active]="true">
@@ -25,10 +22,11 @@
       <po-tab p-label="Projetos">
         <section class="sxg-team-detail__section">
           @if (projects().length === 0) {
-            <div class="sxg-team-detail__empty">
-              <h3>Nenhum projeto pertence a esta equipe</h3>
-              <p>Projetos transferidos para a equipe aparecerão aqui.</p>
-            </div>
+            <sxg-empty-state
+              icon="an an-folder-open"
+              title="Nenhum projeto pertence a esta equipe"
+              description="Projetos transferidos para a equipe aparecerão aqui."
+            />
           } @else {
             <div class="sxg-team-detail__projects">
               @for (project of projects(); track project.id) {

@@ -5,10 +5,7 @@
   [p-actions]="pageActions"
 >
   @if (isLoading()) {
-    <div class="sxg-table-form__state">
-      <span class="sxg-table-form__spinner"></span>
-      <p>Carregando tabela...</p>
-    </div>
+    <sxg-loading-skeleton variant="detail" [rows]="4" />
   } @else {
     <form class="sxg-table-form" [formGroup]="form" (ngSubmit)="save()" novalidate>
       <!-- ── Identificação ─────────────────────────────────── -->

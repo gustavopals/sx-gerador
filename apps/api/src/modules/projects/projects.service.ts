@@ -30,6 +30,41 @@ export interface PaginatedProjects {
   };
 }
 
+export const PROJECT_EXPORT_INCLUDE = {
+  tables: {
+    where: { deletedAt: null },
+    orderBy: { prefix: 'asc' as const },
+    include: {
+      fields: {
+        where: { deletedAt: null },
+        orderBy: { order: 'asc' as const },
+      },
+      indexes: {
+        where: { deletedAt: null },
+        orderBy: { order: 'asc' as const },
+      },
+    },
+  },
+} satisfies Prisma.ProjectInclude;
+
+export type ProjectExportSnapshot = Prisma.ProjectGetPayload<{
+  include: typeof PROJECT_EXPORT_INCLUDE;
+}>;
+
+/** Formato aberto para backup e importação futura (F8.2). */
+export interface ProjectExportDocument {
+  format: 'sxgerador-project';
+  formatVersion: 1;
+  exportedAt: string;
+  project: Omit<ProjectExportSnapshot, 'tables'>;
+  tables: Array<
+    Omit<ProjectExportSnapshot['tables'][number], 'fields' | 'indexes'> & {
+      fields: ProjectExportSnapshot['tables'][number]['fields'];
+      indexes: ProjectExportSnapshot['tables'][number]['indexes'];
+    }
+  >;
+}
+
 export class ProjectsService {
   constructor(private readonly db: PrismaClient) {}
 
@@ -67,6 +102,22 @@ export class ProjectsService {
     if (!project) throw ProjectErrors.NOT_FOUND;
     await assertProjectPermission(this.db, actorUserId, 'project:read', id);
     return project;
+  }
+
+  /**
+   * Exporta o projeto com tabelas, campos e índices ativos (sem soft-deletados).
+   */
+  async exportJson(id: string, actorUserId?: string): Promise<ProjectExportDocument> {
+    await this.get(id, actorUserId);
+    const snapshot = await this.db.project.findFirst({
+      where: { id, deletedAt: null },
+      include: PROJECT_EXPORT_INCLUDE,
+    });
+    if (!snapshot) throw ProjectErrors.NOT_FOUND;
+
+    const doc = toProjectExportDocument(snapshot);
+    await logAudit(this.db, 'projects.export', actorUserId ?? null, { projectId: id });
+    return doc;
   }
 
   async create(input: CreateProjectInput, actorUserId?: string): Promise<Project> {
@@ -244,5 +295,20 @@ function normalizeUpdateProjectInput(input: UpdateProjectInput): Prisma.ProjectU
     ...(input.visibility !== undefined ? { visibility: input.visibility } : {}),
     ...(input.defaultTamFil !== undefined ? { defaultTamFil: input.defaultTamFil } : {}),
     ...(input.defaultLang !== undefined ? { defaultLang: input.defaultLang } : {}),
+  };
+}
+
+function toProjectExportDocument(snapshot: ProjectExportSnapshot): ProjectExportDocument {
+  const { tables, ...project } = snapshot;
+  return {
+    format: 'sxgerador-project',
+    formatVersion: 1,
+    exportedAt: new Date().toISOString(),
+    project,
+    tables: tables.map(({ fields, indexes, ...table }) => ({
+      ...table,
+      fields,
+      indexes,
+    })),
   };
 }

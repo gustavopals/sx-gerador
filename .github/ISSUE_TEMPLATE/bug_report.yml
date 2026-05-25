@@ -1,0 +1,81 @@
+name: 🐛 Bug
+description: Algo está quebrado ou se comporta diferente do esperado.
+title: '[bug] '
+labels: ['bug', 'triage']
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Obrigado por reportar! Quanto mais detalhes, mais rápido a gente resolve.
+
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: O que aconteceu?
+      description: Descreva o comportamento observado.
+      placeholder: |
+        Ao tentar publicar uma tabela como template, recebo erro 500...
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: O que você esperava?
+      placeholder: A tabela deveria aparecer na galeria de templates.
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Passos para reproduzir
+      placeholder: |
+        1. Criar projeto X
+        2. Criar tabela com prefixo Y
+        3. Clicar em "Publicar como template"
+        4. ...
+    validations:
+      required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: Versão do SXGerador
+      placeholder: 'v0.5.2 (ou commit SHA se em self-hosted)'
+    validations:
+      required: false
+
+  - type: dropdown
+    id: where
+    attributes:
+      label: Onde aconteceu?
+      options:
+        - SaaS oficial (sxgerador.com.br)
+        - Self-hosted
+        - Desenvolvimento local
+    validations:
+      required: true
+
+  - type: input
+    id: browser
+    attributes:
+      label: Navegador / OS
+      placeholder: 'Chrome 130 / Windows 11'
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs / screenshots
+      description: Cole stack traces, prints, network errors. Use blocos `code`.
+      render: text
+
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Checklist
+      options:
+        - label: Procurei issues existentes e este bug ainda não foi reportado.
+          required: true
+        - label: Não estou colando credenciais, tokens ou dados sensíveis.
+          required: true

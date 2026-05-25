@@ -28,7 +28,6 @@
 
       .po-icon {
         color: var(--color-neutral-mid-40, #999);
-        animation: sxg-spin 1s linear infinite;
       }
     }
 
@@ -73,14 +72,5 @@
   &__cooldown {
     margin: 0;
     color: var(--color-neutral-mid-60, #767676);
-  }
-}
-
-@keyframes sxg-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
   }
 }

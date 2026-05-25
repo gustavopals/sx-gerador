@@ -1,0 +1,54 @@
+name: ✨ Feature
+description: Uma ideia, melhoria ou nova funcionalidade.
+title: '[feat] '
+labels: ['enhancement', 'triage']
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Qual problema isso resolve?
+      description: Descreva o contexto e o pain point — não a solução ainda.
+      placeholder: |
+        Hoje quando tenho 50 campos numa tabela, rolar a lista é lento e não dá pra
+        agrupar por módulo...
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Sua proposta
+      description: Como você gostaria que funcionasse?
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternativas consideradas
+      description: Workarounds atuais ou outras abordagens que você pensou.
+
+  - type: dropdown
+    id: scope
+    attributes:
+      label: Escopo
+      options:
+        - UI/UX
+        - Backend/API
+        - Geração de AdvPL
+        - Permissões/Equipes
+        - Importação/Exportação
+        - Templates
+        - Diff/Histórico
+        - Documentação
+        - Outro
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: terms
+    attributes:
+      label: Checklist
+      options:
+        - label: Procurei issues existentes e esta ideia ainda não foi proposta.
+          required: true

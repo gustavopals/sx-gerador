@@ -5,10 +5,7 @@
   [p-actions]="pageActions"
 >
   @if (isLoading()) {
-    <div class="sxg-index-form__state">
-      <span class="sxg-index-form__spinner"></span>
-      <p>Carregando contexto da tabela...</p>
-    </div>
+    <sxg-loading-skeleton variant="detail" [rows]="3" />
   } @else {
     <form class="sxg-index-form" [formGroup]="form" (ngSubmit)="save()">
       <section class="sxg-index-form__section">

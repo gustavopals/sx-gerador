@@ -2,6 +2,7 @@ import { registerLocaleData } from '@angular/common';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import localePt from '@angular/common/locales/pt';
 import {
+  ErrorHandler,
   importProvidersFrom,
   LOCALE_ID,
   makeEnvironmentProviders,
@@ -14,6 +15,7 @@ import { provideRouter } from '@angular/router';
 import { PoI18nModule, type PoI18nConfig } from '@po-ui/ng-components';
 import { routes } from './app.routes';
 import { authInterceptor } from './core/interceptors/auth.interceptor';
+import { SxgGlobalErrorHandler } from './shared/components/global-error/global-error.handler';
 
 registerLocaleData(localePt);
 
@@ -38,5 +40,6 @@ export const appConfig: ApplicationConfig = {
     provideAnimations(),
     providePoLocale(),
     provideRouter(routes),
+    { provide: ErrorHandler, useClass: SxgGlobalErrorHandler },
   ],
 };

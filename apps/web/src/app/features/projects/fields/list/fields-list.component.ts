@@ -11,6 +11,8 @@ import {
   type PoTableColumn,
 } from '@po-ui/ng-components';
 import { mapFieldsError, type FieldSummary } from '../../../../core/services/fields.service';
+import { EmptyStateComponent } from '../../../../shared/components/empty-state/empty-state.component';
+import { LoadingSkeletonComponent } from '../../../../shared/components/loading-skeleton/loading-skeleton.component';
 import { FieldsStore } from '../../../../stores/fields.store';
 
 interface FieldRow extends FieldSummary {
@@ -22,7 +24,14 @@ interface FieldRow extends FieldSummary {
 
 @Component({
   selector: 'sxg-fields-list',
-  imports: [FormsModule, PoButtonModule, PoFieldModule, PoTableModule],
+  imports: [
+    FormsModule,
+    PoButtonModule,
+    PoFieldModule,
+    PoTableModule,
+    EmptyStateComponent,
+    LoadingSkeletonComponent,
+  ],
   templateUrl: './fields-list.component.html',
   styleUrl: './fields-list.component.scss',
 })

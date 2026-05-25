@@ -31,21 +31,16 @@
     </form>
 
     @if (isLoading()) {
-      <div class="sxg-projects__state">
-        <span class="sxg-projects__spinner"></span>
-        <p>Carregando projetos</p>
-      </div>
+      <sxg-loading-skeleton variant="cards" [rows]="6" />
     } @else if (projects().length === 0) {
-      <div class="sxg-projects__empty">
-        <h2>Nenhum projeto encontrado</h2>
-        <p>Crie seu primeiro dicionário ou ajuste os filtros para ver projetos arquivados.</p>
-        <po-button
-          p-label="Novo projeto"
-          p-icon="an an-plus"
-          p-kind="primary"
-          [routerLink]="['/projects/new']"
-        ></po-button>
-      </div>
+      <sxg-empty-state
+        icon="an an-folder-open"
+        title="Nenhum projeto encontrado"
+        description="Crie seu primeiro dicionário ou ajuste os filtros para ver projetos arquivados."
+        actionLabel="Novo projeto"
+        actionIcon="an an-plus"
+        [actionLink]="['/projects/new']"
+      />
     } @else {
       <div class="sxg-projects__grid" aria-label="Lista de projetos">
         @for (project of projects(); track project.id) {

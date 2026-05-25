@@ -5,10 +5,7 @@
   [p-actions]="pageActions"
 >
   @if (isLoading()) {
-    <div class="sxg-gm__state">
-      <span class="sxg-gm__spinner"></span>
-      <p>Carregando draft de migration...</p>
-    </div>
+    <sxg-loading-skeleton variant="detail" [rows]="3" />
   } @else {
     <section class="sxg-gm">
       <po-input

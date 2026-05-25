@@ -35,15 +35,27 @@
     }
   </div>
 
-  <po-table
-    [p-columns]="columns"
-    [p-items]="tables()"
-    [p-loading]="isLoading()"
-    [p-actions]="actions"
-    [p-striped]="true"
-    p-sort="true"
-    [p-literals]="tableLiterals"
-  ></po-table>
+  @if (isLoading()) {
+    <sxg-loading-skeleton variant="table" [rows]="4" />
+  } @else if (tables().length === 0) {
+    <sxg-empty-state
+      icon="an an-table"
+      title="Nenhuma tabela cadastrada"
+      description="Cadastre a primeira tabela SX2 para começar a modelar o dicionário."
+      [actionLabel]="projectDeleted ? null : 'Nova tabela'"
+      actionIcon="an an-plus"
+      (action)="navigateToNew()"
+    />
+  } @else {
+    <po-table
+      [p-columns]="columns"
+      [p-items]="tables()"
+      [p-actions]="actions"
+      [p-striped]="true"
+      p-sort="true"
+      [p-literals]="tableLiterals"
+    ></po-table>
+  }
 
   @if (total() > pageSize) {
     <nav class="sxg-tables__pagination" aria-label="Paginação de tabelas">

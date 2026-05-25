@@ -17,6 +17,7 @@ model User {
   avatarUrl             String?
   emailVerified         Boolean   @default(false)
   locale                String    @default("pt-BR")
+  prefs                 Json?
   createdAt             DateTime  @default(now())
   updatedAt             DateTime  @updatedAt
   lastLoginAt           DateTime?
@@ -28,6 +29,7 @@ model User {
   ownedProjects   Project[]       @relation("ProjectOwner")
   teamMemberships TeamMember[]
   invitesSent     ProjectInvite[] @relation("ProjectInviteSender")
+  templates       Template[]
 
   @@index([email])
   @@index([deletedAt])
@@ -153,7 +155,9 @@ model Project {
 
   @@index([visibility])
   @@index([ownerUserId])
+  @@index([ownerUserId, deletedAt, updatedAt])
   @@index([ownerTeamId])
+  @@index([ownerTeamId, deletedAt, updatedAt])
   @@index([deletedAt])
 }
 
@@ -257,6 +261,7 @@ model Table {
 
   @@unique([projectId, prefix])
   @@index([projectId])
+  @@index([projectId, deletedAt, updatedAt])
 }
 
 model Index {
@@ -284,6 +289,7 @@ model Index {
 
   @@unique([tableId, order])
   @@index([tableId])
+  @@index([tableId, deletedAt, order])
   @@index([deletedAt])
 }
 
@@ -394,6 +400,7 @@ model Field {
   @@unique([tableId, name])
   @@unique([tableId, order])
   @@index([tableId])
+  @@index([tableId, deletedAt, order])
   @@index([deletedAt])
 }
 
@@ -414,6 +421,34 @@ model Migration {
 
   @@unique([projectId, sequence])
   @@index([projectId])
+  @@index([projectId, status, createdAt])
+}
+
+// ============================================================================
+// TEMPLATES DA COMUNIDADE (Fase 9)
+// ============================================================================
+
+model Template {
+  id                String   @id @default(cuid())
+  authorId          String?
+  name              String
+  description       String?
+  category          String
+  content           Json
+  sourceTablePrefix String?
+  downloads         Int      @default(0)
+  isOfficial        Boolean  @default(false)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  author User? @relation(fields: [authorId], references: [id], onDelete: SetNull)
+
+  @@index([category])
+  @@index([isOfficial])
+  @@index([isOfficial, downloads, createdAt])
+  @@index([sourceTablePrefix])
+  @@index([authorId])
+  @@index([createdAt])
 }
 
 model MigrationItem {
